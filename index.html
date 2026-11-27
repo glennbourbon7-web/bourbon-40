@@ -184,6 +184,13 @@ header .logo{flex:none}
 .mclose{position:absolute;top:10px;right:10px;width:40px;height:40px;min-height:40px;padding:0;border-radius:20px;z-index:1}
 .kv2{border:1px solid #38383a;border-radius:12px;overflow:hidden}.kv2>div{display:flex;justify-content:space-between;gap:14px;padding:10px 12px;border-bottom:1px solid #2c2c2e;font-size:14px}.kv2>div:last-child{border-bottom:0}
 .kv2 span{color:var(--mut);flex:none;max-width:45%}.kv2 b{text-align:right;font-weight:600;overflow-wrap:anywhere;white-space:pre-wrap}
+.getapp{text-align:center;padding:34px 16px 60px;max-width:720px;margin:0 auto}
+.appicon{width:120px;height:120px;border-radius:27px;box-shadow:0 18px 50px rgba(0,0,0,.7),0 0 0 1px #38383a;margin-bottom:18px}
+.getapp h1{margin:16px 0 8px}.big-b{width:100%;min-height:52px;font-size:17px;margin-bottom:14px}
+.gsteps{display:grid;gap:4px}.gstep{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #2c2c2e}.gstep:last-child{border-bottom:0}
+.gstep .grow{flex:1}.gstep p{margin:2px 0 0;font-size:14px}
+.gn{flex:none;width:30px;height:30px;border-radius:15px;background:#fff;color:#000;font-weight:800;display:grid;place-items:center}
+.gic{flex:none;width:44px;height:44px;border-radius:12px;background:#2c2c2e;display:grid;place-items:center}.gi{width:24px;height:24px;fill:none;stroke:#0a84ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head><body>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -734,7 +741,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     /* ================= ROUTER / RENDER ================= */
     const route = () => (location.hash || '#home').slice(1);
     function render() {
-        const r = route(), tab = r.startsWith('s-') ? 'markets' : ['corporate', 'ledger', 'how', 'meetings', 'funding', 'staff'].includes(r) ? 'more' : r;
+        const r = route(), tab = r.startsWith('s-') ? 'markets' : ['corporate', 'ledger', 'how', 'meetings', 'funding', 'staff', 'get-app'].includes(r) ? 'more' : r;
         document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.n === tab));
         const a = me();
         {
@@ -750,6 +757,10 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const keep = {}, fe = document.activeElement, fk = fe && app.contains(fe) && !fe.dataset.st ? (fe.id || fe.name) : null;
         app.querySelectorAll('input,select,textarea').forEach(el => { const k = el.id || el.name; if (k && !el.dataset.st && el.type !== 'checkbox')
             keep[k] = el.value; });
+        if (r === 'get-app') {
+            app.innerHTML = getApp();
+            return;
+        }
         if (!S.uid) {
             app.innerHTML = landing();
             restoreForm(keep, fk);
@@ -835,7 +846,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
      <p class="note" style="margin:4px 0 0">${tab === 'emp' ? '<a href="#" data-auth="in">Back to customer sign in<\/a>' : '<a href="#" data-auth="emp">Employee sign in<\/a>'}<\/p><\/form><\/div><\/div><\/section>
    <section class="band"><h2>Today on the B40<\/h2><div class="chips" style="margin-top:10px">${mv.map(x => `<span class="tick"><b>${esc(x.c.ticker)}<\/b> <span class="mono">${$(live(x.c.ticker))}<\/span> <span class="${cls(x.d)}">${sg(x.d * 100)}<\/span><\/span>`).join('')}<\/div>
    <div class="g3">${[['Trade', 'Buy and sell every company on Ānanda, with market, limit and stop orders and live charts.'], ['IPOs', 'Take a company public: set its valuation and share count, and investors request shares before it lists.'], ['Bets', 'File a betting board on anything, or put money on someone else’s. Winners split the pot.']].map(x => `<div class="card pad"><h3>${x[0]}<\/h3><p class="mut" style="margin:6px 0 0">${x[1]}<\/p><\/div>`).join('')}<\/div>
-   <p class="note" style="margin-top:22px">© Ānanda Capital<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version 2 · connected to the shared database<\/p><\/section>`;
+   <p style="margin-top:22px"><a class="btn" href="#get-app">📲 Get the app<\/a><\/p><p class="note" style="margin-top:14px">© Ānanda Capital<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version 2 · connected to the shared database<\/p><\/section>`;
     }
     function afterLanding() {
         const svg = document.getElementById('herobg');
@@ -871,6 +882,31 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
                 say('authmsg', e.message || 'Something went wrong. Try again.', false);
             }
         });
+    }
+    /* ---------- GET THE APP ---------- */
+    let installEvt = null;
+    addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (route() === 'get-app')
+        render(); });
+    function getApp() {
+        const ua = navigator.userAgent || '', ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), android = /Android/.test(ua), safari = ios && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA|FBAN|FBAV|Instagram|Snapchat|Line\//.test(ua), standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+        const shareIc = '<svg viewBox="0 0 24 24" class="gi"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/><\/svg>', addIc = '<svg viewBox="0 0 24 24" class="gi"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/><\/svg>';
+        const step = (n, t, d, ic) => `<div class="gstep"><span class="gn">${n}<\/span><div class="grow"><b>${t}<\/b><p class="mut">${d}<\/p><\/div>${ic ? `<span class="gic">${ic}<\/span>` : ''}<\/div>`;
+        let body;
+        if (standalone)
+            body = `<div class="msg okm" style="font-size:16px">You're all set. You're using the Ānanda Capital app right now.<\/div>`;
+        else if (ios && !safari)
+            body = `<div class="msg err" style="font-size:15px">On iPhone, the app can only be added from <b>Safari<\/b>. Copy this page's link, open Safari, paste it in, then follow the steps below.<\/div><button class="pri" data-act="copylink" style="margin-top:12px">Copy link<\/button>` + iosSteps();
+        else if (ios)
+            body = iosSteps();
+        else if (android)
+            body = `${installEvt ? '<button class="pri big-b" data-act="install">Install app<\/button>' : ''}<div class="gsteps">${step(1, 'Tap the menu', 'Tap ⋮ at the top right of Chrome.')}${step(2, 'Tap “Install app” or “Add to Home screen”', 'Then tap Install.')}${step(3, 'Open Ānanda from your home screen', 'It opens full-screen like any other app.')}<\/div>`;
+        else
+            body = `${installEvt ? '<button class="pri big-b" data-act="install">Install app<\/button>' : ''}<p class="mut">On a computer, use Chrome or Edge and click the install icon in the address bar. On a phone, open <b>glennbourbon7-web.github.io/bourbon-40/app<\/b> and follow the steps.<\/p>`;
+        function iosSteps() { return `<div class="gsteps">${step(1, 'Tap the Share button', `It's the square with an arrow at the bottom of Safari.`, shareIc)}${step(2, 'Scroll down and tap “Add to Home Screen”', 'It's in the list under the row of apps.', addIc)}${step(3, 'Tap “Add”', 'The name will already say Ānanda.')}${step(4, 'Open Ānanda from your home screen', 'It opens full-screen with no address bar, just like an app.')}<\/div>`; }
+        return `<section class="getapp"><img src="icons/icon-512.png" alt="Ānanda Capital app icon" class="appicon"><div class="wm" style="justify-items:center"><b>ĀNANDA CAPITAL<\/b><\/div>
+   <h1>Get the app<\/h1><p class="mut" style="max-width:440px;margin:0 auto 22px">Put Ānanda Capital on your home screen. It opens full-screen, with live prices, your portfolio and alerts, one tap away.<\/p>
+   <div class="card pad" style="text-align:left;max-width:520px;margin:0 auto">${body}<\/div>
+   <p style="margin-top:22px"><a href="#${S.uid ? 'home' : ''}">${S.uid ? 'Back to my account' : 'Back to sign in'}<\/a><\/p><\/section>`;
     }
     /* ---------- HOME / ACCOUNTS ---------- */
     function home() {
@@ -1734,6 +1770,7 @@ No<\/textarea><\/label>
    ${it('corporate', 'Corporate dashboard', 'Market cap, shareholders, representative requests and IPO books for your companies')}
    ${it('funding', 'Add or withdraw money', 'Fund your account through a representative, or withdraw up to $50,000 a day')}
    ${it('meetings', 'Representative meetings', 'Your requests to sell shares that need approval')}
+   ${it('get-app', 'Get the app', 'Add Ānanda Capital to your home screen')}
    ${it('ledger', 'System ledger', 'Every account, order, trade, IPO and listing on the exchange')}
    ${it('bets', 'Betting boards', 'Bet play money on outcomes, or file your own board')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
@@ -2205,6 +2242,23 @@ No<\/textarea><\/label>
         if (act === 'details') {
             e.preventDefault();
             openDetails(b.dataset.k, b.dataset.id);
+            return;
+        }
+        if (act === 'install') {
+            if (installEvt) {
+                installEvt.prompt();
+                installEvt.userChoice.then(() => { installEvt = null; render(); });
+            }
+            return;
+        }
+        if (act === 'copylink') {
+            const u = location.href.split('#')[0].replace(/index\.html$/, '') + 'app/';
+            try {
+                navigator.clipboard.writeText(u).then(() => { b.textContent = 'Link copied'; });
+            }
+            catch (err) {
+                b.textContent = u;
+            }
             return;
         }
         b.disabled = true;
