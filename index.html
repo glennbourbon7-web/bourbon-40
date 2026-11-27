@@ -490,8 +490,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795758838';
-    const START = 0, WDLIM = 50000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
+    const BUILD = '1795761641';
+    const START = 0, WDLIM = 50000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
@@ -504,7 +504,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     const n2 = n => (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const big = n => n >= 1e12 ? '$' + (n / 1e12).toFixed(2) + 'T' : n >= 1e9 ? '$' + (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? '$' + (n / 1e6).toFixed(2) + 'M' : $(n);
     const cnt = n => n >= 1e9 ? (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : Math.round(n).toLocaleString();
-    const sg = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2) + '%';
+    const sg = v => (v >= 0 ? '+' : '−') + (Math.abs(v) > 0 && Math.abs(v) < 0.1 ? Math.abs(v).toFixed(3) : Math.abs(v).toFixed(2)) + '%';
     const sd = v => (v >= 0 ? '+' : '−') + n2(Math.abs(v));
     const cls = v => v >= 0 ? 'up' : 'dn';
     const r2 = n => Math.round(n * 100) / 100;
@@ -549,9 +549,10 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     function chgOver(T, ms) { const c = S.companies[T]; if (!c)
         return 0; const now = Date.now(), a = liveC(c, now); const b = liveC(c, Math.max(now - ms, c.since || 0)); return b ? a / b - 1 : 0; }
     const dayChg = T => chgOver(T, DAY);
-    /* Trade impact: % move = Y × √(shares traded ÷ shares outstanding) ÷ √(1 + investors holding), kept between 0.05% and 8% */
-    function impactParts(c, qty) { const frac = qty / c.shares, h = holders(c.ticker), raw = Y * Math.sqrt(frac) / Math.sqrt(1 + h); return { frac, h, raw, m: Math.min(CAP, Math.max(FLOOR, raw)) }; }
-    const impact = (c, q) => impactParts(c, q).m;
+    /* Trade impact: the move is proportional to the dollars traded compared with the company's total value,
+       softened by how many investors hold it. Ten trades of 100 shares move the price exactly as much as one trade of 1,000. */
+    function impactParts(c, qty, sell) { const frac = qty / c.shares, h = holders(c.ticker), depth = 1 / (1 + 0.1 * h), x = frac * depth; return { frac, h, depth, x, m: sell ? 1 - Math.exp(-x) : Math.exp(x) - 1 }; }
+    const impact = (c, q, sell) => impactParts(c, q, sell).m;
     function series(fn, tf, n) { const [span, N] = TF[tf]; n = n || N; const now = Date.now(), out = []; for (let i = 0; i < n; i++) {
         const t = now - span + i * span / (n - 1), v = fn(t);
         if (v != null && isFinite(v) && v > 0)
@@ -833,7 +834,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     const openAcct = () => !S.db ? `<div class="card pad"><h3>Sign in to trade<\/h3><p class="mut">Open this page while signed in to get an investor account.<\/p><\/div>`
         : !S.canWrite ? `<div class="card pad"><h3>View-only access<\/h3><p class="mut">You can watch the market, but your access doesn't allow trading. Ask the owner for Contributor access.<\/p><\/div>`
             : `<div class="card pad"><h2>Open your investor account<\/h2><p class="mut">Start with ${$(START)} in play money. Your account, trades and orders are all recorded in the system ledger.<\/p><button class="pri" data-act="open">Open account<\/button><\/div>`;
-    function stockRow(c, extra = '') { const T = c.ticker, d = dayChg(T); return `<a class="li" href="#s-${esc(T.toLowerCase())}"><span class="tk">${esc(T)}<\/span><span class="grow"><b>${esc(c.name)}<\/b><small>${extra || esc(c.sector)}<\/small><\/span>${spark(T)}<span class="rt"><b data-px="${esc(T)}">${$(live(T))}<\/b><small><span class="cbox ${cls(d)}" data-ch="${esc(T)}">${sg(d * 100)}<\/span><\/small><\/span><\/a>`; }
+    function stockRow(c, extra = '') { const T = c.ticker, d = moveOf(T); return `<a class="li" href="#s-${esc(T.toLowerCase())}"><span class="tk">${esc(T)}<\/span><span class="grow"><b>${esc(c.name)}<\/b><small>${extra || esc(c.sector)}<\/small><\/span>${spark(T)}<span class="rt"><b data-px="${esc(T)}">${$(live(T))}<\/b><small><span class="cbox ${cls(d)}" data-ch="${esc(T)}">${sg(d * 100)}<\/span><\/small><\/span><\/a>`; }
     /* ---------- LOGIN / WELCOME PAGE ---------- */
     function landing() {
         const mv = L().map(c => ({ c, d: dayChg(c.ticker) })).sort((x, y) => Math.abs(y.d) - Math.abs(x.d)).slice(0, 8);
@@ -935,7 +936,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         if (!a)
             return `<div class="cols"><div class="stackc">${openAcct()}<\/div><div class="stackc">${indices}${wire}<\/div><\/div>`;
         const hs = Object.entries(a.holdings || {}).filter(([T, h]) => h.q > 0 && S.companies[T]).sort((x, y) => y[1].q * live(y[0]) - x[1].q * live(x[0]));
-        const unreal = st.inv - st.cost, dep = S.deps.filter(d => d.uid === S.uid && d.status === 'approved').reduce((x, d) => x + (d.approved || 0), 0) + (a.base || 0), all = st.tot - dep;
+        const unreal = st.inv - st.cost, dep = S.deps.filter(d => d.uid === S.uid && d.status === 'approved' && (d.dt || d.t || 0) > (a.resetAt || 0)).reduce((x, d) => x + (d.approved || 0), 0) + S.ledger.filter(l => l.uid === S.uid && l.kind === 'DEPOSIT' && /^Added by/.test(l.via || '') && l.t > (a.resetAt || 0)).reduce((x, l) => x + (l.price || 0), 0) - S.wds.filter(w => w.uid === S.uid && (w.status === 'paid' || w.status === 'pending') && w.t > (a.resetAt || 0)).reduce((x, w) => x + w.amt, 0) + (a.base || 0), all = st.tot - dep;
         const hero = `<section class="card"><div class="pad" style="padding-bottom:6px"><div class="lbl">Total account value<\/div><div class="big">${$(st.tot)}<\/div>
     <div class="row" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;font-size:14px"><span class="${cls(st.dayAbs)}">${st.dayAbs >= 0 ? '+' : '−'}${$(Math.abs(st.dayAbs))} today<\/span><span class="${cls(all)}">${all >= 0 ? '+' : '−'}${$(Math.abs(all))} all time<\/span><\/div><\/div>
     ${figHtml('pfig', 'sm')}${segHtml('p', S.ptf)}<p class="note" style="margin:0 18px 10px">Chart shows what your current holdings would have been worth.<\/p>
@@ -995,6 +996,15 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         return `<div class="list">${o.top.map((x, i) => row(esc(name(x.id)) + (x.id === S.uid ? ' (you)' : ''), x.q, '#' + (i + 1) + ' shareholder')).join('')}${rq ? row('All other shareholders', rq, o.rest.length + ' more ' + (o.rest.length === 1 ? 'person' : 'people')) : ''}
   <div class="li" style="cursor:default"><span class="grow"><b>Total<\/b><\/span><span class="rt"><b class="mono">100.00%<\/b><small class="mut">${o.tot.toLocaleString()} sh<\/small><\/span><\/div><\/div>`;
     }
+    /* the most recent trade's move: red when it was a sale, green when it was a buy */
+    function lastMove(T) {
+        const l = S.ledger.find(x => x.ticker === T && x.after && x.price && ['BUY', 'SELL', 'FILL', 'REP-SALE'].indexOf(x.kind) >= 0);
+        if (!l)
+            return null;
+        const sold = l.kind === 'SELL' || l.kind === 'REP-SALE' || (l.kind === 'FILL' && l.side === 'SELL');
+        return { p: typeof l.mv === 'number' ? l.mv : l.after / l.price - 1, sold, t: l.t, qty: l.qty, who: l.uid };
+    }
+    const moveOf = T => { const m = lastMove(T); return m ? m.p : dayChg(T); };
     /* ---------- STOCK DETAIL ---------- */
     function stock(T) {
         var _a;
@@ -1008,7 +1018,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     <div style="display:flex;gap:10px;align-items:center;justify-content:space-between"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tk">${esc(T)}<\/span><span class="note">${esc(c.sector)}${inB40(c) ? ' · B40 member' : ''}<\/span>${c.rep ? '<span class="pill bl">Sales need a representative<\/span>' : ''}<\/div>
     ${a ? `<button class="star" data-act="watch" aria-label="Watch">${(a.watch || []).includes(T) ? '★' : '☆'}<\/button>` : ''}<\/div>
     <h1 style="margin-top:8px">${esc(c.name)}<\/h1>
-    <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px"><span class="big" data-px="${esc(T)}">${$(p)}<\/span><span class="${cls(ch)}" style="font-weight:700">${sg(ch * 100)} · ${newL ? 'since listing' : TFL[S.stf]}<\/span><\/div><\/div>
+    <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px"><span class="big" data-px="${esc(T)}">${$(p)}<\/span>${(() => { const lm = lastMove(T); if (!lm)
+            return `<span class="${cls(ch)}" style="font-weight:700">${sg(ch * 100)} · ${newL ? 'since listing' : TFL[S.stf]}<\/span>`; return `<span class="${lm.sold ? 'dn' : 'up'}" style="font-weight:700">${lm.sold ? '▼' : '▲'} ${Math.abs(lm.p * 100) < 0.1 ? Math.abs(lm.p * 100).toFixed(3) : Math.abs(lm.p * 100).toFixed(2)}% · last trade ${lm.sold ? '(sold)' : '(bought)'}<\/span><span class="note" style="display:block;width:100%">${esc(name(lm.who))} ${lm.sold ? 'sold' : 'bought'} ${Number(lm.qty).toLocaleString()} shares · ${ago(lm.t)}<\/span>`; })()}<\/div><\/div>
     ${figHtml('sfig', 'tall')}${segHtml('s', S.stf)}
     <div class="stats" style="margin-top:8px"><div><b>${big(p * c.shares)}<\/b><span>Market cap<\/span><\/div><div><b>${cnt(c.shares)}<\/b><span>Shares outstanding<\/span><\/div><div><b>${(c.vol || 0).toLocaleString()}<\/b><span>Shares traded<\/span><\/div><div><b>${holders(T)}<\/b><span>Investors<\/span><\/div><div><b>${y.length ? $(Math.max(...y)) : '—'}<\/b><span>1-year high<\/span><\/div><div><b>${y.length ? $(Math.min(...y)) : '—'}<\/b><span>1-year low<\/span><\/div>${c.ipo ? `<div><b>${$(c.ipo)}<\/b><span>IPO price<\/span><\/div>` : ''}<\/div>
     ${c.about ? `<p class="mut pad" style="margin:0">${esc(c.about)}<\/p>` : ''}<\/section>
@@ -1073,7 +1084,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             el.innerHTML = '<div><span>Enter at least 1 share.<\/span><\/div>';
             return;
         }
-        const p = live(T), ip = impactParts(c, q), sell = S.side === 'SELL', np = p * (sell ? 1 - ip.m : 1 + ip.m);
+        const sell = S.side === 'SELL', p = live(T), ip = impactParts(c, q, sell), np = p * (sell ? 1 - ip.m : 1 + ip.m);
         const lim = +((_a = document.getElementById('lim')) === null || _a === void 0 ? void 0 : _a.value) || 0;
         let cond = '';
         if (S.ot === 'limit' && lim)
@@ -1093,7 +1104,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const mine = S.orders.filter(o => o.uid === S.uid), open = mine.filter(o => o.status === 'open'), past = mine.filter(o => o.status !== 'open').slice(0, 20);
         const c = S.companies[S.tt];
         return `<div class="cols"><div class="stackc"><section class="card pad"><label>Stock<select id="tsel" data-st="1">${L().map(x => `<option value="${esc(x.ticker)}"${x.ticker === S.tt ? ' selected' : ''}>${esc(x.ticker)} · ${esc(x.name)}<\/option>`).join('')}<\/select><\/label>
-    ${c ? `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><a href="#s-${esc(S.tt.toLowerCase())}" style="text-decoration:none;color:inherit"><b style="font-size:18px">${esc(c.name)}<\/b><\/a><span><b data-px="${esc(S.tt)}" style="font-size:22px">${$(live(S.tt))}<\/b> <span class="cbox ${cls(dayChg(S.tt))}" data-ch="${esc(S.tt)}">${sg(dayChg(S.tt) * 100)}<\/span><\/span><\/div>` : ''}<\/section>
+    ${c ? `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px"><a href="#s-${esc(S.tt.toLowerCase())}" style="text-decoration:none;color:inherit"><b style="font-size:18px">${esc(c.name)}<\/b><\/a><span><b data-px="${esc(S.tt)}" style="font-size:22px">${$(live(S.tt))}<\/b> <span class="cbox ${cls(moveOf(S.tt))}" data-ch="${esc(S.tt)}">${sg(moveOf(S.tt) * 100)}<\/span><\/span><\/div>` : ''}<\/section>
     ${ticket(S.tt)}<\/div>
    <div class="stackc"><section class="card"><div class="ch-h"><h2>Open orders<\/h2><span class="note">${open.length}<\/span><\/div><div class="list">${open.length ? open.map(o => `<div class="li" style="cursor:default"><span class="tk">${esc(o.ticker)}<\/span><span class="grow"><b class="${o.side === 'BUY' ? 'up' : 'dn'}">${esc(o.side)} ${Number(o.qty).toLocaleString()} · ${esc(o.type)} ${$(o.px)}<\/b><small>Now ${$(live(o.ticker))} · ${o.tif === 'gtc' ? 'until cancelled' : 'expires ' + esc(when(o.t + DAY))}<\/small><\/span><button class="sm-b" data-act="cancel-order" data-id="${esc(o.id)}">Cancel<\/button><\/div>`).join('') : '<div class="empty">No open orders. Choose Limit or Stop in the ticket to place one.<\/div>'}<\/div><\/section>
    <section class="card"><div class="ch-h"><h2>Order history<\/h2><\/div>${past.length ? `<table class="stack"><thead><tr><th>Placed<\/th><th>Order<\/th><th>Status<\/th><th class="r">Fill<\/th><\/tr><\/thead><tbody>${past.map(o => `<tr><td class="mut">${esc(when(o.t))}<\/td><td>${esc(o.side)} ${Number(o.qty).toLocaleString()} ${esc(o.ticker)} · ${esc(o.type)} ${$(o.px)}<\/td><td><span class="pill ${o.status === 'filled' ? 'gr' : o.status === 'rejected' ? 'rd' : ''}">${esc(o.status)}<\/span>${o.why ? `<br><small class="mut">${esc(o.why)}<\/small>` : ''}<\/td><td class="r">${o.fill ? $(o.fill) : ''}<\/td><\/tr>`).join('')}<\/tbody><\/table>` : '<div class="empty">Filled, cancelled and expired orders appear here.<\/div>'}<\/section><\/div><\/div>`;
@@ -1715,6 +1726,61 @@ No<\/textarea><\/label>
         body.innerHTML = detailsHtml(S.modal.k, S.modal.id);
         body.scrollTop = y;
     }
+    /* one-time reset: every stock back to its original price, every account to exactly $50,000 with no stocks */
+    let resetBusy = false;
+    function resetOnce() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner || resetBusy || !S.loaded)
+                return;
+            resetBusy = true;
+            try {
+                const done = yield S.db.doc('meta/reset1').get();
+                if (done.exists)
+                    return;
+                const c1 = yield S.db.doc('meta/cleanup1').get();
+                if (!c1.exists) {
+                    resetBusy = false;
+                    return;
+                }
+                yield S.db.doc('meta/reset1').set({ started: Date.now(), by: S.uid });
+                const now = Date.now();
+                for (const c of L()) {
+                    const orig = r2(c.ipo || c.ref || (c.ticker === 'GNS' ? 9.6 : refPx(c)));
+                    yield S.db.doc('companies/' + c.ticker).update({ price: orig, hist: [[now, orig]], t0: now, vol: 0 });
+                }
+                for (const [id, a] of Object.entries(S.accounts)) {
+                    if (a.seed)
+                        continue;
+                    yield S.db.doc('accounts/' + id).set({ label: a.label || name(id), cash: 50000, base: 50000, resetAt: now, created: a.created || now, watch: a.watch || [] });
+                }
+                for (const o of S.orders)
+                    if (o.status === 'open')
+                        yield S.db.doc('orders/' + o.id).update({ status: 'cancelled' });
+                for (const r of S.reqs)
+                    if (r.status === 'scheduled')
+                        yield S.db.doc('requests/' + r.id).update({ status: 'cancelled' });
+                for (const w of S.wds)
+                    if (w.status === 'pending')
+                        yield S.db.doc('withdrawals/' + w.id).update({ status: 'cancelled' });
+                for (const i of Object.values(S.ipos))
+                    if ((i.status === 'open' || i.status === 'review') && i.subs)
+                        yield S.db.doc('ipos/' + i.ticker).set(Object.assign({}, i, { subs: {} }));
+                for (const b of Object.values(S.bets))
+                    if ((b.status === 'open' || b.status === 'review') && b.wagers) {
+                        const nb = Object.assign({}, b);
+                        delete nb.id;
+                        nb.wagers = {};
+                        yield S.db.doc('bets/' + b.id).set(nb);
+                    }
+                yield S.db.doc('meta/reset1').update({ done: Date.now() });
+                yield log({ kind: 'RESET', via: 'All stock prices reset to their original price and every account reset to $50,000' });
+            }
+            catch (e) {
+                console.warn(e);
+                resetBusy = false;
+            }
+        });
+    }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1821,7 +1887,7 @@ No<\/textarea><\/label>
         }).join('')}<\/tbody><\/table>`;
     }
     function ledger() {
-        const kinds = ['all', 'DELIST', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
+        const kinds = ['all', 'RESET', 'DELIST', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
         const rows = S.ledger.filter(l => S.lk === 'all' || l.kind === S.lk);
         return `<section class="card"><div class="ch-h"><div><h2>System ledger<\/h2><p class="note" style="margin:2px 0 0">Every event on the exchange, newest first (latest 300).<\/p><\/div><select id="lk" data-st="1" style="width:auto">${kinds.map(k => `<option value="${k}"${S.lk === k ? ' selected' : ''}>${k === 'all' ? 'All events' : k}<\/option>`).join('')}<\/select><\/div>${ledgerTable(rows)}<\/section>`;
     }
@@ -1833,10 +1899,10 @@ No<\/textarea><\/label>
    <p class="mut">Every price on Ānanda Capital is built from two pieces: a <b>base price<\/b> that only changes when someone trades, and a shared <b>market mood<\/b> that makes prices drift through the day the way real markets do.<\/p>
    <div class="formula">Price = Base price × Market mood<\/div>
    <h2 style="margin-top:22px">1. Trades push the base price<\/h2>
-   <p class="mut">Buying pushes the price up and selling pushes it down. The size of the move uses a version of the <b>square-root impact rule<\/b> that real trading desks use to estimate how much a big order moves a stock:<\/p>
-   <div class="formula">Move % = 10 × √(shares traded ÷ shares outstanding) ÷ √(1 + investors holding)<br><span class="mut">kept between 0.05% and 8% per trade<\/span><\/div>
-   <ul class="mut"><li><b>Shares traded ÷ shares outstanding<\/b> is the same as the trade's dollar value ÷ the company's market cap, so selling $10,000 of a $4M company hits far harder than $10,000 of a $4T company.<\/li>
-   <li><b>The square root<\/b> means doubling an order doesn't double its impact. The first shares move the price most.<\/li>
+   <p class="mut">Buying pushes the price up and selling pushes it down, in proportion to how much money the trade is compared with what the whole company is worth:<\/p>
+   <div class="formula">Push = (trade value ÷ company value) ÷ (1 + 0.1 × investors holding)<br>Buy: new price = price × e<sup>push<\/sup> · Sell: new price = price × e<sup>−push<\/sup><\/div>
+   <ul class="mut"><li><b>Trade value ÷ company value:<\/b> buying 10% of a company's worth pushes its price up about 10%. $10,000 barely moves a $100M company but clearly moves a $4M one.<\/li>
+   <li><b>No shortcuts:<\/b> ten trades of 100 shares move the price exactly as much as one trade of 1,000 shares, so spamming small orders gets you nothing extra.<\/li>
    <li><b>Investors holding<\/b> is market depth. With more shareholders there are more people on the other side of a trade, so each order moves the price less.<\/li>
    <li>The new base price is then saved and logged, so every viewer sees the same new price instantly.<\/li><\/ul>
    <h2 style="margin-top:22px">2. Market mood keeps prices alive<\/h2>
@@ -1856,11 +1922,11 @@ No<\/textarea><\/label>
         const c = S.companies[document.getElementById('cT').value];
         if (!c)
             return;
-        const q = Math.max(1, Math.floor(+document.getElementById('cQ').value || 1)), sell = document.getElementById('cS').value === 'SELL', p = live(c.ticker), ip = impactParts(c, q), np = p * (sell ? 1 - ip.m : 1 + ip.m);
+        const q = Math.max(1, Math.floor(+document.getElementById('cQ').value || 1)), sell = document.getElementById('cS').value === 'SELL', p = live(c.ticker), ip = impactParts(c, q, sell), np = p * (sell ? 1 - ip.m : 1 + ip.m);
         el.innerHTML = `<div><span class="mut">Price now<\/span><b>${$(p)}<\/b><\/div><div><span class="mut">Trade value<\/span><b>${$(p * q)}<\/b><\/div><div><span class="mut">Market cap<\/span><b>${big(p * c.shares)}<\/b><\/div>
-  <div><span class="mut">Shares traded ÷ outstanding<\/span><b>${(ip.frac * 100).toPrecision(3)}%<\/b><\/div><div><span class="mut">10 × √ of that<\/span><b>${(Y * Math.sqrt(ip.frac) * 100).toFixed(3)}%<\/b><\/div>
-  <div><span class="mut">Investors holding<\/span><b>${ip.h} → ÷ ${Math.sqrt(1 + ip.h).toFixed(2)}<\/b><\/div><div><span class="mut">Raw move<\/span><b>${(ip.raw * 100).toFixed(3)}%<\/b><\/div>
-  <div><span class="mut">Applied move ${ip.raw > CAP ? '(capped)' : ip.raw < FLOOR ? '(minimum)' : ''}<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div style="border:0"><span>New price<\/span><b style="font-size:20px">${$(np)}<\/b><\/div>`;
+  <div><span class="mut">Trade ÷ company value<\/span><b>${(ip.frac * 100).toPrecision(3)}%<\/b><\/div>
+  <div><span class="mut">Investors holding<\/span><b>${ip.h} → × ${ip.depth.toFixed(3)}<\/b><\/div><div><span class="mut">Push<\/span><b>${(ip.x * 100).toFixed(3)}%<\/b><\/div>
+  <div><span class="mut">Price move<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div style="border:0"><span>New price<\/span><b style="font-size:20px">${$(np)}<\/b><\/div>`;
     }
     /* ================= WRITES ================= */
     S.msgs = {};
@@ -1891,12 +1957,12 @@ No<\/textarea><\/label>
                 throw Error('Account not found.');
             const a = clone(as.data());
             a.holdings = a.holdings || {};
-            const now = Date.now(), px = r2(liveC(c, now)), total = r2(px * qty), h = a.holdings[T] || { q: 0, c: 0 };
+            const now = Date.now(), rawPx = liveC(c, now), px = r2(rawPx), total = r2(px * qty), h = a.holdings[T] || { q: 0, c: 0 };
             if (side === 'BUY' && a.cash < total)
                 throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
             if (side === 'SELL' && h.q < qty)
                 throw Error(`Only ${h.q} shares of ${T} are owned.`);
-            const m = impact(c, qty), np = Math.max(.01, px * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
+            const m = impact(c, qty, side === 'SELL'), np = Math.max(.01, rawPx * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
             if (side === 'BUY') {
                 h.q += qty;
                 h.c = r2(h.c + total);
@@ -1915,7 +1981,7 @@ No<\/textarea><\/label>
             yield S.db.doc('accounts/' + uid).set(a);
             const hist = (Array.isArray(c.hist) ? c.hist.filter(Array.isArray) : []).concat([[now, nb]]).slice(-240);
             yield S.db.doc('companies/' + T).update({ price: nb, hist, vol: (c.vol || 0) + qty });
-            yield S.db.collection('ledger').add({ t: now, uid, kind: rep ? 'REP-SALE' : via && via !== 'Market order' ? 'FILL' : side, via, side, ticker: T, qty, price: px, after: r2(np), total });
+            yield S.db.collection('ledger').add({ t: now, uid, kind: rep ? 'REP-SALE' : via && via !== 'Market order' ? 'FILL' : side, via, side, ticker: T, qty, price: px, after: r2(np), mv: np / rawPx - 1, total });
             return { px, np: r2(np) };
         });
     }
@@ -2442,7 +2508,7 @@ No<\/textarea><\/label>
             return;
         document.querySelectorAll('[data-px]').forEach(el => { const v = live(el.dataset.px); if (v != null)
             el.textContent = $(v); });
-        document.querySelectorAll('[data-ch]').forEach(el => { const v = dayChg(el.dataset.ch); el.textContent = sg(v * 100); el.classList.toggle('up', v >= 0); el.classList.toggle('dn', v < 0); });
+        document.querySelectorAll('[data-ch]').forEach(el => { const v = moveOf(el.dataset.ch); el.textContent = sg(v * 100); el.classList.toggle('up', v >= 0); el.classList.toggle('dn', v < 0); });
         document.querySelectorAll('[data-ago]').forEach(el => { el.textContent = ago(+el.dataset.ago); });
         est();
         matchOrders();
@@ -2477,7 +2543,7 @@ No<\/textarea><\/label>
         });
     }
     let rt = 0;
-    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); }, 80); };
+    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); resetOnce(); }, 80); };
     setTimeout(() => { if (!S.loaded) {
         S.stale = true;
         render();
