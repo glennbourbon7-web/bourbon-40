@@ -147,6 +147,11 @@ a{color:#fff}.note a,.li a{color:#d1d1d6}
 .side{font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:4px 7px;border-radius:6px;flex:none;min-width:62px;text-align:center}.side.up{background:#0f2a17}.side.dn{background:#3a1412}
 @media(prefers-reduced-motion:reduce){.livedot{animation:none}}
 .k-DEPOSIT{color:#30d158}.k-DEP-REQ{color:#d1d1d6}
+#toast{position:fixed;left:50%;top:12px;transform:translate(-50%,-140%);z-index:20;max-width:min(92vw,520px);background:#fff;color:#000;font-weight:600;font-size:14px;padding:12px 16px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.6);text-decoration:none;transition:transform .35s ease}
+#toast.show{transform:translate(-50%,0)}
+nav a{position:relative}.nbadge{position:absolute;top:2px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff453a;color:#fff;font:700 10.5px/17px Inter,sans-serif;font-style:normal;text-align:center}
+@media(min-width:701px){.nbadge{position:static;margin-left:4px}}
+.pill.rd{background:#3a1412}
 </style>
 </head><body>
 
@@ -712,7 +717,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
      <p class="note" style="margin:4px 0 0">${tab === 'emp' ? '<a href="#" data-auth="in">Back to customer sign in<\/a>' : '<a href="#" data-auth="emp">Employee sign in<\/a>'}<\/p><\/form><\/div><\/div><\/section>
    <section class="band"><h2>Today on the B40<\/h2><div class="chips" style="margin-top:10px">${mv.map(x => `<span class="tick"><b>${esc(x.c.ticker)}<\/b> <span class="mono">${$(live(x.c.ticker))}<\/span> <span class="${cls(x.d)}">${sg(x.d * 100)}<\/span><\/span>`).join('')}<\/div>
    <div class="g3">${[['Trade', 'Buy and sell all 40 companies in the B40, with market, limit and stop orders and live charts.'], ['IPOs', 'Take a company public: set its valuation and share count, and investors request shares before it lists.'], ['Bets', 'File a betting board on anything, or put money on someone else’s. Winners split the pot.']].map(x => `<div class="card pad"><h3>${x[0]}<\/h3><p class="mut" style="margin:6px 0 0">${x[1]}<\/p><\/div>`).join('')}<\/div>
-   <p class="note" style="margin-top:22px">Ānanda Capital is a parody brokerage with play money. Prices aren't real quotes.<\/p><\/section>`;
+   <p class="note" style="margin-top:22px">Ānanda Capital is a parody brokerage with play money. Prices aren't real quotes.<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version 2 · connected to the shared database<\/p><\/section>`;
     }
     function afterLanding() {
         const svg = document.getElementById('herobg');
@@ -1159,6 +1164,74 @@ No<\/textarea><\/label>
             }
         });
     }
+    /* ---------- STAFF INBOX: every filing, live alerts and badges ---------- */
+    const SEENK = 'ananda-staff-seen';
+    const getSeen = () => { try {
+        return +localStorage.getItem(SEENK) || 0;
+    }
+    catch (e) {
+        return 0;
+    } };
+    const setSeen = t => { try {
+        localStorage.setItem(SEENK, String(t));
+    }
+    catch (e) { } };
+    function filings() {
+        const out = [];
+        Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, kind: 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' }));
+        Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, kind: 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#bets', open: b.status === 'open' }));
+        S.deps.forEach(d => out.push({ id: 'dep' + d.id, t: d.t || 0, kind: 'Deposit request', text: `${name(d.uid)} wants to add ${$(d.amt)}`, href: '#staff', open: d.status === 'scheduled' }));
+        S.reqs.forEach(r => out.push({ id: 'req' + r.id, t: r.t || 0, kind: 'Sale request', text: `${name(r.uid)} wants to sell ${Number(r.qty).toLocaleString()} ${r.ticker}`, href: '#staff', open: r.status === 'scheduled' }));
+        Object.entries(S.accounts).forEach(([id, a]) => { if (!a.seed && a.created)
+            out.push({ id: 'acct' + id, t: a.created, kind: 'New account', text: `${a.label || id} opened an account (@${String(id).replace(/^u:/, '')})`, href: '#staff', open: false }); });
+        return out.sort((x, y) => y.t - x.t);
+    }
+    const newCount = () => { const sn = getSeen(); return filings().filter(f => f.t > sn).length; };
+    function inbox() {
+        const sn = getSeen(), f = filings().slice(0, 25);
+        return `<section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>New filings<\/h2><span class="pill ${newCount() ? 'rd' : ''}">${newCount()} new<\/span><\/div>${f.length ? `<div class="list">${f.map(x => `<a class="li" href="${x.href}"><span class="grow"><b>${esc(x.text)}<\/b><small>${esc(x.kind)} · ${esc(when(x.t))}${x.open ? ' · needs action' : ''}<\/small><\/span>${x.t > sn ? '<span class="pill rd">NEW<\/span>' : ''}<span class="chev"><\/span><\/a>`).join('')}<\/div>` : '<div class="empty">Nothing filed yet.<\/div>'}<\/section>`;
+    }
+    let known = null;
+    function staffAlerts() {
+        if (!S.isOwner || !S.loaded)
+            return;
+        const f = filings();
+        if (known === null) {
+            known = new Set(f.map(x => x.id));
+        }
+        else {
+            const fresh = f.filter(x => !known.has(x.id));
+            fresh.forEach(x => known.add(x.id));
+            if (fresh.length)
+                toast(fresh[0].kind + ': ' + fresh[0].text + (fresh.length > 1 ? ` (+${fresh.length - 1} more)` : ''), fresh[0].href);
+        }
+        const n = newCount(), more = document.querySelector('#nav a[data-n=more]');
+        if (more) {
+            let bd = more.querySelector('.nbadge');
+            if (n) {
+                if (!bd) {
+                    bd = document.createElement('i');
+                    bd.className = 'nbadge';
+                    more.appendChild(bd);
+                }
+                bd.textContent = n > 9 ? '9+' : String(n);
+            }
+            else if (bd)
+                bd.remove();
+        }
+        const chip = document.getElementById('cashChip');
+        if (chip && n && chip.textContent.indexOf('new') < 0)
+            chip.textContent = chip.textContent.replace('Staff', 'Staff (' + n + ' new)');
+        if (route() === 'staff') {
+            clearTimeout(staffAlerts._t);
+            staffAlerts._t = setTimeout(() => { setSeen(Date.now()); }, 4000);
+        }
+    }
+    function toast(msg, href) { let el = document.getElementById('toast'); if (!el) {
+        el = document.createElement('a');
+        el.id = 'toast';
+        document.body.appendChild(el);
+    } el.href = href || '#staff'; el.textContent = '🔔 ' + msg; el.className = 'show'; clearTimeout(toast._t); toast._t = setTimeout(() => { el.className = ''; }, 7000); }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1181,7 +1254,7 @@ No<\/textarea><\/label>
         if (!S.isOwner)
             return `<div class="card pad"><h2>Employees only<\/h2><p class="mut">Sign out and use Employee sign in with an employee account.<\/p><\/div>`;
         const now = Date.now(), deps = S.deps.filter(d => d.status === 'scheduled'), sales = S.reqs.filter(r => r.status === 'scheduled').sort((x, y) => x.slot - y.slot);
-        const ipo = Object.values(S.ipos).filter(i => i.status === 'open'), toSettle = Object.values(S.bets).filter(b => b.status === 'open' && now > b.closes), openB = Object.values(S.bets).filter(b => b.status === 'open' && now <= b.closes);
+        const ipo = Object.values(S.ipos).filter(i => i.status === 'open'), toSettle = Object.values(S.bets).filter(b => b.status === 'open'), openB = Object.values(S.bets).filter(b => b.status === 'open' && now <= b.closes);
         const accts = Object.entries(S.accounts).filter(([id, a]) => !a.seed).map(([id, a]) => { let v = 0; for (const [T, h] of Object.entries(a.holdings || {}))
             if (h.q > 0 && S.companies[T])
                 v += h.q * live(T); return { id, a, v }; }).sort((x, y) => (y.a.cash + y.v) - (x.a.cash + x.v));
@@ -1191,11 +1264,12 @@ No<\/textarea><\/label>
         const betRow = b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0); return `<div class="li" style="cursor:default;display:grid;gap:8px"><span class="grow"><b>${esc(b.title)}<\/b><small>Filed by ${esc(name(b.owner))} · pot ${$(pot)} · closed ${esc(when(b.closes))}<\/small><\/span><div class="qq">${b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('')}<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void<\/button><\/div><div class="msg" id="bm_${esc(b.id)}"><\/div><\/div>`; };
         const sec = (t, n, body) => `<section class="card"><div class="ch-h"><h2>${t}<\/h2><span class="pill ${n ? 'bl' : ''}">${n} waiting<\/span><\/div>${body}<\/section>`;
         return `<div class="stackc"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Employee dashboard<\/h1><span class="pill gr">Signed in as ${esc(name(S.uid))}<\/span><\/div>
-  <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Boards to settle<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
+  ${inbox()}
+  <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Open betting boards<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
   <div class="cols"><div class="stackc">${depositDesk()}
    ${sec('Share sale requests', sales.length, sales.length ? `<div class="list">${sales.map(saleRow).join('')}<\/div>` : '<div class="empty">No sale requests right now.<\/div>')}
    ${sec('IPOs', ipo.length, ipo.length ? `<div class="list">${ipo.map(ipoRow).join('')}<\/div>` : '<div class="empty">No open IPOs.<\/div>')}
-   ${sec('Betting boards to settle', toSettle.length, toSettle.length ? `<div class="list">${toSettle.map(betRow).join('')}<\/div>` : `<div class="empty">Nothing to settle. ${openB.length} board${openB.length === 1 ? ' is' : 's are'} still taking bets.<\/div>`)}
+   ${sec('Betting boards', toSettle.length, toSettle.length ? `<div class="list">${toSettle.map(betRow).join('')}<\/div>` : `<div class="empty">No open betting boards.<\/div>`)}
    <div class="msg" id="cm_staff"><\/div><\/div>
   <div class="stackc"><section class="card"><div class="ch-h"><h2>All accounts<\/h2><span class="note">${accts.length}<\/span><\/div>${accts.length ? `<div class="list">${accts.map(x => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(x.id))}<\/b><small>@${esc(String(x.id).replace(/^u:/, ''))} · traded ${$(x.a.day && x.a.day.d === dk ? x.a.day.v : 0)} today<\/small><\/span><span class="rt"><b class="mono">${$(x.a.cash + x.v)}<\/b><small class="mut">${$(x.a.cash)} cash<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No accounts yet.<\/div>'}<\/section>
    <section class="card pad"><h2>Give money<\/h2><p class="mut" style="margin:6px 0 12px">Add cash straight to any account. It's logged in the ledger as a deposit.<\/p>
@@ -1218,7 +1292,7 @@ No<\/textarea><\/label>
    ${it('bets', 'Betting boards', 'Bet play money on outcomes, or file your own board')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
    <section class="card pad"><h2>Your login<\/h2><p class="mut" style="margin:6px 0 12px">Signed in as <b style="color:var(--ink)">${esc(name(S.uid))}<\/b> (@${esc(String(S.uid).replace(/^u:/, ''))})<\/p><button data-act="signout">Sign out<\/button><\/section>
-   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings from every phone are stored in one system. Prices aren't real quotes.<\/p><\/section><\/div>`;
+   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="note"><span class="livedot"><\/span>Version 2 · shared database<\/p><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings from every phone are stored in one system. Prices aren't real quotes.<\/p><\/section><\/div>`;
     }
     /* ---------- CORPORATE ---------- */
     function corporate() {
@@ -1788,7 +1862,7 @@ No<\/textarea><\/label>
     } });
     function ipoPrev() { const f = document.getElementById('ipof'), el = document.getElementById('ipoPrev'); if (!f || !el)
         return; const v = +f.val.value || 0, sh = +f.shares.value || 0, of = +f.offered.value || 0, p = sh ? v / sh : 0; el.innerHTML = `IPO price <b class="mono" style="color:var(--ink)">${$(p)}<\/b> per share · selling ${sh ? (of / sh * 100).toFixed(1) : 0}% of the company · raising ${big(p * of)}`; }
-    addEventListener('hashchange', () => { if (route().startsWith('s-'))
+    addEventListener('hashchange', () => { setTimeout(staffAlerts, 50); if (route().startsWith('s-'))
         S.ot = S.ot; render(); scrollTo(0, 0); });
     /* ================= LIVE TICK ================= */
     setInterval(() => {
@@ -1801,6 +1875,7 @@ No<\/textarea><\/label>
         est();
         matchOrders();
         logo();
+        staffAlerts();
     }, 3000);
     setInterval(() => { const a = document.activeElement; if (S.loaded && !(a && app.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)))
         render(); }, 20000);
@@ -1830,7 +1905,7 @@ No<\/textarea><\/label>
         });
     }
     let rt = 0;
-    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); }, 80); };
+    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); }, 80); };
     (() => __awaiter(this, void 0, void 0, function* () {
         const [db, user] = yield Promise.all([SOLO.use('db'), SOLO.use('user')]);
         S.db = db;
