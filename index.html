@@ -517,7 +517,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795762525';
+    const BUILD = '1795762748';
     const START = 0, WDLIM = 50000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -888,7 +888,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
      <p class="note" style="margin:4px 0 0">${tab === 'emp' ? '<a href="#" data-auth="in">Back to customer sign in<\/a>' : '<a href="#" data-auth="emp">Employee sign in<\/a>'}<\/p><\/form><\/div><\/div><\/section>
    <section class="band"><h2>Today on the B40<\/h2><div class="chips" style="margin-top:10px">${mv.map(x => `<span class="tick"><b>${esc(x.c.ticker)}<\/b> <span class="mono">${$(live(x.c.ticker))}<\/span> <span class="${cls(x.d)}">${sg(x.d * 100)}<\/span><\/span>`).join('')}<\/div>
    <div class="g3">${[['Trade', 'Buy and sell every company on Ānanda, with market, limit and stop orders and live charts.'], ['IPOs', 'Take a company public: set its valuation and share count, and investors request shares before it lists.'], ['Bets', 'File a betting board on anything, or put money on someone else’s. Winners split the pot.']].map(x => `<div class="card pad"><h3>${x[0]}<\/h3><p class="mut" style="margin:6px 0 0">${x[1]}<\/p><\/div>`).join('')}<\/div>
-   <p style="margin-top:22px"><a class="btn" href="#get-app">📲 Get the app<\/a><\/p><p class="note" style="margin-top:14px">© Ānanda Capital<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version 2 · connected to the shared database<\/p><\/section>`;
+   <p style="margin-top:22px"><a class="btn" href="#get-app">📲 Get the app<\/a><\/p><p class="note" style="margin-top:14px">© Ānanda Capital<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version ${BUILD.slice(-4)} · connected to the shared database<\/p><\/section>`;
     }
     function afterLanding() {
         const svg = document.getElementById('herobg');
@@ -1776,18 +1776,13 @@ No<\/textarea><\/label>
     let resetBusy = false;
     function resetOnce() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!S.isOwner || resetBusy || !S.loaded)
+            if (!S.uid || resetBusy || !S.loaded)
                 return;
             resetBusy = true;
             try {
                 const done = yield S.db.doc('meta/reset3').get();
                 if (done.exists)
                     return;
-                const c1 = yield S.db.doc('meta/cleanup1').get();
-                if (!c1.exists) {
-                    resetBusy = false;
-                    return;
-                }
                 yield S.db.doc('meta/reset3').set({ started: Date.now(), by: S.uid });
                 const now = Date.now();
                 for (const c of L()) {
@@ -1892,7 +1887,7 @@ No<\/textarea><\/label>
    ${it('bets', 'Betting boards', 'Bet play money on outcomes, or file your own board')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
    <section class="card pad"><h2>Your login<\/h2><p class="mut" style="margin:6px 0 12px">Signed in as <b style="color:var(--ink)">${esc(name(S.uid))}<\/b> (@${esc(String(S.uid).replace(/^u:/, ''))})<\/p><button data-act="signout">Sign out<\/button><\/section>
-   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="note"><span class="livedot"><\/span>Version 2 · shared database<\/p><p class="mut">Everyone trades in one shared market: accounts, orders, trades and listings from every phone are stored in one system.<\/p><\/section><\/div>`;
+   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="note"><span class="livedot"><\/span>Version ${BUILD.slice(-4)} · shared database<\/p><p class="mut">Everyone trades in one shared market: accounts, orders, trades and listings from every phone are stored in one system.<\/p><\/section><\/div>`;
     }
     /* ---------- CORPORATE ---------- */
     function corporate() {
