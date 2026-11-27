@@ -1106,6 +1106,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
        Everyone's stakes go into one pot. When the board closes, its creator picks the winning outcome,
        and the pot (minus the creator's fee) is split among winners in proportion to what they staked.
        Payout multiple for an outcome = pot × (1 − fee) ÷ money on that outcome. */
+    const BOARD_FEE = 0.25;
     const stakeOf = (b, uid, i) => { const w = b.wagers && b.wagers[uid]; return w && w[i] ? w[i] : 0; };
     const myStake = b => { const w = b.wagers && b.wagers[S.uid]; return w ? Object.values(w).reduce((s, v) => s + (+v || 0), 0) : 0; };
     function pools(b) { const p = b.outcomes.map(() => 0); for (const w of Object.values(b.wagers || {}))
@@ -1117,7 +1118,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const okB = b => !boardBad(b) && !b.removed;
         const mineRev = all.filter(b => b.status === 'review' && b.owner === S.uid), open = all.filter(b => b.status === 'open' && okB(b)), done = all.filter(b => (b.status === 'resolved' || b.status === 'void') && okB(b));
         const card = b => {
-            const p = pools(b), pot = p.reduce((x, y) => x + y, 0), closed = now > b.closes, left = b.closes - now, fee = b.fee || 0, mine = myStake(b);
+            const p = pools(b), pot = p.reduce((x, y) => x + y, 0), closed = now > b.closes, left = b.closes - now, fee = BOARD_FEE, mine = myStake(b);
             const cd = closed ? 'Betting closed · waiting for the result' : left > DAY ? `Closes in ${Math.ceil(left / DAY)} days` : left > 36e5 ? `Closes in ${Math.round(left / 36e5)} h` : `Closes in ${Math.max(1, Math.round(left / 6e4))} min`;
             return `<section class="card"><div class="pad" style="padding-bottom:8px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="pill bl">${esc(b.cat || 'General')}<\/span><span class="note">${esc(cd)}<\/span><\/div>
      <h2 style="margin-top:8px">${esc(b.title)}<\/h2>${b.desc ? `<p class="mut" style="margin:6px 0 0">${esc(b.desc)}<\/p>` : ''}<\/div>
@@ -1136,12 +1137,12 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     <label>Details and rules (optional)<textarea name="desc" rows="2" maxlength="400" placeholder="How the result will be decided"><\/textarea><\/label>
     <label>Outcomes, one per line (2 to 6)<textarea name="outs" rows="3" required>Yes
 No<\/textarea><\/label>
-    <div class="frow"><label>Category<select name="cat"><option>Markets<\/option><option>Politics<\/option><option>Sports<\/option><option>GNS<\/option><option>Entertainment<\/option><option>General<\/option><\/select><\/label><label>Betting closes in<select name="win"><option value="${36e5}">1 hour<\/option><option value="${6 * 36e5}">6 hours<\/option><option value="${DAY}" selected>1 day<\/option><option value="${3 * DAY}">3 days<\/option><option value="${7 * DAY}">7 days<\/option><option value="${30 * DAY}">30 days<\/option><\/select><\/label><label>Your fee from the pot<select name="fee"><option value="0">0%<\/option><option value="0.01">1%<\/option><option value="0.02" selected>2%<\/option><option value="0.05">5%<\/option><\/select><\/label><\/div>
-    <button class="pri">File betting board<\/button><div class="msg" id="betmsg"><\/div><\/form>` : a ? '<p class="mut">Your access is view-only.<\/p>' : openAcct();
+    <div class="frow"><label>Category<select name="cat"><option>Markets<\/option><option>Politics<\/option><option>Sports<\/option><option>GNS<\/option><option>Entertainment<\/option><option>General<\/option><\/select><\/label><label>Betting closes in<select name="win"><option value="${36e5}">1 hour<\/option><option value="${6 * 36e5}">6 hours<\/option><option value="${DAY}" selected>1 day<\/option><option value="${3 * DAY}">3 days<\/option><option value="${7 * DAY}">7 days<\/option><option value="${30 * DAY}">30 days<\/option><\/select><\/label><\/div>
+    <p class="note" style="margin:0">You earn 25% of the pot when the board is settled.<\/p><button class="pri">File betting board<\/button><div class="msg" id="betmsg"><\/div><\/form>` : a ? '<p class="mut">Your access is view-only.<\/p>' : openAcct();
         return `<div class="cols"><div class="stackc">${mineRev.length ? `<section class="card"><div class="ch-h"><h2>Your boards under review<\/h2><\/div><div class="list">${mineRev.map(b => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(b.title)}<\/b><small>Waiting for an Ānanda employee to approve<\/small><\/span><span class="pill bl">in review<\/span><\/div>`).join('')}<\/div><\/section>` : ''}<h2>Open betting boards<\/h2>${open.length ? open.map(card).join('') : '<div class="card empty">No boards are open. File one and let people bet on it.<\/div>'}
     ${done.length ? `<section class="card"><div class="ch-h"><h2>Settled boards<\/h2><\/div><div class="list">${done.slice(0, 10).map(b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0); return `<div class="li" style="cursor:default"><span class="grow"><b>${esc(b.title)}<\/b><small>${b.status === 'void' ? 'Voided, everyone refunded' : 'Winner: ' + esc(b.outcomes[b.winner]) + ' · pot ' + $(pot)}${b.payout && b.payout[S.uid] ? ' · you won ' + $(b.payout[S.uid]) : ''}<\/small><\/span><span class="pill ${b.status === 'void' ? '' : 'gr'}">${b.status === 'void' ? 'void' : 'settled'}<\/span><\/div>`; }).join('')}<\/div><\/section>` : ''}<\/div>
-   <div class="stackc"><section class="card pad"><h2>File a betting board<\/h2><p class="mut" style="margin:6px 0 14px">Ask a question, list the possible outcomes and set when betting closes. When it's over, you pick the result and the pot is paid out automatically.<\/p>${form}<\/section>
-   <section class="card pad"><h3>How payouts work<\/h3><p class="mut" style="margin:6px 0 0">All stakes go into one pot. Winners split the pot, minus the creator's fee, in proportion to what they bet. Payout multiple = pot × (1 − fee) ÷ money on that outcome, so long shots pay more. The % beside each outcome is the crowd's odds: its share of the pot.<\/p><\/section><\/div><\/div>`;
+   <div class="stackc"><section class="card pad"><h2>File a betting board<\/h2><p class="mut" style="margin:6px 0 14px">Ask a question, list the possible outcomes and set when betting closes. An Ānanda employee approves it, and when it's settled you earn 25% of the pot.<\/p>${form}<\/section>
+   <section class="card pad"><h3>How payouts work<\/h3><p class="mut" style="margin:6px 0 0">All stakes go into one pot. The board's creator earns 25% of the pot, and winners split the other 75% in proportion to what they bet. Payout multiple = pot × 0.75 ÷ money on that outcome, so long shots pay more. The % beside each outcome is the crowd's odds: its share of the pot.<\/p><\/section><\/div><\/div>`;
     }
     function fileBoard(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1153,7 +1154,7 @@ No<\/textarea><\/label>
             if (outs.length < 2)
                 return say('betmsg', 'List at least 2 outcomes, one per line.', false);
             try {
-                const ref = yield S.db.collection('bets').add({ title, desc: f.desc.value.trim(), outcomes: outs, cat: f.cat.value, win: +f.win.value, closes: Date.now() + (+f.win.value), fee: +f.fee.value, owner: S.uid, status: 'review', wagers: {}, t: Date.now() });
+                const ref = yield S.db.collection('bets').add({ title, desc: f.desc.value.trim(), outcomes: outs, cat: f.cat.value, win: +f.win.value, closes: Date.now() + (+f.win.value), fee: BOARD_FEE, owner: S.uid, status: 'review', wagers: {}, t: Date.now() });
                 yield log({ kind: 'BOARD', via: title.slice(0, 60) });
                 f.reset();
                 say('betmsg', 'Board filed. An Ānanda employee will review it before people can bet.', true);
@@ -1202,7 +1203,7 @@ No<\/textarea><\/label>
                 const b = s.data();
                 if (!b || b.status !== 'open')
                     return;
-                const p = pools(b), pot = p.reduce((x, y) => x + y, 0), fee = b.fee || 0, payout = {};
+                const p = pools(b), pot = p.reduce((x, y) => x + y, 0), fee = BOARD_FEE, payout = {};
                 if (!p[win]) {
                     yield voidBoard(id, true);
                     return say('bm_' + id, 'Nobody bet on that outcome, so everyone was refunded.', true);
