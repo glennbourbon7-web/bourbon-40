@@ -193,6 +193,9 @@ header .logo{flex:none}
 .gic{flex:none;width:44px;height:44px;border-radius:12px;background:#2c2c2e;display:grid;place-items:center}.gi{width:24px;height:24px;fill:none;stroke:#0a84ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 #updbar{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;background:#30d158;color:#000;border:0;font-weight:700;border-radius:999px;padding:0 18px;min-height:44px;box-shadow:0 10px 30px rgba(0,0,0,.6);white-space:nowrap}
 @media(min-width:701px){#updbar{bottom:24px}}
+.promo{border-color:#30d15866;background:linear-gradient(180deg,#0f2a17,#1c1c1e 70%)}
+.promo-timer{display:flex;justify-content:space-between;align-items:baseline;background:#000;border:1px solid #38383a;border-radius:12px;padding:12px 14px}.promo-timer b{font-size:22px;color:#30d158}
+.k-BONUS{color:#30d158}
 </style>
 </head><body>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -517,7 +520,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795764017';
+    const BUILD = '1795817638';
     const START = 0, WDLIM = 50000, SHARECAP = 450000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -886,6 +889,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
      <button class="pri">${tab === 'up' ? 'Create account' : tab === 'emp' ? 'Employee sign in' : 'Sign in'}<\/button><div class="msg" id="authmsg"><\/div>
      <p class="note" style="margin:0">${tab === 'up' ? `New accounts start empty. Book a meeting with an Ānanda representative to add money.` : tab === 'emp' ? 'For Ānanda Capital staff only.' : 'No account yet? Tap Create account.'}<\/p>
      <p class="note" style="margin:4px 0 0">${tab === 'emp' ? '<a href="#" data-auth="in">Back to customer sign in<\/a>' : '<a href="#" data-auth="emp">Employee sign in<\/a>'}<\/p><\/form><\/div><\/div><\/section>
+   ${promoLeft() > 0 ? `<section class="band" style="padding-bottom:0"><div class="card pad promo"><h2>🎉 The first ${PROMO_SLOTS} new members get a free $25,000<\/h2><p class="mut" style="margin:6px 0 10px">Open an account now and we'll add $25,000 to it. Load at least $5,000 within 15 days to keep it.<\/p><b>${promoLeft()} of ${PROMO_SLOTS} spots left<\/b> <button class="sm-b" data-auth="up" style="margin-left:8px">Create account<\/button><\/div><\/section>` : ''}
    <section class="band"><h2>Today on the B40<\/h2><div class="chips" style="margin-top:10px">${mv.map(x => `<span class="tick"><b>${esc(x.c.ticker)}<\/b> <span class="mono">${$(live(x.c.ticker))}<\/span> <span class="${cls(x.d)}">${sg(x.d * 100)}<\/span><\/span>`).join('')}<\/div>
    <div class="g3">${[['Trade', 'Buy and sell every company on Ānanda, with market, limit and stop orders and live charts.'], ['IPOs', 'Take a company public: set its valuation and share count, and investors request shares before it lists.'], ['Bets', 'File a betting board on anything, or put money on someone else’s. Winners split the pot.']].map(x => `<div class="card pad"><h3>${x[0]}<\/h3><p class="mut" style="margin:6px 0 0">${x[1]}<\/p><\/div>`).join('')}<\/div>
    <p style="margin-top:22px"><a class="btn" href="#get-app">📲 Get the app<\/a><\/p><p class="note" style="margin-top:14px">© Ānanda Capital<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version ${BUILD.slice(-4)} · connected to the shared database<\/p><\/section>`;
@@ -950,6 +954,100 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
    <div class="card pad" style="text-align:left;max-width:520px;margin:0 auto">${body}<\/div>
    <p style="margin-top:22px"><a href="#${S.uid ? 'home' : ''}">${S.uid ? 'Back to my account' : 'Back to sign in'}<\/a><\/p><\/section>`;
     }
+    /* ---------- WELCOME BONUS: first 10 new members get $25,000; they must load $5,000 within 15 days to keep it ---------- */
+    const PROMO_FROM = 1795755600000, PROMO_SLOTS = 10, PROMO_AMT = 25000, PROMO_NEED = 5000, PROMO_DAYS = 15;
+    const promoAccts = () => Object.entries(S.accounts).filter(([id, a]) => a && a.promo);
+    const promoLeft = () => Math.max(0, PROMO_SLOTS - promoAccts().length);
+    /* money the member loaded since the bonus started: approved deposits plus money an employee added */
+    function promoLoaded(uid, p) {
+        const end = p.deadline;
+        return S.deps.filter(d => d.uid === uid && d.status === 'approved' && (d.dt || d.t) >= p.start && (d.dt || d.t) <= end).reduce((x, d) => x + (d.approved || 0), 0)
+            + S.ledger.filter(l => l.uid === uid && l.kind === 'DEPOSIT' && /^Added by/.test(l.via || '') && l.t >= p.start && l.t <= end).reduce((x, l) => x + (l.price || 0), 0);
+    }
+    const leftTxt = ms => { if (ms <= 0)
+        return '0d 0h 0m 0s'; const d = Math.floor(ms / DAY), h = Math.floor(ms % DAY / 36e5), m = Math.floor(ms % 36e5 / 6e4), sec = Math.floor(ms % 6e4 / 1e3); return `${d}d ${h}h ${m}m ${sec}s`; };
+    let promoBusy = false;
+    function promoJobs() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.loaded || promoBusy)
+                return;
+            promoBusy = true;
+            try { /* give the bonus to new members (signed up today or later), oldest first, while spots last */
+                const fresh = Object.entries(S.accounts).filter(([id, a]) => a && !a.seed && !a.promo && (a.created || 0) >= PROMO_FROM && id.indexOf('u:') === 0).sort((x, y) => (x[1].created || 0) - (y[1].created || 0));
+                let left = promoLeft();
+                for (const [id] of fresh) {
+                    if (left <= 0)
+                        break;
+                    const ref = S.db.doc('accounts/' + id), cur = yield ref.get();
+                    if (!cur.exists)
+                        continue;
+                    const a = cur.data();
+                    if (a.promo)
+                        continue;
+                    const now = Date.now();
+                    yield ref.update({ cash: r2((a.cash || 0) + PROMO_AMT), promo: { amt: PROMO_AMT, start: now, deadline: now + PROMO_DAYS * DAY, status: 'active' } });
+                    yield S.db.collection('ledger').add({ t: now, uid: id, kind: 'BONUS', price: PROMO_AMT, via: 'Welcome bonus: load $5,000 within 15 days to keep it' });
+                    left--;
+                }
+                /* settle bonuses: kept once $5,000 is loaded, taken back if the deadline passes */
+                for (const [id, a] of promoAccts()) {
+                    const p = a.promo;
+                    if (p.status !== 'active')
+                        continue;
+                    const loaded = promoLoaded(id, p);
+                    if (loaded >= PROMO_NEED) {
+                        yield S.db.doc('accounts/' + id).update({ promo: { status: 'kept', kept: Date.now() } });
+                        yield S.db.collection('ledger').add({ t: Date.now(), uid: id, kind: 'BONUS', price: p.amt, via: 'Welcome bonus kept: $5,000 loaded' });
+                    }
+                    else if (Date.now() > p.deadline) {
+                        const cur = yield S.db.doc('accounts/' + id).get();
+                        if (!cur.exists)
+                            continue;
+                        const ac = cur.data();
+                        if (!ac.promo || ac.promo.status !== 'active')
+                            continue;
+                        const take = r2(Math.min(p.amt, Math.max(0, ac.cash || 0)));
+                        yield S.db.doc('accounts/' + id).update({ cash: r2((ac.cash || 0) - take), promo: { status: 'expired', taken: take, ended: Date.now() } });
+                        yield S.db.collection('ledger').add({ t: Date.now(), uid: id, kind: 'BONUS', price: take, via: 'Welcome bonus taken back: $5,000 not loaded within 15 days' });
+                    }
+                }
+            }
+            catch (e) {
+                console.warn(e);
+            }
+            finally {
+                promoBusy = false;
+            }
+        });
+    }
+    function promoCard(a) {
+        const p = a && a.promo;
+        if (!p)
+            return '';
+        if (p.status === 'kept')
+            return `<section class="card pad promo"><h2>🎉 Welcome bonus kept<\/h2><p class="mut" style="margin:6px 0 0">You loaded $5,000, so the $25,000 bonus is yours to keep.<\/p><\/section>`;
+        if (p.status === 'expired')
+            return '';
+        const loaded = promoLoaded(S.uid, p), pc = Math.min(100, loaded / PROMO_NEED * 100);
+        return `<section class="card pad promo"><h2>🎉 Your account has been funded with $25,000<\/h2><p class="mut" style="margin:6px 0 12px">You're one of the first 10 members, so we added a free $25,000. To keep it, load at least $5,000 into your account before the timer runs out. If you don't, the $25,000 is taken back.<\/p>
+   <div class="promo-timer"><span class="mut">Time left<\/span><b class="mono" data-countdown="${p.deadline}">${leftTxt(p.deadline - Date.now())}<\/b><\/div>
+   <div style="display:flex;justify-content:space-between;font-size:14px;margin:12px 0 6px"><span>Loaded ${$(loaded)} of ${$(PROMO_NEED)}<\/span><span class="mut">${Math.round(pc)}%<\/span><\/div><div class="bar"><i style="width:${pc}%"><\/i><\/div>
+   <a class="btn pri" href="#funding" style="margin-top:14px;width:100%">Add money<\/a><\/section>`;
+    }
+    function promoPopup() {
+        const a = me();
+        if (!a || !a.promo || a.promo.status !== 'active')
+            return;
+        const k = 'ananda-promo-seen-' + S.uid;
+        try {
+            if (localStorage.getItem(k))
+                return;
+            localStorage.setItem(k, '1');
+        }
+        catch (e) { }
+        S.modal = { k: 'promo', id: '' };
+        paintModal();
+    }
     /* ---------- HOME / ACCOUNTS ---------- */
     function home() {
         const a = me(), st = acctStats(a);
@@ -989,7 +1087,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     <a class="li" href="#bets"><span class="grow"><b>Open bets<\/b><small>Betting boards you have money on<\/small><\/span><span class="rt"><b>${Object.values(S.bets).filter(b => b.status === 'open' && myStake(b) > 0).length}<\/b><\/span><span class="chev"><\/span><\/a><\/div><\/section>`;
         const wl = (a.watch || []).filter(T => S.companies[T]);
         const watch = `<section class="card"><div class="ch-h"><h2>Watchlist<\/h2><\/div><div class="list">${wl.length ? wl.map(T => stockRow(S.companies[T])).join('') : '<div class="empty">Tap the star on any stock to watch it here.<\/div>'}<\/div><\/section>`;
-        const fund = a.cash <= 0 && !hs.length ? `<section class="card pad"><h2>Fund your account<\/h2><p class="mut" style="margin:6px 0 12px">Your account starts empty. Book a meeting with an Ānanda Capital representative to add money, then you can start trading.<\/p><a class="btn pri" href="#funding">Add money<\/a><\/section>` : '';
+        const fund = a.promo && a.promo.status !== 'expired' ? promoCard(a) : a.cash <= 0 && !hs.length ? `<section class="card pad"><h2>Fund your account<\/h2><p class="mut" style="margin:6px 0 12px">Your account starts empty. Book a meeting with an Ānanda Capital representative to add money, then you can start trading.<\/p><a class="btn pri" href="#funding">Add money<\/a><\/section>` : '';
         return `<div class="cols"><div class="stackc">${fund}${hero}${inv}${pend}${watch}<\/div><div class="stackc">${indices}${wire}<\/div><\/div>`;
     }
     /* ---------- MARKETS ---------- */
@@ -1483,7 +1581,9 @@ No<\/textarea><\/label>
     } el.href = href || '#staff'; el.textContent = '🔔 ' + msg; el.className = 'show'; clearTimeout(toast._t); toast._t = setTimeout(() => { el.className = ''; }, 7000); }
     function requestWithdrawal(f) {
         return __awaiter(this, void 0, void 0, function* () {
-            const a = me(), amt = r2(+f.wamt.value || 0), left = WDLIM - wdToday(S.uid);
+            const a = me(), amt = r2(+f.wamt.value || 0), left = WDLIM - wdToday(S.uid), locked = a && a.promo && a.promo.status === 'active' ? a.promo.amt : 0;
+            if (locked && amt > (a.cash || 0) - locked)
+                return say('wdmsg', `Your $25,000 welcome bonus can't be withdrawn until you've loaded $5,000. You can withdraw up to ${$(Math.max(0, (a.cash || 0) - locked))} right now.`, false);
             if (!(amt >= 1))
                 return say('wdmsg', 'Enter an amount.', false);
             if (amt > left)
@@ -1748,6 +1848,8 @@ No<\/textarea><\/label>
         }
         if (k === 'acct')
             return `<h2 style="margin:0 0 4px">${esc(name(id))}<\/h2>${acctCard(id)}`;
+        if (k === 'promo')
+            return promoCard(me()) || '<p class="mut">No bonus on this account.<\/p>';
         return '';
     }
     function openDetails(k, id) { S.modal = { k, id }; paintModal(); }
@@ -1855,6 +1957,7 @@ No<\/textarea><\/label>
         const sec = (t, n, body) => `<section class="card"><div class="ch-h"><h2>${t}<\/h2><span class="pill ${n ? 'bl' : ''}">${n} waiting<\/span><\/div>${body}<\/section>`;
         return `<div class="stackc"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Employee dashboard<\/h1><span class="pill gr">Signed in as ${esc(name(S.uid))}<\/span><\/div>
   ${inbox()}
+  ${promoAccts().length ? `<section class="card"><div class="ch-h"><h2>Welcome bonus<\/h2><span class="note">${promoAccts().length} of ${PROMO_SLOTS} spots used<\/span><\/div><div class="list">${promoAccts().sort((x, y) => (x[1].promo.start || 0) - (y[1].promo.start || 0)).map(([id, a]) => { const p = a.promo, l = p.status === 'active' ? promoLoaded(id, p) : 0; return `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(id))}<\/b><small>@${esc(String(id).replace(/^u:/, ''))} · ${p.status === 'active' ? `loaded ${$(l)} of $5,000 · <span data-countdown="${p.deadline}">${leftTxt(p.deadline - Date.now())}<\/span> left` : p.status === 'kept' ? 'loaded $5,000 · bonus kept' : 'deadline passed · ' + $(p.taken || 0) + ' taken back'}<\/small><\/span><span class="pill ${p.status === 'kept' ? 'gr' : p.status === 'expired' ? 'rd' : 'bl'}">${p.status === 'active' ? 'on the clock' : p.status}<\/span><\/div>`; }).join('')}<\/div><\/section>` : ''}
   <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${S.wds.filter(w => w.status === 'pending').length}<\/b><span>Withdrawals<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Boards to review or settle<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
   <div class="cols"><div class="stackc">${depositDesk()}${withdrawDesk()}
    ${sec('Share sale requests', sales.length, sales.length ? `<div class="list">${sales.map(saleRow).join('')}<\/div>` : '<div class="empty">No sale requests right now.<\/div>')}
@@ -1928,7 +2031,7 @@ No<\/textarea><\/label>
         }).join('')}<\/tbody><\/table>`;
     }
     function ledger() {
-        const kinds = ['all', 'RESET', 'DELIST', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
+        const kinds = ['all', 'BONUS', 'RESET', 'DELIST', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
         const rows = S.ledger.filter(l => S.lk === 'all' || l.kind === S.lk);
         return `<section class="card"><div class="ch-h"><div><h2>System ledger<\/h2><p class="note" style="margin:2px 0 0">Every event on the exchange, newest first (latest 300).<\/p><\/div><select id="lk" data-st="1" style="width:auto">${kinds.map(k => `<option value="${k}"${S.lk === k ? ' selected' : ''}>${k === 'all' ? 'All events' : k}<\/option>`).join('')}<\/select><\/div>${ledgerTable(rows)}<\/section>`;
     }
@@ -2544,7 +2647,10 @@ No<\/textarea><\/label>
     } });
     function ipoPrev() { const f = document.getElementById('ipof'), el = document.getElementById('ipoPrev'); if (!f || !el)
         return; const v = +f.val.value || 0, sh = +f.shares.value || 0, of = +f.offered.value || 0, p = sh ? v / sh : 0; el.innerHTML = `IPO price <b class="mono" style="color:var(--ink)">${$(p)}<\/b> per share · selling ${sh ? (of / sh * 100).toFixed(1) : 0}% of the company · raising ${big(p * of)}`; }
-    addEventListener('hashchange', () => { setTimeout(staffAlerts, 50); if (route().startsWith('s-'))
+    addEventListener('hashchange', () => { if (S.modal) {
+        S.modal = null;
+        paintModal();
+    } setTimeout(staffAlerts, 50); if (route().startsWith('s-'))
         S.ot = S.ot; render(); scrollTo(0, 0); });
     /* ---------- UPDATES: tell people (and the home-screen app) when a newer version is live ---------- */
     function checkUpdate() {
@@ -2581,6 +2687,7 @@ No<\/textarea><\/label>
         logo();
         staffAlerts();
     }, 3000);
+    setInterval(() => { document.querySelectorAll('[data-countdown]').forEach(el => { el.textContent = leftTxt(+el.dataset.countdown - Date.now()); }); }, 1000);
     setInterval(() => { const a = document.activeElement; if (S.loaded && !(a && app.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)))
         render(); }, 20000);
     /* ================= DATA ================= */
@@ -2609,7 +2716,7 @@ No<\/textarea><\/label>
         });
     }
     let rt = 0;
-    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); resetOnce(); }, 80); };
+    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); resetOnce(); promoJobs(); promoPopup(); }, 80); };
     setTimeout(() => { if (!S.loaded) {
         S.stale = true;
         render();
