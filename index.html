@@ -170,6 +170,7 @@ nav a{position:relative}.nbadge{position:absolute;top:2px;right:calc(50% - 22px)
 @media(prefers-reduced-motion:reduce){.sp-word span,.sp-line path,.sp-bar i{animation-duration:.01s}}
 header{padding-top:max(10px,env(safe-area-inset-top))}
 .k-WITHDRAW{color:#ff453a}.k-WD-REQ{color:#d1d1d6}
+.k-DELIST{color:#ff453a}
 </style>
 </head><body>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1037,7 +1038,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     /* ---------- IPOs ---------- */
     function ipos() {
         const a = me(), now = Date.now(), all = Object.values(S.ipos);
-        const open = all.filter(i => i.status === 'open'), listed = all.filter(i => i.status === 'listed').sort((x, y) => (y.listed || 0) - (x.listed || 0));
+        const mineRev = all.filter(i => i.status === 'review' && i.owner === S.uid), open = all.filter(i => i.status === 'open'), listed = all.filter(i => i.status === 'listed').sort((x, y) => (y.listed || 0) - (x.listed || 0));
         const card = i => {
             var _a;
             const R = Object.values(i.subs || {}).reduce((s, v) => s + (v.q || 0), 0), pc = R / i.offered, mine = (_a = i.subs) === null || _a === void 0 ? void 0 : _a[S.uid], closed = now > i.closes, left = i.closes - now;
@@ -1059,7 +1060,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     <label style="display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" name="rep" style="width:22px;height:22px"> Shareholders must meet a representative to sell<\/label>
     <label>Representative name<input name="repName" maxlength="60" placeholder="Acme Investor Relations"><\/label>
     <p class="note" id="ipoPrev" style="margin:0"><\/p><button class="pri">File IPO<\/button><div class="msg" id="ipomsg"><\/div><\/form>` : `<p class="mut">${S.db ? 'Your access is view-only.' : 'Sign in to file an IPO.'}<\/p>`;
-        return `<div class="cols"><div class="stackc"><h2>Open offerings<\/h2>${open.length ? open.map(card).join('') : '<div class="card empty">No IPOs are open right now. File one to let investors subscribe.<\/div>'}
+        return `<div class="cols"><div class="stackc">${mineRev.length ? `<section class="card"><div class="ch-h"><h2>Your filings under review<\/h2><\/div><div class="list">${mineRev.map(i => `<div class="li" style="cursor:default"><span class="tk">${esc(i.ticker)}<\/span><span class="grow"><b>${esc(i.name)}<\/b><small>Waiting for an Ānanda employee to approve<\/small><\/span><span class="pill bl">in review<\/span><\/div>`).join('')}<\/div><\/section>` : ''}<h2>Open offerings<\/h2>${open.length ? open.map(card).join('') : '<div class="card empty">No IPOs are open right now. File one to let investors subscribe.<\/div>'}
     ${listed.length ? `<section class="card"><div class="ch-h"><h2>Recent IPOs<\/h2><\/div><div class="list">${listed.slice(0, 8).map(i => { const p = live(i.ticker), ret = p ? p / i.price - 1 : 0; return `<a class="li" href="#s-${esc(i.ticker.toLowerCase())}"><span class="tk">${esc(i.ticker)}<\/span><span class="grow"><b>${esc(i.name)}<\/b><small>IPO ${$(i.price)} · opened ${$(i.openPx)} · ${esc(when(i.listed))}<\/small><\/span><span class="rt"><b>${p ? $(p) : ''}<\/b><small class="${cls(ret)}">${sg(ret * 100)} since IPO<\/small><\/span><\/a>`; }).join('')}<\/div><\/section>` : ''}<\/div>
    <div class="stackc"><section class="card pad"><h2>Take your company public<\/h2><p class="mut" style="margin:6px 0 14px">Investors request shares during the subscription window, and their cash is held until listing. When you list, shares are handed out (cut back evenly if demand is higher than supply), anyone who got fewer shares is refunded the difference, and trading starts.<\/p>${form}<\/section>
    <section class="card pad"><h3>How the opening price is set<\/h3><p class="mut" style="margin:6px 0 0">Opening price = IPO price × (1 + 12% × ln(shares requested ÷ shares offered)), capped between −30% and +60%. Exactly matched demand opens flat; 3× demand opens about 13% higher; half demand opens about 8% lower.<\/p><\/section><\/div><\/div>`;
@@ -1277,7 +1278,7 @@ No<\/textarea><\/label>
     catch (e) { } };
     function filings() {
         const out = [];
-        Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, kind: 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' }));
+        Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, kind: i.status === 'review' ? 'IPO needs approval' : 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' || i.status === 'review' }));
         Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, kind: 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#bets', open: b.status === 'open' }));
         S.deps.forEach(d => out.push({ id: 'dep' + d.id, t: d.t || 0, kind: 'Deposit request', text: `${name(d.uid)} wants to add ${$(d.amt)}`, href: '#staff', open: d.status === 'scheduled' }));
         S.wds.forEach(w => out.push({ id: 'wd' + w.id, t: w.t || 0, kind: 'Withdrawal', text: `${name(w.uid)} is withdrawing ${$(w.amt)}`, href: '#staff', open: w.status === 'pending' }));
@@ -1374,6 +1375,63 @@ No<\/textarea><\/label>
         });
     }
     function withdrawDesk() { const p = S.wds.filter(w => w.status === 'pending'); return `<section class="card"><div class="ch-h"><h2>Withdrawal requests<\/h2><span class="pill ${p.length ? 'bl' : ''}">${p.length} waiting<\/span><\/div>${p.length ? `<div class="list">${p.map(w => `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="grow" style="min-width:170px"><b>${esc(name(w.uid))} is withdrawing ${$(w.amt)}<\/b><small>${esc(when(w.t))} · ${$(wdToday(w.uid))} withdrawn today<\/small><\/span><button class="sm-b ok" data-act="wd-approve" data-id="${esc(w.id)}">Complete<\/button><button class="sm-b" data-act="wd-decline" data-id="${esc(w.id)}">Decline<\/button><\/div>`).join('')}<\/div>` : '<div class="empty">No withdrawals waiting.<\/div>'}<\/section>`; }
+    function approveIPO(T) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner)
+                return;
+            const ref = S.db.doc('ipos/' + T), c = yield ref.get();
+            if (!c.exists)
+                return;
+            const ip = c.data();
+            if (ip.status !== 'review')
+                return;
+            yield ref.update({ status: 'open', approvedBy: S.uid, closes: Date.now() + (ip.win || 3 * DAY) });
+            yield log({ kind: 'IPO', ticker: T, via: 'Approved by ' + name(S.uid) });
+        });
+    }
+    function rejectIPO(T) {
+        return __awaiter(this, void 0, void 0, function* () { if (!S.isOwner)
+            return; const ref = S.db.doc('ipos/' + T), c = yield ref.get(); if (!c.exists || c.data().status !== 'review')
+            return; yield ref.update({ status: 'rejected', rt: Date.now() }); yield log({ kind: 'CANCEL', ticker: T, via: 'IPO rejected by ' + name(S.uid) }); });
+    }
+    /* delist: shareholders get their money back at today's price, then the company is removed */
+    function delist(T) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner)
+                return;
+            const c = S.companies[T];
+            if (!c)
+                return;
+            const p = r2(live(T));
+            let paid = 0;
+            try {
+                for (const [id, a] of Object.entries(S.accounts)) {
+                    const q = (a.holdings && a.holdings[T] && a.holdings[T].q) || 0;
+                    if (!q)
+                        continue;
+                    const as = yield S.db.doc('accounts/' + id).get();
+                    if (!as.exists)
+                        continue;
+                    const ac = clone(as.data());
+                    const amt = r2(q * p);
+                    ac.cash = r2((ac.cash || 0) + amt);
+                    if (ac.holdings)
+                        delete ac.holdings[T];
+                    yield S.db.doc('accounts/' + id).set(ac);
+                    paid += amt;
+                }
+                S.orders.filter(o => o.ticker === T && o.status === 'open').forEach(o => S.db.doc('orders/' + o.id).update({ status: 'cancelled' }));
+                yield S.db.doc('companies/' + T).delete();
+                if (S.ipos[T])
+                    yield S.db.doc('ipos/' + T).update({ status: 'delisted' });
+                yield log({ kind: 'DELIST', ticker: T, price: p, via: `Delisted by ${name(S.uid)} · ${$(paid)} paid back to shareholders` });
+                say('cm_delist', `${T} delisted. Shareholders were paid ${$(paid)} at ${$(p)} a share.`, true);
+            }
+            catch (e) {
+                say('cm_delist', 'Could not delist. Try again.', false);
+            }
+        });
+    }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1396,13 +1454,13 @@ No<\/textarea><\/label>
         if (!S.isOwner)
             return `<div class="card pad"><h2>Employees only<\/h2><p class="mut">Sign out and use Employee sign in with an employee account.<\/p><\/div>`;
         const now = Date.now(), deps = S.deps.filter(d => d.status === 'scheduled'), sales = S.reqs.filter(r => r.status === 'scheduled').sort((x, y) => x.slot - y.slot);
-        const ipo = Object.values(S.ipos).filter(i => i.status === 'open'), toSettle = Object.values(S.bets).filter(b => b.status === 'open'), openB = Object.values(S.bets).filter(b => b.status === 'open' && now <= b.closes);
+        const ipo = Object.values(S.ipos).filter(i => i.status === 'open' || i.status === 'review').sort((x, y) => (x.status === 'review' ? 0 : 1) - (y.status === 'review' ? 0 : 1)), toSettle = Object.values(S.bets).filter(b => b.status === 'open'), openB = Object.values(S.bets).filter(b => b.status === 'open' && now <= b.closes);
         const accts = Object.entries(S.accounts).filter(([id, a]) => !a.seed).map(([id, a]) => { let v = 0; for (const [T, h] of Object.entries(a.holdings || {}))
             if (h.q > 0 && S.companies[T])
                 v += h.q * live(T); return { id, a, v }; }).sort((x, y) => (y.a.cash + y.v) - (x.a.cash + x.v));
         const cashAll = accts.reduce((s, x) => s + x.a.cash, 0), dk = dayKey();
         const saleRow = r => { const p = live(r.ticker) || 0; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(r.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(name(r.uid))} wants to sell ${Number(r.qty).toLocaleString()} sh<\/b><small>Meeting ${esc(when(r.slot))} · about ${$(r.qty * p)}${r.note ? ' · “' + esc(r.note) + '”' : ''}<\/small><\/span><button class="sm-b ok" data-act="rep-approve" data-id="${esc(r.id)}">Approve sale<\/button><button class="sm-b" data-act="rep-decline" data-id="${esc(r.id)}">Decline<\/button><\/div>`; };
-        const ipoRow = i => { const R = Object.values(i.subs || {}).reduce((s, v) => s + (v.q || 0), 0); return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(i.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(i.name)} · ${$(i.price)}/sh<\/b><small>Filed by ${esc(name(i.owner))} · ${cnt(R)} of ${cnt(i.offered)} requested · ${now > i.closes ? 'window closed' : 'closes ' + esc(when(i.closes))}<\/small><\/span><button class="sm-b ok" data-act="ipo-launch" data-t="${esc(i.ticker)}">List now<\/button><button class="sm-b" data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw<\/button><\/div>`; };
+        const ipoRow = i => { const R = Object.values(i.subs || {}).reduce((s, v) => s + (v.q || 0), 0), rev = i.status === 'review'; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(i.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(i.name)} · ${$(i.price)}/sh${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(i.owner))} · valued ${big(i.price * i.shares)} · ${rev ? 'selling ' + cnt(i.offered) + ' shares' : cnt(R) + ' of ' + cnt(i.offered) + ' requested · ' + (now > i.closes ? 'window closed' : 'closes ' + esc(when(i.closes)))}<\/small><\/span>${rev ? `<button class="sm-b ok" data-act="ipo-approve" data-t="${esc(i.ticker)}">Approve<\/button><button class="sm-b" data-act="ipo-reject" data-t="${esc(i.ticker)}">Reject<\/button>` : `<button class="sm-b ok" data-act="ipo-launch" data-t="${esc(i.ticker)}">List now<\/button><button class="sm-b" data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw<\/button>`}<\/div>`; };
         const betRow = b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0); return `<div class="li" style="cursor:default;display:grid;gap:8px"><span class="grow"><b>${esc(b.title)}<\/b><small>Filed by ${esc(name(b.owner))} · pot ${$(pot)} · closed ${esc(when(b.closes))}<\/small><\/span><div class="qq">${b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('')}<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void<\/button><\/div><div class="msg" id="bm_${esc(b.id)}"><\/div><\/div>`; };
         const sec = (t, n, body) => `<section class="card"><div class="ch-h"><h2>${t}<\/h2><span class="pill ${n ? 'bl' : ''}">${n} waiting<\/span><\/div>${body}<\/section>`;
         return `<div class="stackc"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Employee dashboard<\/h1><span class="pill gr">Signed in as ${esc(name(S.uid))}<\/span><\/div>
@@ -1417,6 +1475,7 @@ No<\/textarea><\/label>
    <section class="card"><div class="ch-h"><h2>Logins<\/h2><span class="note">${Object.keys(S.users).length} accounts<\/span><\/div>
     <div class="list">${Object.entries(S.users).sort((x, y) => (y[1].last || y[1].created || 0) - (x[1].last || x[1].created || 0)).map(([un, u]) => `<form class="li pwf" data-u="${esc(un)}" style="cursor:default;flex-wrap:wrap;gap:8px"><span class="grow" style="min-width:160px"><b>${esc(u.name || un)}${u.emp ? ' <span class="pill gr">employee<\/span>' : ''}<\/b><small>@${esc(un)} · ${u.last ? 'last signed in ' + esc(when(u.last)) : 'never signed in'}${u.reset ? ' · reset ' + esc(when(u.reset)) : ''}<\/small><\/span><input name="np_${esc(un)}" type="text" autocomplete="off" autocapitalize="none" placeholder="New password" style="width:150px"><button class="sm-b">Reset password<\/button><\/form>`).join('')}<\/div><div class="msg" id="pwmsg" style="margin:0 18px 14px"><\/div><\/section>
    <section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>Sign-in log<\/h2><span class="note">latest 30<\/span><\/div>${S.logins.length ? `<div class="list">${S.logins.slice(0, 30).map(l => `<div class="li" style="cursor:default"><span class="side ${l.ok ? 'up' : 'dn'}">${l.ok ? 'OK' : 'FAILED'}<\/span><span class="grow"><b>@${esc(l.un)}<\/b><small>${esc(l.why || '')} · ${esc(l.dev || '')}<\/small><\/span><span class="rt"><small class="mut">${esc(when(l.t))}<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No sign-ins yet.<\/div>'}<\/section>
+   <section class="card"><div class="ch-h"><h2>Listed companies<\/h2><span class="note">new listings<\/span><\/div>${L().filter(c => !c.b40).length ? `<div class="list">${L().filter(c => !c.b40).map(c => `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(c.ticker)}<\/span><span class="grow" style="min-width:150px"><b>${esc(c.name)}<\/b><small>${big(live(c.ticker) * c.shares)} · ${holders(c.ticker)} shareholders${c.owner ? ' · owner ' + esc(name(c.owner)) : ''}<\/small><\/span><button class="sm-b sell" data-act="delist" data-t="${esc(c.ticker)}">Delist<\/button><\/div>`).join('')}<\/div>` : '<div class="empty">No new listings.<\/div>'}<div class="msg" id="cm_delist" style="margin:0 18px 14px"><\/div><\/section>
    <section class="card pad"><h2>Give money<\/h2><p class="mut" style="margin:6px 0 12px">Add cash straight to any account. It's logged in the ledger as a deposit.<\/p>
     <form id="givef" class="form"><label>Account<select name="gu">${accts.map(x => `<option value="${esc(x.id)}">${esc(name(x.id))} (@${esc(String(x.id).replace(/^u:/, ''))})<\/option>`).join('')}<\/select><\/label>
     <label>Amount<input name="ga" type="number" min="1" step="1" value="50000" inputmode="numeric"><\/label><button class="pri">Give money<\/button><div class="msg" id="givemsg"><\/div><\/form><\/section>
@@ -1441,7 +1500,7 @@ No<\/textarea><\/label>
     }
     /* ---------- CORPORATE ---------- */
     function corporate() {
-        const cos = L().filter(owns), myIpos = Object.values(S.ipos).filter(i => owns(i) && i.status === 'open');
+        const cos = L().filter(owns), myIpos = Object.values(S.ipos).filter(i => (i.owner === S.uid || (S.isOwner && owns(i))) && (i.status === 'open' || i.status === 'review'));
         if (!cos.length && !myIpos.length)
             return `<div class="card pad"><h2>No corporate accounts yet<\/h2><p class="mut">File an IPO to take a company public, and it will show up here with its market cap, shareholders and requests.<\/p><a class="btn pri" href="#ipos">Go to IPOs<\/a><\/div>`;
         const ipoC = i => {
@@ -1449,7 +1508,7 @@ No<\/textarea><\/label>
             return `<section class="card"><div class="ch-h"><div style="display:flex;gap:8px;align-items:center"><span class="tk">${esc(i.ticker)}<\/span><h2>${esc(i.name)} IPO<\/h2><\/div><span class="pill bl">${Date.now() > i.closes ? 'Subscription closed' : 'Taking subscriptions'}<\/span><\/div>
      <div class="stats"><div><b>${$(i.price)}<\/b><span>IPO price<\/span><\/div><div><b>${cnt(i.offered)}<\/b><span>Offered<\/span><\/div><div><b>${cnt(R)}<\/b><span>Requested<\/span><\/div><div><b>${subs.length}<\/b><span>Subscribers<\/span><\/div><div><b>${$(i.price * (1 + Math.max(-.3, Math.min(.6, .12 * Math.log(Math.max(R, 1) / i.offered)))))}<\/b><span>Expected open<\/span><\/div><\/div>
      ${subs.length ? `<table><thead><tr><th>Subscriber<\/th><th class="r">Requested<\/th><th class="r">Held<\/th><\/tr><\/thead><tbody>${subs.map(([id, v]) => `<tr><td>${esc(name(id))}<\/td><td class="r">${v.q.toLocaleString()}<\/td><td class="r">${$(v.paid)}<\/td><\/tr>`).join('')}<\/tbody><\/table>` : '<div class="empty">No subscribers yet.<\/div>'}
-     <div class="pad" style="display:flex;gap:8px;flex-wrap:wrap"><button class="pri" data-act="ipo-launch" data-t="${esc(i.ticker)}">List ${esc(i.ticker)} and start trading<\/button><button data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw IPO and refund everyone<\/button><\/div><div class="msg" id="cm_${esc(i.ticker)}" style="margin:0 18px 18px"><\/div><\/section>`;
+     <div class="pad" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${S.isOwner && i.status === 'open' ? `<button class="pri" data-act="ipo-launch" data-t="${esc(i.ticker)}">List ${esc(i.ticker)} and start trading<\/button>` : `<span class="note">${i.status === 'review' ? 'Waiting for an Ānanda employee to approve this filing.' : 'An Ānanda employee will list it when the subscription window closes.'}<\/span>`}<button data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw IPO and refund everyone<\/button><\/div><div class="msg" id="cm_${esc(i.ticker)}" style="margin:0 18px 18px"><\/div><\/section>`;
         };
         const coC = c => {
             const T = c.ticker, p = live(T), sh = Object.entries(S.accounts).map(([id, a]) => { var _a, _b; return ({ id, q: ((_b = (_a = a.holdings) === null || _a === void 0 ? void 0 : _a[T]) === null || _b === void 0 ? void 0 : _b.q) || 0 }); }).filter(x => x.q > 0).sort((x, y) => y.q - x.q), held = sh.reduce((s, x) => s + x.q, 0);
@@ -1478,7 +1537,7 @@ No<\/textarea><\/label>
         }).join('')}<\/tbody><\/table>`;
     }
     function ledger() {
-        const kinds = ['all', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
+        const kinds = ['all', 'DELIST', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
         const rows = S.ledger.filter(l => S.lk === 'all' || l.kind === S.lk);
         return `<section class="card"><div class="ch-h"><div><h2>System ledger<\/h2><p class="note" style="margin:2px 0 0">Every event on the exchange, newest first (latest 300).<\/p><\/div><select id="lk" data-st="1" style="width:auto">${kinds.map(k => `<option value="${k}"${S.lk === k ? ' selected' : ''}>${k === 'all' ? 'All events' : k}<\/option>`).join('')}<\/select><\/div>${ledgerTable(rows)}<\/section>`;
     }
@@ -1716,10 +1775,10 @@ No<\/textarea><\/label>
                 const ex = yield ref.get();
                 if (ex.exists && ex.data().ticker)
                     return say('ipomsg', `${T} is already taken.`, false);
-                yield ref.set({ ticker: T, name: nm, sector: f.sector.value, about: f.about.value.trim(), price: pr, shares: sh, offered: of, closes: Date.now() + (+f.win.value), owner: S.uid, status: 'open', subs: {}, rep: f.rep.checked, repName: f.repName.value.trim() || nm + ' Investor Relations', t: Date.now() });
+                yield ref.set({ ticker: T, name: nm, sector: f.sector.value, about: f.about.value.trim(), price: pr, shares: sh, offered: of, win: +f.win.value, closes: Date.now() + (+f.win.value), owner: S.uid, status: 'review', subs: {}, rep: f.rep.checked, repName: f.repName.value.trim() || nm + ' Investor Relations', t: Date.now() });
                 yield log({ kind: 'IPO', via: 'Filed', ticker: T, qty: of, price: pr });
                 f.reset();
-                say('ipomsg', `${T} IPO filed. Investors can subscribe now.`, true);
+                say('ipomsg', `${T} IPO filed. An Ānanda employee will review it before investors can subscribe.`, true);
             }
             catch (e) {
                 say('ipomsg', e.code === 'quota_exceeded' ? 'The exchange database is full.' : 'Filing failed. Try again.', false);
@@ -1772,6 +1831,8 @@ No<\/textarea><\/label>
     }
     function launchIPO(T) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner)
+                return say('cm_' + T, 'Only Ānanda employees can list an IPO.', false);
             const ref = S.db.doc('ipos/' + T);
             try {
                 const l = yield ref.acquire({ holder: S.uid, ttlMs: 60000 });
@@ -1922,6 +1983,21 @@ No<\/textarea><\/label>
                 yield unsub(b.dataset.t);
             if (act === 'ipo-launch')
                 yield launchIPO(b.dataset.t);
+            if (act === 'ipo-approve')
+                yield approveIPO(b.dataset.t);
+            if (act === 'ipo-reject')
+                yield rejectIPO(b.dataset.t);
+            if (act === 'delist') {
+                if (b.dataset.sure) {
+                    yield delist(b.dataset.t);
+                }
+                else {
+                    b.dataset.sure = '1';
+                    b.textContent = 'Tap again to delist';
+                    setTimeout(() => { b.textContent = 'Delist'; delete b.dataset.sure; }, 4000);
+                    return;
+                }
+            }
             if (act === 'ipo-cancel')
                 yield cancelIPO(b.dataset.t);
             if (act === 'bet-resolve')
