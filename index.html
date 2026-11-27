@@ -330,14 +330,54 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             h = ((h << 5) + h + txt.charCodeAt(i)) | 0; return 'f' + (h >>> 0).toString(16); });
     }
     const users = () => getAt('users') || {};
+    function logLogin(un, ok, why) { docRef('logins/' + newId()).set({ un, ok: !!ok, why, t: Date.now(), dev: (navigator.userAgent.match(/iPhone|iPad|Android|Mac|Windows/) || ['other'])[0] }).catch(() => { }); }
     const auth = {
         current: () => { const s = lsGet(SK, null); return s && users()[s] ? 'u:' + s : null; },
         signUp: (un, dn, pw) => __awaiter(this, void 0, void 0, function* () { yield whenReady(); if (users()[un])
-            throw Error('That username is taken.'); if (!pw || pw.length < 4)
-            throw Error('Use at least 4 characters for the password.'); const salt = Math.random().toString(36).slice(2, 10); yield docRef('users/' + un).set({ name: dn, salt, hash: yield hashPw(pw, salt), created: Date.now() }); lsSet(SK, un); return 'u:' + un; }),
-        signIn: (un, pw, staff) => __awaiter(this, void 0, void 0, function* () { yield whenReady(); un = String(un).trim().toLowerCase(); const u = users()[un]; if (!u || (u.hash !== (yield hashPw(pw, u.salt)) && u.hash !== (yield hashPw(String(pw).trim(), u.salt))))
-            throw Error('Wrong username or password.'); if (staff && !u.emp)
-            throw Error("That account doesn't have employee access."); lsSet(SK, un); return 'u:' + un; }),
+            throw Error('That username is taken. If it\'s yours, tap Sign in instead.'); if (!pw || pw.length < 4)
+            throw Error('Use at least 4 characters for the password.'); const salt = Math.random().toString(36).slice(2, 10); yield docRef('users/' + un).set({ name: dn, salt, hash: yield hashPw(pw, salt), created: Date.now() }); logLogin(un, true, 'Created account'); lsSet(SK, un); return 'u:' + un; }),
+        signIn: (un, pw, staff) => __awaiter(this, void 0, void 0, function* () {
+            yield whenReady();
+            un = String(un).trim().toLowerCase();
+            let u = users()[un];
+            const ok = (x) => __awaiter(this, void 0, void 0, function* () { return x && (x.hash === (yield hashPw(pw, x.salt)) || x.hash === (yield hashPw(String(pw).trim(), x.salt))); });
+            if (!u) { /* bring over an account made on this phone before the shared database */
+                const old = lsGet('ananda-users-v1', {})[un];
+                if (old && (yield ok(old))) {
+                    const v = { name: old.name || un, salt: old.salt, hash: old.hash, created: old.created || Date.now(), moved: Date.now(), last: Date.now() };
+                    yield docRef('users/' + un).set(v);
+                    u = v;
+                    const m = lsGet('ananda-market-v1', null), acct = m && m['accounts/u:' + un];
+                    if (!getAt('accounts/u:' + un))
+                        yield docRef('accounts/u:' + un).set({ label: (acct && acct.label) || v.name, cash: (acct && acct.cash) || 0, holdings: (acct && acct.holdings) || {}, watch: (acct && acct.watch) || [], base: acct ? (acct.base != null ? acct.base : acct.cash || 0) : 0, created: (acct && acct.created) || Date.now() });
+                    logLogin(un, true, 'Moved from the old version');
+                    lsSet(SK, un);
+                    return 'u:' + un;
+                }
+                if (old) {
+                    logLogin(un, false, 'Wrong password (old account)');
+                    throw Error('Wrong password. Ask an Ānanda employee to reset it if you forgot it.');
+                }
+                logLogin(un, false, 'No account with that username');
+                throw Error(`There's no account called @${un}. Tap Create account, or ask an employee for help.`);
+            }
+            if (!(yield ok(u))) {
+                logLogin(un, false, 'Wrong password');
+                throw Error('Wrong password. Ask an Ānanda employee to reset it if you forgot it.');
+            }
+            if (staff && !u.emp) {
+                logLogin(un, false, 'Tried employee sign in without access');
+                throw Error("That account doesn't have employee access.");
+            }
+            logLogin(un, true, staff ? 'Employee sign in' : 'Sign in');
+            docRef('users/' + un).update({ last: Date.now() }).catch(() => { });
+            lsSet(SK, un);
+            return 'u:' + un;
+        }),
+        resetPassword: (un, pw) => __awaiter(this, void 0, void 0, function* () { if (!auth.isEmployee())
+            throw Error('Employees only.'); const u = users()[un]; if (!u)
+            throw Error('No account with that username.'); if (!pw || pw.length < 4)
+            throw Error('Use at least 4 characters.'); const salt = Math.random().toString(36).slice(2, 10); yield docRef('users/' + un).update({ salt, hash: yield hashPw(pw, salt), reset: Date.now() }); logLogin(un, true, 'Password reset by @' + lsGet(SK, '?')); }),
         isEmployee: () => { const s = lsGet(SK, null), u = s && users()[s]; return !!(u && u.emp); },
         employees: () => { const u = users(); return Object.keys(u).filter(k => u[k] && u[k].emp); },
         users: () => Object.keys(users()),
@@ -409,7 +449,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
     const S = { db: null, user: null, uid: null, canWrite: true, isOwner: false, companies: {}, accounts: {}, ledger: [], orders: [], ipos: {}, reqs: [], names: {},
-        bets: {}, deps: [], loaded: false, stale: false, tf: '1D', ptf: '1M', stf: '1D', side: 'BUY', ot: 'market', q: '', sector: 'all', lk: 'all', tt: null };
+        bets: {}, deps: [], users: {}, logins: [], loaded: false, stale: false, tf: '1D', ptf: '1M', stf: '1D', side: 'BUY', ot: 'market', q: '', sector: 'all', lk: 'all', tt: null };
     const app = document.getElementById('app');
     /* ================= HELPERS ================= */
     const esc = v => String(v !== null && v !== void 0 ? v : '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -640,17 +680,22 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             return;
         }
         document.body.classList.toggle('guest', !S.uid);
-        if (!S.uid) {
-            app.innerHTML = landing();
-            afterLanding();
-            return;
-        }
         const keep = {}, fe = document.activeElement, fk = fe && app.contains(fe) && !fe.dataset.st ? (fe.id || fe.name) : null;
         app.querySelectorAll('input,select,textarea').forEach(el => { const k = el.id || el.name; if (k && !el.dataset.st && el.type !== 'checkbox')
             keep[k] = el.value; });
+        if (!S.uid) {
+            app.innerHTML = landing();
+            restoreForm(keep, fk);
+            afterLanding();
+            return;
+        }
         const views = { home, markets, trade, ipos, bets, more, corporate, ledger, how, meetings, funding, staff };
         const v = r.startsWith('s-') ? stock(r.slice(2).toUpperCase()) : (views[r] || home)();
         app.innerHTML = (S.stale ? '<p class="msg err">Showing saved data. It may be out of date until the connection answers.<\/p>' : '') + v;
+        restoreForm(keep, fk);
+        after(r);
+    }
+    function restoreForm(keep, fk) {
         app.querySelectorAll('input,select,textarea').forEach(el => { const k = el.id || el.name; if (k in keep && !el.dataset.st)
             el.value = keep[k]; });
         for (const [id, m] of Object.entries(S.msgs))
@@ -669,7 +714,6 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
                 catch (_a) { }
             }
         }
-        after(r);
     }
     function after(r) {
         const fi = document.getElementById('ifig');
@@ -1272,6 +1316,9 @@ No<\/textarea><\/label>
    ${sec('Betting boards', toSettle.length, toSettle.length ? `<div class="list">${toSettle.map(betRow).join('')}<\/div>` : `<div class="empty">No open betting boards.<\/div>`)}
    <div class="msg" id="cm_staff"><\/div><\/div>
   <div class="stackc"><section class="card"><div class="ch-h"><h2>All accounts<\/h2><span class="note">${accts.length}<\/span><\/div>${accts.length ? `<div class="list">${accts.map(x => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(x.id))}<\/b><small>@${esc(String(x.id).replace(/^u:/, ''))} · traded ${$(x.a.day && x.a.day.d === dk ? x.a.day.v : 0)} today<\/small><\/span><span class="rt"><b class="mono">${$(x.a.cash + x.v)}<\/b><small class="mut">${$(x.a.cash)} cash<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No accounts yet.<\/div>'}<\/section>
+   <section class="card"><div class="ch-h"><h2>Logins<\/h2><span class="note">${Object.keys(S.users).length} accounts<\/span><\/div>
+    <div class="list">${Object.entries(S.users).sort((x, y) => (y[1].last || y[1].created || 0) - (x[1].last || x[1].created || 0)).map(([un, u]) => `<form class="li pwf" data-u="${esc(un)}" style="cursor:default;flex-wrap:wrap;gap:8px"><span class="grow" style="min-width:160px"><b>${esc(u.name || un)}${u.emp ? ' <span class="pill gr">employee<\/span>' : ''}<\/b><small>@${esc(un)} · ${u.last ? 'last signed in ' + esc(when(u.last)) : 'never signed in'}${u.reset ? ' · reset ' + esc(when(u.reset)) : ''}<\/small><\/span><input name="np_${esc(un)}" type="text" autocomplete="off" autocapitalize="none" placeholder="New password" style="width:150px"><button class="sm-b">Reset password<\/button><\/form>`).join('')}<\/div><div class="msg" id="pwmsg" style="margin:0 18px 14px"><\/div><\/section>
+   <section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>Sign-in log<\/h2><span class="note">latest 30<\/span><\/div>${S.logins.length ? `<div class="list">${S.logins.slice(0, 30).map(l => `<div class="li" style="cursor:default"><span class="side ${l.ok ? 'up' : 'dn'}">${l.ok ? 'OK' : 'FAILED'}<\/span><span class="grow"><b>@${esc(l.un)}<\/b><small>${esc(l.why || '')} · ${esc(l.dev || '')}<\/small><\/span><span class="rt"><small class="mut">${esc(when(l.t))}<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No sign-ins yet.<\/div>'}<\/section>
    <section class="card pad"><h2>Give money<\/h2><p class="mut" style="margin:6px 0 12px">Add cash straight to any account. It's logged in the ledger as a deposit.<\/p>
     <form id="givef" class="form"><label>Account<select name="gu">${accts.map(x => `<option value="${esc(x.id)}">${esc(name(x.id))} (@${esc(String(x.id).replace(/^u:/, ''))})<\/option>`).join('')}<\/select><\/label>
     <label>Amount<input name="ga" type="number" min="1" step="1" value="50000" inputmode="numeric"><\/label><button class="pri">Give money<\/button><div class="msg" id="givemsg"><\/div><\/form><\/section>
@@ -1845,7 +1892,10 @@ No<\/textarea><\/label>
         fileBoard(f); if (f.id === 'authf')
         authSubmit(f); if (f.id === 'depf')
         requestDeposit(f); if (f.id === 'givef')
-        giveMoney(f); if (f.id === 'empf') {
+        giveMoney(f); if (f.classList.contains('pwf')) {
+        const un = f.dataset.u, pw = f.querySelector('input').value;
+        SOLO.auth.resetPassword(un, pw).then(() => { say('pwmsg', `Password for @${un} is now: ${pw}. Tell them to sign in with it.`, true); f.querySelector('input').value = ''; }).catch(err => say('pwmsg', err.message, false));
+    } if (f.id === 'empf') {
         try {
             SOLO.auth.setEmployee(f.eu.value.trim().toLowerCase(), true);
             render();
@@ -1940,6 +1990,8 @@ No<\/textarea><\/label>
         db.collection('accounts').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); S.accounts = o; soon(); }, fail);
         db.collection('ledger').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.ledger = s.docs.map(d => d.data()); soon(); }, fail);
         db.collection('orders').orderBy('t', 'desc').limit(400).onSnapshot(s => { S.orders = s.docs.map(d => (Object.assign(Object.assign({}, d.data()), { id: d.id }))); soon(); }, fail);
+        db.collection('users').onSnapshot(s => { const o = {}; s.docs.forEach(d => { o[d.id] = d.data(); }); S.users = o; soon(); }, fail);
+        db.collection('logins').orderBy('t', 'desc').limit(200).onSnapshot(s => { S.logins = s.docs.map(d => d.data()); soon(); }, fail);
         db.collection('deposits').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.deps = s.docs.map(d => Object.assign({}, d.data(), { id: d.id })); soon(); }, fail);
         db.collection('bets').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = Object.assign({}, d.data(), { id: d.id })); S.bets = o; soon(); }, fail);
         db.collection('ipos').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); S.ipos = o; soon(); }, fail);
