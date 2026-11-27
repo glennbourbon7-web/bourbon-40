@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dough Jones Exchange</title>
+<title>Bourbon 40 Exchange</title>
+<script>window.__errs=[];window.onerror=function(m,src,l,c,e){var t=(e&&e.message)||m;window.__errs.push(t+' @'+l+':'+c);var a=document.getElementById('app');if(a){a.innerHTML='<div style="background:#3a0f16;color:#ffc6cc;border-radius:12px;padding:14px;font:14px/1.5 -apple-system,sans-serif">Something broke while loading. Screenshot this and send it:<br><b>'+String(window.__errs.join(' | ')).replace(/[<>&]/g,'')+'</b><br>'+navigator.userAgent.replace(/[<>&]/g,'')+'</div>'}};window.addEventListener('unhandledrejection',function(ev){window.onerror('Promise: '+(ev.reason&&ev.reason.message||ev.reason),'',0,0)});</script>
+<script>if(!Object.fromEntries)Object.fromEntries=function(it){var o={};Array.from(it).forEach(function(p){o[p[0]]=p[1]});return o};if(!Array.prototype.flat)Array.prototype.flat=function(){return [].concat.apply([],this)};if(!Array.prototype.flatMap)Array.prototype.flatMap=function(f,t){return [].concat.apply([],this.map(f,t))};if(!window.requestAnimationFrame)window.requestAnimationFrame=function(f){return setTimeout(f,16)};</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>/* VOICE: a pro brokerage app at night — dense, exact, calm.
    IDEA: the broker's "Markets" screen: index lines racing on black, grouped lists with chevrons.
    PICTURE: the multi-line Indices chart with timeframe switch, and touchable price charts.
@@ -18,9 +20,6 @@ a{color:var(--b2)}
 .mut{color:var(--mut)}.up{color:var(--up)}.dn{color:var(--dn)}
 .banner{font-size:12px;color:var(--mut);text-align:center;padding:6px 14px;background:#020305;border-bottom:1px solid var(--ln)}
 header{position:sticky;top:0;z-index:5;display:flex;gap:16px;align-items:center;padding:10px max(3vw,16px);background:rgba(5,7,11,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--ln)}
-.logo{display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none;font-weight:800;font-size:17px}
-.logo i{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#6cc4ff,var(--b) 50%,#0a3fa8);box-shadow:0 0 20px #1e8bff66;font:800 12.5px Inter;font-style:normal;color:#fff}
-.logo span{display:grid;line-height:1.05}.logo small{font-size:11px;font-weight:600;color:var(--b2)}
 nav{display:flex;gap:2px;flex:1;justify-content:center}
 nav a{display:flex;gap:7px;align-items:center;color:var(--mut);text-decoration:none;padding:9px 12px;border-radius:10px;font-weight:600;font-size:14px}
 nav a:hover{color:var(--ink)}nav a.on{color:var(--b2);background:#0e1a2c}
@@ -103,11 +102,27 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
 }
 @media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid #1a1f2a}.stack td{display:flow-root;border:0;padding:3px 12px;padding-inline-start:calc(8em + 12px);text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--mut)}.stack td:empty{display:none}}
 @media(prefers-reduced-motion:no-preference){.flash{animation:fl 1s ease-out}@keyframes fl{from{background:#173a6a}to{background:transparent}}}
+
+.logo{display:flex;gap:11px;align-items:center;color:var(--ink);text-decoration:none}
+.mark{width:40px;height:40px;flex:none;filter:drop-shadow(0 0 10px rgba(30,139,255,.45))}
+.wm{display:grid;line-height:1}
+.wm b{font:700 23px/1 'Cormorant Garamond',Georgia,'Times New Roman',serif;letter-spacing:.01em}
+.wm em{font-style:normal;margin-left:5px;background:linear-gradient(135deg,#8fd3ff,#1e8bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wm small{font:600 11.5px/1.2 Inter,sans-serif;margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:700px){.mark{width:36px;height:36px}.wm b{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.shine{display:none}}
 </style>
 </head><body>
-<div class="banner">Solo mode: your market is saved on this device. Parody exchange with play money. Not affiliated with Dow Jones &amp; Company or S&amp;P Dow Jones Indices.</div>
+<div class="banner">Bourbon 40 is a parody exchange with play money. Prices aren't real quotes, and your market is saved on this device.</div>
 <header>
-  <a class="logo" href="#home"><i>DJ</i><span>Dough Jones<small>Exchange</small></span></a>
+  <a class="logo" href="#home" aria-label="Bourbon 40 home"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+<defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fd3ff"/><stop offset=".55" stop-color="#1e8bff"/><stop offset="1" stop-color="#0b3c9c"/></linearGradient></defs>
+<polygon points="20,2.5 35.2,11.25 35.2,28.75 20,37.5 4.8,28.75 4.8,11.25" fill="#07101f" stroke="url(#lgG)" stroke-width="2.2" stroke-linejoin="round"/>
+<polygon points="20,7.5 30.9,13.75 30.9,26.25 20,32.5 9.1,26.25 9.1,13.75" fill="none" stroke="#1e8bff" stroke-opacity=".28" stroke-width="1"/>
+<polygon class="shine" points="20,2.5 35.2,11.25 35.2,28.75 20,37.5 4.8,28.75 4.8,11.25" fill="none" stroke="#e6f4ff" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="9 96"><animate attributeName="stroke-dashoffset" from="0" to="-105" dur="5s" repeatCount="indefinite"/></polygon>
+<path id="lgLine" d="M11 25 L16.5 21 L21.5 23.5 L29 14" fill="none" stroke="#8fd3ff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle id="lgDot" cx="29" cy="14" r="2.4" fill="#2fd27a"><animate attributeName="r" values="2.2;3.1;2.2" dur="2.4s" repeatCount="indefinite"/></circle>
+</svg><span class="wm"><b>Bourbon<em>40</em></b><small id="lgx">B40 · loading</small></span></a>
   <nav id="nav">
    <a href="#home" data-n="home"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Accounts</span></a>
    <a href="#markets" data-n="markets"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span>Markets</span></a>
@@ -119,18 +134,28 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
 </header>
 <main id="app"><p class="mut">Loading market data…</p></main>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;var cl=c.closest('table').rows[0].cells[i];c.dataset.l=cl?cl.textContent:''}}).observe(document,{childList:true,subtree:true})</script>
-<script>window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector": "Technology", "price": 270, "hist": [[1795657029791, 270]], "t0": 1795657029791, "since": 1732585029791, "shares": 14800000000, "vf": 0.7, "dow": true, "owner": null, "about": "Consumer electronics, software and services.", "vol": 0, "rep": false }, "companies/AMGN": { "ticker": "AMGN", "name": "Amgen", "sector": "Health care", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 540000000, "vf": 1.208, "dow": true, "owner": null, "about": "Biotechnology medicines.", "vol": 0, "rep": false }, "companies/AMZN": { "ticker": "AMZN", "name": "Amazon", "sector": "Consumer", "price": 230, "hist": [[1795657029791, 230]], "t0": 1795657029791, "since": 1732585029791, "shares": 10700000000, "vf": 1.115, "dow": true, "owner": null, "about": "Online retail and cloud computing.", "vol": 0, "rep": false }, "companies/AXP": { "ticker": "AXP", "name": "American Express", "sector": "Financials", "price": 340, "hist": [[1795657029791, 340]], "t0": 1795657029791, "since": 1732585029791, "shares": 700000000, "vf": 1.023, "dow": true, "owner": null, "about": "Payment cards and travel services.", "vol": 0, "rep": false }, "companies/BA": { "ticker": "BA", "name": "Boeing", "sector": "Industrials", "price": 215, "hist": [[1795657029791, 215]], "t0": 1795657029791, "since": 1732585029791, "shares": 760000000, "vf": 0.931, "dow": true, "owner": null, "about": "Commercial jets, defense and space.", "vol": 0, "rep": false }, "companies/CAT": { "ticker": "CAT", "name": "Caterpillar", "sector": "Industrials", "price": 520, "hist": [[1795657029791, 520]], "t0": 1795657029791, "since": 1732585029791, "shares": 470000000, "vf": 0.838, "dow": true, "owner": null, "about": "Construction and mining equipment.", "vol": 0, "rep": false }, "companies/CRM": { "ticker": "CRM", "name": "Salesforce", "sector": "Technology", "price": 240, "hist": [[1795657029791, 240]], "t0": 1795657029791, "since": 1732585029791, "shares": 960000000, "vf": 0.746, "dow": true, "owner": null, "about": "Customer-relationship software.", "vol": 0, "rep": false }, "companies/CSCO": { "ticker": "CSCO", "name": "Cisco Systems", "sector": "Technology", "price": 70, "hist": [[1795657029791, 70]], "t0": 1795657029791, "since": 1732585029791, "shares": 3950000000, "vf": 1.254, "dow": true, "owner": null, "about": "Networking hardware and security.", "vol": 0, "rep": false }, "companies/CVX": { "ticker": "CVX", "name": "Chevron", "sector": "Energy", "price": 155, "hist": [[1795657029791, 155]], "t0": 1795657029791, "since": 1732585029791, "shares": 2000000000, "vf": 1.162, "dow": true, "owner": null, "about": "Integrated oil and gas.", "vol": 0, "rep": false }, "companies/DIS": { "ticker": "DIS", "name": "Walt Disney", "sector": "Media", "price": 112, "hist": [[1795657029791, 112]], "t0": 1795657029791, "since": 1732585029791, "shares": 1800000000, "vf": 1.069, "dow": true, "owner": null, "about": "Entertainment, parks and streaming.", "vol": 0, "rep": false }, "companies/GOOGL": { "ticker": "GOOGL", "name": "Alphabet", "sector": "Technology", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 12100000000, "vf": 0.977, "dow": true, "owner": null, "about": "Search, advertising and cloud.", "vol": 0, "rep": false }, "companies/GS": { "ticker": "GS", "name": "Goldman Sachs", "sector": "Financials", "price": 780, "hist": [[1795657029791, 780]], "t0": 1795657029791, "since": 1732585029791, "shares": 310000000, "vf": 0.885, "dow": true, "owner": null, "about": "Investment banking and asset management.", "vol": 0, "rep": false }, "companies/HD": { "ticker": "HD", "name": "Home Depot", "sector": "Consumer", "price": 380, "hist": [[1795657029791, 380]], "t0": 1795657029791, "since": 1732585029791, "shares": 1000000000, "vf": 0.792, "dow": true, "owner": null, "about": "Home-improvement retail.", "vol": 0, "rep": false }, "companies/HON": { "ticker": "HON", "name": "Honeywell", "sector": "Industrials", "price": 205, "hist": [[1795657029791, 205]], "t0": 1795657029791, "since": 1732585029791, "shares": 640000000, "vf": 0.7, "dow": true, "owner": null, "about": "Aerospace, automation and building tech.", "vol": 0, "rep": false }, "companies/IBM": { "ticker": "IBM", "name": "IBM", "sector": "Technology", "price": 290, "hist": [[1795657029791, 290]], "t0": 1795657029791, "since": 1732585029791, "shares": 930000000, "vf": 1.208, "dow": true, "owner": null, "about": "Hybrid cloud, software and consulting.", "vol": 0, "rep": false }, "companies/JNJ": { "ticker": "JNJ", "name": "Johnson & Johnson", "sector": "Health care", "price": 195, "hist": [[1795657029791, 195]], "t0": 1795657029791, "since": 1732585029791, "shares": 2400000000, "vf": 1.115, "dow": true, "owner": null, "about": "Pharmaceuticals and medical devices.", "vol": 0, "rep": false }, "companies/JPM": { "ticker": "JPM", "name": "JPMorgan Chase", "sector": "Financials", "price": 305, "hist": [[1795657029791, 305]], "t0": 1795657029791, "since": 1732585029791, "shares": 2750000000, "vf": 1.023, "dow": true, "owner": null, "about": "Banking and financial services.", "vol": 0, "rep": false }, "companies/KO": { "ticker": "KO", "name": "Coca-Cola", "sector": "Consumer", "price": 70, "hist": [[1795657029791, 70]], "t0": 1795657029791, "since": 1732585029791, "shares": 4300000000, "vf": 0.931, "dow": true, "owner": null, "about": "Beverages.", "vol": 0, "rep": false }, "companies/MCD": { "ticker": "MCD", "name": "McDonald's", "sector": "Consumer", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 710000000, "vf": 0.838, "dow": true, "owner": null, "about": "Fast-food restaurants.", "vol": 0, "rep": false }, "companies/MMM": { "ticker": "MMM", "name": "3M", "sector": "Industrials", "price": 160, "hist": [[1795657029791, 160]], "t0": 1795657029791, "since": 1732585029791, "shares": 530000000, "vf": 0.746, "dow": true, "owner": null, "about": "Industrial and consumer products.", "vol": 0, "rep": false }, "companies/MRK": { "ticker": "MRK", "name": "Merck", "sector": "Health care", "price": 95, "hist": [[1795657029791, 95]], "t0": 1795657029791, "since": 1732585029791, "shares": 2500000000, "vf": 1.254, "dow": true, "owner": null, "about": "Pharmaceuticals and vaccines.", "vol": 0, "rep": false }, "companies/MSFT": { "ticker": "MSFT", "name": "Microsoft", "sector": "Technology", "price": 500, "hist": [[1795657029791, 500]], "t0": 1795657029791, "since": 1732585029791, "shares": 7430000000, "vf": 1.162, "dow": true, "owner": null, "about": "Software, cloud and AI.", "vol": 0, "rep": false }, "companies/NKE": { "ticker": "NKE", "name": "Nike", "sector": "Consumer", "price": 65, "hist": [[1795657029791, 65]], "t0": 1795657029791, "since": 1732585029791, "shares": 1480000000, "vf": 1.069, "dow": true, "owner": null, "about": "Athletic footwear and apparel.", "vol": 0, "rep": false }, "companies/NVDA": { "ticker": "NVDA", "name": "Nvidia", "sector": "Technology", "price": 185, "hist": [[1795657029791, 185]], "t0": 1795657029791, "since": 1732585029791, "shares": 24300000000, "vf": 0.977, "dow": true, "owner": null, "about": "GPUs and AI computing.", "vol": 0, "rep": false }, "companies/PG": { "ticker": "PG", "name": "Procter & Gamble", "sector": "Consumer", "price": 150, "hist": [[1795657029791, 150]], "t0": 1795657029791, "since": 1732585029791, "shares": 2340000000, "vf": 0.885, "dow": true, "owner": null, "about": "Household and personal-care brands.", "vol": 0, "rep": false }, "companies/SHW": { "ticker": "SHW", "name": "Sherwin-Williams", "sector": "Materials", "price": 340, "hist": [[1795657029791, 340]], "t0": 1795657029791, "since": 1732585029791, "shares": 250000000, "vf": 0.792, "dow": true, "owner": null, "about": "Paints and coatings.", "vol": 0, "rep": false }, "companies/TRV": { "ticker": "TRV", "name": "Travelers", "sector": "Financials", "price": 280, "hist": [[1795657029791, 280]], "t0": 1795657029791, "since": 1732585029791, "shares": 220000000, "vf": 0.7, "dow": true, "owner": null, "about": "Property and casualty insurance.", "vol": 0, "rep": false }, "companies/UNH": { "ticker": "UNH", "name": "UnitedHealth Group", "sector": "Health care", "price": 330, "hist": [[1795657029791, 330]], "t0": 1795657029791, "since": 1732585029791, "shares": 910000000, "vf": 1.208, "dow": true, "owner": null, "about": "Health insurance and care services.", "vol": 0, "rep": false }, "companies/V": { "ticker": "V", "name": "Visa", "sector": "Financials", "price": 345, "hist": [[1795657029791, 345]], "t0": 1795657029791, "since": 1732585029791, "shares": 1930000000, "vf": 1.115, "dow": true, "owner": null, "about": "Global payments network.", "vol": 0, "rep": false }, "companies/WMT": { "ticker": "WMT", "name": "Walmart", "sector": "Consumer", "price": 105, "hist": [[1795657029791, 105]], "t0": 1795657029791, "since": 1732585029791, "shares": 7980000000, "vf": 1.023, "dow": true, "owner": null, "about": "Discount retail and groceries.", "vol": 0, "rep": false }, "companies/GNS": { "ticker": "GNS", "name": "GNS", "sector": "Media", "price": 9.6, "hist": [[1795657029791, 9.6]], "t0": 1795657029791, "since": 1732585029791, "shares": 437500, "vf": 2, "dow": false, "owner": "artifact-owner", "about": "News, streaming (GNS+) and kids entertainment (GNS Kids).", "vol": 0, "rep": true, "repName": "GNS Investor Relations", "ref": 9.6 }, "accounts/seed-gns-01": { "label": "GNS Founders Trust", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 60000, "c": 576000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-02": { "label": "Marcus Bell", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 25000, "c": 240000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-03": { "label": "Lena Ortiz", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 12000, "c": 115200.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-04": { "label": "Harbor Point Capital", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 8000, "c": 76800.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-05": { "label": "Dana Whitfield", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 5000, "c": 48000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-06": { "label": "Ray Okafor", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 4000, "c": 38400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-07": { "label": "Priya Natarajan", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 2500, "c": 24000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-08": { "label": "Sam Kowalski", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1500, "c": 14400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-09": { "label": "Tasha Greene", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-10": { "label": "Eli Brandt", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 } };
+<script>var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector": "Technology", "price": 270, "hist": [[1795657029791, 270]], "t0": 1795657029791, "since": 1732585029791, "shares": 14800000000, "vf": 0.7, "owner": null, "about": "Consumer electronics, software and services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/AMGN": { "ticker": "AMGN", "name": "Amgen", "sector": "Health care", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 540000000, "vf": 1.208, "owner": null, "about": "Biotechnology medicines.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/AMZN": { "ticker": "AMZN", "name": "Amazon", "sector": "Consumer", "price": 230, "hist": [[1795657029791, 230]], "t0": 1795657029791, "since": 1732585029791, "shares": 10700000000, "vf": 1.115, "owner": null, "about": "Online retail and cloud computing.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/AXP": { "ticker": "AXP", "name": "American Express", "sector": "Financials", "price": 340, "hist": [[1795657029791, 340]], "t0": 1795657029791, "since": 1732585029791, "shares": 700000000, "vf": 1.023, "owner": null, "about": "Payment cards and travel services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/BA": { "ticker": "BA", "name": "Boeing", "sector": "Industrials", "price": 215, "hist": [[1795657029791, 215]], "t0": 1795657029791, "since": 1732585029791, "shares": 760000000, "vf": 0.931, "owner": null, "about": "Commercial jets, defense and space.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CAT": { "ticker": "CAT", "name": "Caterpillar", "sector": "Industrials", "price": 520, "hist": [[1795657029791, 520]], "t0": 1795657029791, "since": 1732585029791, "shares": 470000000, "vf": 0.838, "owner": null, "about": "Construction and mining equipment.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CRM": { "ticker": "CRM", "name": "Salesforce", "sector": "Technology", "price": 240, "hist": [[1795657029791, 240]], "t0": 1795657029791, "since": 1732585029791, "shares": 960000000, "vf": 0.746, "owner": null, "about": "Customer-relationship software.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CSCO": { "ticker": "CSCO", "name": "Cisco Systems", "sector": "Technology", "price": 70, "hist": [[1795657029791, 70]], "t0": 1795657029791, "since": 1732585029791, "shares": 3950000000, "vf": 1.254, "owner": null, "about": "Networking hardware and security.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CVX": { "ticker": "CVX", "name": "Chevron", "sector": "Energy", "price": 155, "hist": [[1795657029791, 155]], "t0": 1795657029791, "since": 1732585029791, "shares": 2000000000, "vf": 1.162, "owner": null, "about": "Integrated oil and gas.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/DIS": { "ticker": "DIS", "name": "Walt Disney", "sector": "Media", "price": 112, "hist": [[1795657029791, 112]], "t0": 1795657029791, "since": 1732585029791, "shares": 1800000000, "vf": 1.069, "owner": null, "about": "Entertainment, parks and streaming.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/GOOGL": { "ticker": "GOOGL", "name": "Alphabet", "sector": "Technology", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 12100000000, "vf": 0.977, "owner": null, "about": "Search, advertising and cloud.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/GS": { "ticker": "GS", "name": "Goldman Sachs", "sector": "Financials", "price": 780, "hist": [[1795657029791, 780]], "t0": 1795657029791, "since": 1732585029791, "shares": 310000000, "vf": 0.885, "owner": null, "about": "Investment banking and asset management.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/HD": { "ticker": "HD", "name": "Home Depot", "sector": "Consumer", "price": 380, "hist": [[1795657029791, 380]], "t0": 1795657029791, "since": 1732585029791, "shares": 1000000000, "vf": 0.792, "owner": null, "about": "Home-improvement retail.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/HON": { "ticker": "HON", "name": "Honeywell", "sector": "Industrials", "price": 205, "hist": [[1795657029791, 205]], "t0": 1795657029791, "since": 1732585029791, "shares": 640000000, "vf": 0.7, "owner": null, "about": "Aerospace, automation and building tech.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/IBM": { "ticker": "IBM", "name": "IBM", "sector": "Technology", "price": 290, "hist": [[1795657029791, 290]], "t0": 1795657029791, "since": 1732585029791, "shares": 930000000, "vf": 1.208, "owner": null, "about": "Hybrid cloud, software and consulting.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/JNJ": { "ticker": "JNJ", "name": "Johnson & Johnson", "sector": "Health care", "price": 195, "hist": [[1795657029791, 195]], "t0": 1795657029791, "since": 1732585029791, "shares": 2400000000, "vf": 1.115, "owner": null, "about": "Pharmaceuticals and medical devices.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/JPM": { "ticker": "JPM", "name": "JPMorgan Chase", "sector": "Financials", "price": 305, "hist": [[1795657029791, 305]], "t0": 1795657029791, "since": 1732585029791, "shares": 2750000000, "vf": 1.023, "owner": null, "about": "Banking and financial services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/KO": { "ticker": "KO", "name": "Coca-Cola", "sector": "Consumer", "price": 70, "hist": [[1795657029791, 70]], "t0": 1795657029791, "since": 1732585029791, "shares": 4300000000, "vf": 0.931, "owner": null, "about": "Beverages.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MCD": { "ticker": "MCD", "name": "McDonald's", "sector": "Consumer", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 710000000, "vf": 0.838, "owner": null, "about": "Fast-food restaurants.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MMM": { "ticker": "MMM", "name": "3M", "sector": "Industrials", "price": 160, "hist": [[1795657029791, 160]], "t0": 1795657029791, "since": 1732585029791, "shares": 530000000, "vf": 0.746, "owner": null, "about": "Industrial and consumer products.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MRK": { "ticker": "MRK", "name": "Merck", "sector": "Health care", "price": 95, "hist": [[1795657029791, 95]], "t0": 1795657029791, "since": 1732585029791, "shares": 2500000000, "vf": 1.254, "owner": null, "about": "Pharmaceuticals and vaccines.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MSFT": { "ticker": "MSFT", "name": "Microsoft", "sector": "Technology", "price": 500, "hist": [[1795657029791, 500]], "t0": 1795657029791, "since": 1732585029791, "shares": 7430000000, "vf": 1.162, "owner": null, "about": "Software, cloud and AI.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/NKE": { "ticker": "NKE", "name": "Nike", "sector": "Consumer", "price": 65, "hist": [[1795657029791, 65]], "t0": 1795657029791, "since": 1732585029791, "shares": 1480000000, "vf": 1.069, "owner": null, "about": "Athletic footwear and apparel.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/NVDA": { "ticker": "NVDA", "name": "Nvidia", "sector": "Technology", "price": 185, "hist": [[1795657029791, 185]], "t0": 1795657029791, "since": 1732585029791, "shares": 24300000000, "vf": 0.977, "owner": null, "about": "GPUs and AI computing.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/PG": { "ticker": "PG", "name": "Procter & Gamble", "sector": "Consumer", "price": 150, "hist": [[1795657029791, 150]], "t0": 1795657029791, "since": 1732585029791, "shares": 2340000000, "vf": 0.885, "owner": null, "about": "Household and personal-care brands.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/SHW": { "ticker": "SHW", "name": "Sherwin-Williams", "sector": "Materials", "price": 340, "hist": [[1795657029791, 340]], "t0": 1795657029791, "since": 1732585029791, "shares": 250000000, "vf": 0.792, "owner": null, "about": "Paints and coatings.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/TRV": { "ticker": "TRV", "name": "Travelers", "sector": "Financials", "price": 280, "hist": [[1795657029791, 280]], "t0": 1795657029791, "since": 1732585029791, "shares": 220000000, "vf": 0.7, "owner": null, "about": "Property and casualty insurance.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/UNH": { "ticker": "UNH", "name": "UnitedHealth Group", "sector": "Health care", "price": 330, "hist": [[1795657029791, 330]], "t0": 1795657029791, "since": 1732585029791, "shares": 910000000, "vf": 1.208, "owner": null, "about": "Health insurance and care services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/V": { "ticker": "V", "name": "Visa", "sector": "Financials", "price": 345, "hist": [[1795657029791, 345]], "t0": 1795657029791, "since": 1732585029791, "shares": 1930000000, "vf": 1.115, "owner": null, "about": "Global payments network.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/WMT": { "ticker": "WMT", "name": "Walmart", "sector": "Consumer", "price": 105, "hist": [[1795657029791, 105]], "t0": 1795657029791, "since": 1732585029791, "shares": 7980000000, "vf": 1.023, "owner": null, "about": "Discount retail and groceries.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/GNS": { "ticker": "GNS", "name": "GNS", "sector": "Media", "price": 9.6, "hist": [[1795657029791, 9.6]], "t0": 1795657029791, "since": 1732585029791, "shares": 437500, "vf": 2, "owner": "artifact-owner", "about": "News, streaming (GNS+) and kids entertainment (GNS Kids).", "vol": 0, "rep": true, "repName": "GNS Investor Relations", "ref": 9.6, "b40": true, "dow": false }, "accounts/seed-gns-01": { "label": "GNS Founders Trust", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 60000, "c": 576000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-02": { "label": "Marcus Bell", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 25000, "c": 240000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-03": { "label": "Lena Ortiz", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 12000, "c": 115200.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-04": { "label": "Harbor Point Capital", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 8000, "c": 76800.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-05": { "label": "Dana Whitfield", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 5000, "c": 48000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-06": { "label": "Ray Okafor", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 4000, "c": 38400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-07": { "label": "Priya Natarajan", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 2500, "c": 24000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-08": { "label": "Sam Kowalski", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1500, "c": 14400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-09": { "label": "Tasha Greene", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-10": { "label": "Eli Brandt", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 }, "companies/TSLA": { "ticker": "TSLA", "name": "Tesla", "sector": "Consumer", "price": 420, "hist": [], "t0": 0, "since": 0, "shares": 3200000000, "vf": 0.75, "dow": false, "b40": true, "owner": null, "about": "Electric vehicles, batteries and energy storage.", "vol": 0, "rep": false }, "companies/META": { "ticker": "META", "name": "Meta Platforms", "sector": "Technology", "price": 640, "hist": [], "t0": 0, "since": 0, "shares": 2520000000, "vf": 1.028, "dow": false, "b40": true, "owner": null, "about": "Social apps and AI.", "vol": 0, "rep": false }, "companies/NFLX": { "ticker": "NFLX", "name": "Netflix", "sector": "Media", "price": 110, "hist": [], "t0": 0, "since": 0, "shares": 4250000000, "vf": 0.806, "dow": false, "b40": true, "owner": null, "about": "Streaming entertainment.", "vol": 0, "rep": false }, "companies/COST": { "ticker": "COST", "name": "Costco", "sector": "Consumer", "price": 920, "hist": [], "t0": 0, "since": 0, "shares": 443000000, "vf": 1.083, "dow": false, "b40": true, "owner": null, "about": "Membership warehouse retail.", "vol": 0, "rep": false }, "companies/XOM": { "ticker": "XOM", "name": "Exxon Mobil", "sector": "Energy", "price": 115, "hist": [], "t0": 0, "since": 0, "shares": 4300000000, "vf": 0.861, "dow": false, "b40": true, "owner": null, "about": "Oil, gas and chemicals.", "vol": 0, "rep": false }, "companies/PFE": { "ticker": "PFE", "name": "Pfizer", "sector": "Health care", "price": 25, "hist": [], "t0": 0, "since": 0, "shares": 5700000000, "vf": 1.139, "dow": false, "b40": true, "owner": null, "about": "Pharmaceuticals and vaccines.", "vol": 0, "rep": false }, "companies/ORCL": { "ticker": "ORCL", "name": "Oracle", "sector": "Technology", "price": 220, "hist": [], "t0": 0, "since": 0, "shares": 2800000000, "vf": 0.917, "dow": false, "b40": true, "owner": null, "about": "Databases and cloud infrastructure.", "vol": 0, "rep": false }, "companies/AMD": { "ticker": "AMD", "name": "AMD", "sector": "Technology", "price": 220, "hist": [], "t0": 0, "since": 0, "shares": 1620000000, "vf": 1.194, "dow": false, "b40": true, "owner": null, "about": "Processors and AI chips.", "vol": 0, "rep": false }, "companies/BAC": { "ticker": "BAC", "name": "Bank of America", "sector": "Financials", "price": 52, "hist": [], "t0": 0, "since": 0, "shares": 7600000000, "vf": 0.972, "dow": false, "b40": true, "owner": null, "about": "Consumer and commercial banking.", "vol": 0, "rep": false } };
 (() => {
-    const KEY = 'dj-solo-v1';
+    const KEY = 'b40-market-v1';
     let saved = null;
     try {
         saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     }
-    catch (_a) { }
+    catch (e) { }
     const now = Date.now(), since = now - 2 * 365 * 864e5;
     const seed = window.__SEED;
-    for (const [k, v] of Object.entries(seed)) {
-        if (k.startsWith('companies/')) {
+    for (const k in seed) {
+        const v = seed[k];
+        if (k.indexOf('companies/') === 0) {
             v.hist = [[now, v.price]];
             v.t0 = now;
             v.since = since;
@@ -142,7 +167,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
     const persist = () => { try {
         localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(store)));
     }
-    catch (_a) { } };
+    catch (e) { } };
     const subs = new Set();
     let idn = 0;
     const fire = () => { persist(); setTimeout(() => subs.forEach(f => f()), 0); };
@@ -153,12 +178,12 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         else
             a[k] = b[k];
     } return a; };
-    const docRef = p => ({ id: p.split('/').pop(), path: p, get: async () => snap(p), set: async (d) => { store.set(p, JSON.parse(JSON.stringify(d))); fire(); },
-        update: async (d) => { if (!store.has(p))
-            throw { code: 'invalid_argument' }; store.set(p, merge(store.get(p), JSON.parse(JSON.stringify(d)))); fire(); }, delete: async () => { store.delete(p); fire(); },
-        acquire: async () => ({ acquired: true }), onSnapshot: (n) => { const f = () => n(snap(p)); subs.add(f); f(); return () => subs.delete(f); }, collection: c => colRef(p + '/' + c) });
+    const docRef = p => ({ id: p.split('/').pop(), path: p, get: () => __awaiter(void 0, void 0, void 0, function* () { return snap(p); }), set: (d) => __awaiter(void 0, void 0, void 0, function* () { store.set(p, JSON.parse(JSON.stringify(d))); fire(); }),
+        update: (d) => __awaiter(void 0, void 0, void 0, function* () { if (!store.has(p))
+            throw { code: 'invalid_argument' }; store.set(p, merge(store.get(p), JSON.parse(JSON.stringify(d)))); fire(); }), delete: () => __awaiter(void 0, void 0, void 0, function* () { store.delete(p); fire(); }),
+        acquire: () => __awaiter(void 0, void 0, void 0, function* () { return ({ acquired: true }); }), onSnapshot: (n) => { const f = () => n(snap(p)); subs.add(f); f(); return () => subs.delete(f); }, collection: c => colRef(p + '/' + c) });
     const q = (path, ob, lim) => ({ where() { return this; }, orderBy: (f, d) => q(path, [f, d], lim), limit: n => q(path, ob, n),
-        get: async () => run(), onSnapshot: (n) => { const f = () => n(run()); subs.add(f); f(); return () => subs.delete(f); } });
+        get: () => __awaiter(void 0, void 0, void 0, function* () { return run(); }), onSnapshot: (n) => { const f = () => n(run()); subs.add(f); f(); return () => subs.delete(f); } });
     function run() { return null; }
     const colRef = path => {
         const base = q(path);
@@ -166,17 +191,26 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
             const r = () => { let ds = [...store.keys()].filter(k => k.startsWith(path + '/') && k.split('/').length === path.split('/').length + 1).map(snap); if (ob)
                 ds.sort((a, b) => { const x = a.data()[ob[0]], y = b.data()[ob[0]]; return (x > y ? 1 : x < y ? -1 : 0) * (ob[1] === 'desc' ? -1 : 1); }); if (lim)
                 ds = ds.slice(0, lim); return { docs: ds, size: ds.length, empty: !ds.length, docChanges: () => [], metadata: { fromCache: false } }; };
-            return { path, where() { return this; }, orderBy: (f, d) => mk([f, d], lim), limit: n => mk(ob, n), get: async () => r(), onSnapshot: n => { const f = () => n(r()); subs.add(f); f(); return () => subs.delete(f); }, doc: id => docRef(path + '/' + (id || ('id' + (++idn) + Date.now()))), add: async (d) => { const ref = docRef(path + '/a' + (++idn) + Date.now()); await ref.set(d); return ref; } };
+            return { path, where() { return this; }, orderBy: (f, d) => mk([f, d], lim), limit: n => mk(ob, n), get: () => __awaiter(void 0, void 0, void 0, function* () { return r(); }), onSnapshot: n => { const f = () => n(r()); subs.add(f); f(); return () => subs.delete(f); }, doc: id => docRef(path + '/' + (id || ('id' + (++idn) + Date.now()))), add: (d) => __awaiter(void 0, void 0, void 0, function* () { const ref = docRef(path + '/a' + (++idn) + Date.now()); yield ref.set(d); return ref; }) };
         };
         return mk();
     };
     const db = { doc: docRef, collection: colRef };
-    const user = { id: async () => 'u-me', isOwner: async () => true, can: async () => true, profiles: async (ids) => Object.fromEntries(ids.map(i => [i, { name: i === 'u-me' ? 'You' : 'Investor' }])) };
-    window.SOLO = { use: async (n) => n === 'db' ? db : n === 'user' ? user : null };
+    const user = { id: () => __awaiter(void 0, void 0, void 0, function* () { return 'u-me'; }), isOwner: () => __awaiter(void 0, void 0, void 0, function* () { return true; }), can: () => __awaiter(void 0, void 0, void 0, function* () { return true; }), profiles: (ids) => __awaiter(void 0, void 0, void 0, function* () { return Object.fromEntries(ids.map(i => [i, { name: i === 'u-me' ? 'You' : 'Investor' }])); }) };
+    window.SOLO = { use: (n) => __awaiter(void 0, void 0, void 0, function* () { return n === 'db' ? db : n === 'user' ? user : null; }) };
 })();
-</script><script>{
+</script><script>var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+(function () {
     /* ================= CONSTANTS ================= */
-    const DIV = 0.16, START = 100000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
+    const DIV = 0.26409, START = 100000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
@@ -249,18 +283,18 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
                 s += v * c.shares;
         } return s; }
     const IDX = [
-        { id: 'dj', name: 'DJIA', full: 'Dough Jones Industrial Average', color: '#38b6ff', f: t => { let s = 0, k = 0; for (const c of L())
-                if (c.dow) {
+        { id: 'b40', name: 'B40', full: 'Bourbon 40 Index', color: '#38b6ff', f: t => { let s = 0, k = 0; for (const c of L())
+                if (c.b40) {
                     const v = liveC(c, t);
                     if (v == null)
                         continue;
                     s += v;
                     k++;
                 } return k ? s / DIV : null; } },
-        { id: 'tm', name: 'DOUGH 500', full: 'Dough Total Market (cap-weighted)', color: '#ff9f43', f: t => capSum(t, () => true) / 1e10 || null },
-        { id: 'tc', name: 'DOUGH TECH', full: 'Dough Tech Composite', color: '#9aa3b5', f: t => capSum(t, c => c.sector === 'Technology') / 1e9 || null },
-        { id: 'sc', name: 'SMALL CAPS', full: 'Dough Small Caps (new listings)', color: '#6a7bff', f: t => { var _a; let s = 0, k = 0; for (const c of L())
-                if (!c.dow) {
+        { id: 'tm', name: 'BOURBON TOTAL', full: 'Bourbon Total Market (cap-weighted)', color: '#ff9f43', f: t => capSum(t, () => true) / 1e10 || null },
+        { id: 'tc', name: 'BOURBON TECH', full: 'Bourbon Tech Composite', color: '#9aa3b5', f: t => capSum(t, c => c.sector === 'Technology') / 1e9 || null },
+        { id: 'sc', name: 'SMALL CAPS', full: 'Bourbon Small Caps (under $1B)', color: '#6a7bff', f: t => { var _a; let s = 0, k = 0; for (const c of L())
+                if (c.price * c.shares < 1e9) {
                     const v = liveC(c, t);
                     if (v == null)
                         continue;
@@ -457,6 +491,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         document.querySelectorAll('[data-cfig]').forEach(f => { const T = f.dataset.cfig; chart(f, [{ name: T, color: '#1e8bff', pts: series(t => live(T, t), '1M') }], { tf: '1M' }); });
         est();
         calc();
+        logo();
     }
     const openAcct = () => !S.db ? `<div class="card pad"><h3>Sign in to trade<\/h3><p class="mut">Open this page while signed in to get an investor account.<\/p><\/div>`
         : !S.canWrite ? `<div class="card pad"><h3>View-only access<\/h3><p class="mut">You can watch the market, but your access doesn't allow trading. Ask the owner for Contributor access.<\/p><\/div>`
@@ -482,7 +517,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
             }).join('') : '<div class="empty">Big moves will show up here as people trade.<\/div>'}<\/div><\/section>`;
         })();
         if (!a)
-            return `<div class="cols"><div class="stackc">${openAcct()}${wire}<\/div><div class="stackc">${indices}<\/div><\/div>`;
+            return `<div class="cols"><div class="stackc">${openAcct()}<\/div><div class="stackc">${indices}${wire}<\/div><\/div>`;
         const hs = Object.entries(a.holdings || {}).filter(([T, h]) => h.q > 0 && S.companies[T]).sort((x, y) => y[1].q * live(y[0]) - x[1].q * live(x[0]));
         const unreal = st.inv - st.cost, all = st.tot - START;
         const hero = `<section class="card"><div class="pad" style="padding-bottom:6px"><div class="lbl">Total account value<\/div><div class="big">${$(st.tot)}<\/div>
@@ -504,14 +539,14 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
     }
     /* ---------- MARKETS ---------- */
     function markets() {
-        const secs = ['all', 'dow', 'new', ...SECTORS.filter(s => L().some(c => c.sector === s))];
-        const rows = L().filter(c => S.sector === 'all' || (S.sector === 'dow' ? c.dow : S.sector === 'new' ? !c.dow : c.sector === S.sector)).filter(c => !S.q || (c.ticker + ' ' + c.name).toLowerCase().includes(S.q.toLowerCase()));
+        const secs = ['all', 'b40', 'new', ...SECTORS.filter(s => L().some(c => c.sector === s))];
+        const rows = L().filter(c => S.sector === 'all' || (S.sector === 'b40' ? c.b40 : S.sector === 'new' ? !c.b40 : c.sector === S.sector)).filter(c => !S.q || (c.ticker + ' ' + c.name).toLowerCase().includes(S.q.toLowerCase()));
         const mv = L().map(c => ({ c, d: dayChg(c.ticker) })).sort((x, y) => y.d - x.d);
         const mover = (x) => `<a class="li" href="#s-${esc(x.c.ticker.toLowerCase())}"><span class="tk">${esc(x.c.ticker)}<\/span><span class="grow"><small>${esc(x.c.name)}<\/small><\/span><span class="cbox ${cls(x.d)}">${sg(x.d * 100)}<\/span><\/a>`;
         return `<div class="cols"><section class="card"><div class="ch-h"><h2>All stocks<\/h2><span class="note">${L().length} listed<\/span><\/div>
     <div style="padding:6px 14px 8px;display:grid;gap:8px"><input id="q" placeholder="Search ticker or company" value="${esc(S.q)}" autocomplete="off">
-    <div class="chips">${secs.map(s => `<button data-sec="${esc(s)}" class="${S.sector === s ? 'on' : ''}">${esc(s === 'all' ? 'All' : s === 'dow' ? 'Dow 30' : s === 'new' ? 'New listings' : s)}<\/button>`).join('')}<\/div><\/div>
-    <div class="list">${rows.map(c => stockRow(c, c.dow ? c.sector : 'New listing · ' + c.sector)).join('') || '<div class="empty">No stocks match.<\/div>'}<\/div><\/section>
+    <div class="chips">${secs.map(s => `<button data-sec="${esc(s)}" class="${S.sector === s ? 'on' : ''}">${esc(s === 'all' ? 'All' : s === 'b40' ? 'B40 members' : s === 'new' ? 'New listings' : s)}<\/button>`).join('')}<\/div><\/div>
+    <div class="list">${rows.map(c => stockRow(c, c.b40 ? c.sector : 'New listing · ' + c.sector)).join('') || '<div class="empty">No stocks match.<\/div>'}<\/div><\/section>
    <div class="stackc"><section class="card"><div class="ch-h"><h2>Top gainers today<\/h2><\/div><div class="list">${mv.slice(0, 5).map(mover).join('')}<\/div><\/section>
    <section class="card"><div class="ch-h"><h2>Top losers today<\/h2><\/div><div class="list">${mv.slice(-5).reverse().map(mover).join('')}<\/div><\/section><\/div><\/div>`;
     }
@@ -525,7 +560,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         const h = (_a = a === null || a === void 0 ? void 0 : a.holdings) === null || _a === void 0 ? void 0 : _a[T];
         return `<p style="margin:0 0 10px"><a href="#markets" style="text-decoration:none">‹ Markets<\/a><\/p>
   <div class="cols"><div class="stackc"><section class="card"><div class="pad" style="padding-bottom:4px">
-    <div style="display:flex;gap:10px;align-items:center;justify-content:space-between"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tk">${esc(T)}<\/span><span class="note">${esc(c.sector)}${c.dow ? ' · Dow 30' : ' · New listing'}<\/span>${c.rep ? '<span class="pill bl">Sales need a representative<\/span>' : ''}<\/div>
+    <div style="display:flex;gap:10px;align-items:center;justify-content:space-between"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tk">${esc(T)}<\/span><span class="note">${esc(c.sector)}${c.b40 ? ' · B40 member' : ' · New listing'}<\/span>${c.rep ? '<span class="pill bl">Sales need a representative<\/span>' : ''}<\/div>
     ${a ? `<button class="star" data-act="watch" aria-label="Watch">${(a.watch || []).includes(T) ? '★' : '☆'}<\/button>` : ''}<\/div>
     <h1 style="margin-top:8px">${esc(c.name)}<\/h1>
     <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px"><span class="big" data-px="${esc(T)}">${$(p)}<\/span><span class="${cls(ch)}" style="font-weight:700">${sg(ch * 100)} · ${TFL[S.stf]}<\/span><\/div><\/div>
@@ -655,7 +690,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
    ${it('meetings', 'Representative meetings', 'Your requests to sell shares that need approval')}
    ${it('ledger', 'System ledger', 'Every account, order, trade, IPO and listing on the exchange')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
-   <section class="card pad"><h2>About Dough Jones<\/h2><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings are stored in a single system and visible to all participants. It isn't affiliated with Dow Jones &amp; Company or S&amp;P Dow Jones Indices, and prices aren't real quotes.<\/p><\/section><\/div>`;
+   <section class="card pad"><h2>About Bourbon 40<\/h2><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings are stored in a single system and visible to all participants. Prices aren't real quotes.<\/p><\/section><\/div>`;
     }
     /* ---------- CORPORATE ---------- */
     function corporate() {
@@ -705,7 +740,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         var _a;
         const def = S.companies.GNS ? 'GNS' : (_a = L()[0]) === null || _a === void 0 ? void 0 : _a.ticker;
         return `<div class="cols"><div class="stackc"><section class="card pad"><h1>How prices move<\/h1>
-   <p class="mut">Every price on Dough Jones is built from two pieces: a <b>base price<\/b> that only changes when someone trades, and a shared <b>market mood<\/b> that makes prices drift through the day the way real markets do.<\/p>
+   <p class="mut">Every price on Bourbon 40 is built from two pieces: a <b>base price<\/b> that only changes when someone trades, and a shared <b>market mood<\/b> that makes prices drift through the day the way real markets do.<\/p>
    <div class="formula">Price = Base price × Market mood<\/div>
    <h2 style="margin-top:22px">1. Trades push the base price<\/h2>
    <p class="mut">Buying pushes the price up and selling pushes it down. The size of the move uses a version of the <b>square-root impact rule<\/b> that real trading desks use to estimate how much a big order moves a stock:<\/p>
@@ -744,285 +779,328 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         el.textContent = m.t;
     } };
     const say = (id, t, ok) => { S.msgs[id] = { t, ok, ts: Date.now() }; paint(id, S.msgs[id]); };
-    async function log(e) { try {
-        await S.db.collection('ledger').add(Object.assign({ t: Date.now(), uid: S.uid }, e));
+    function log(e) {
+        return __awaiter(this, void 0, void 0, function* () { try {
+            yield S.db.collection('ledger').add(Object.assign({ t: Date.now(), uid: S.uid }, e));
+        }
+        catch (err) {
+            console.warn(err);
+        } });
     }
-    catch (err) {
-        console.warn(err);
-    } }
     /* Core trade: price, impact, account, company, ledger */
-    async function execute({ uid, T, side, qty, via, rep }) {
-        const cs = await S.db.doc('companies/' + T).get();
-        if (!cs.exists)
-            throw Error('That stock is no longer listed.');
-        const c = cs.data();
-        if (c.rep && side === 'SELL' && !rep)
-            throw Error(`Sales of ${T} need a representative meeting.`);
-        const as = await S.db.doc('accounts/' + uid).get();
-        if (!as.exists)
-            throw Error('Account not found.');
-        const a = clone(as.data());
-        a.holdings = a.holdings || {};
-        const now = Date.now(), px = r2(liveC(c, now)), total = r2(px * qty), h = a.holdings[T] || { q: 0, c: 0 };
-        if (side === 'BUY' && a.cash < total)
-            throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
-        if (side === 'SELL' && h.q < qty)
-            throw Error(`Only ${h.q} shares of ${T} are owned.`);
-        const m = impact(c, qty), np = Math.max(.01, px * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
-        if (side === 'BUY') {
-            h.q += qty;
-            h.c = r2(h.c + total);
-            a.cash = r2(a.cash - total);
-        }
-        else {
-            const avg = h.c / h.q;
-            h.q -= qty;
-            h.c = r2(h.c - avg * qty);
-            a.cash = r2(a.cash + total);
-        }
-        if (h.q > 0)
-            a.holdings[T] = h;
-        else
-            delete a.holdings[T];
-        await S.db.doc('accounts/' + uid).set(a);
-        const hist = (Array.isArray(c.hist) ? c.hist.filter(Array.isArray) : []).concat([[now, nb]]).slice(-240);
-        await S.db.doc('companies/' + T).update({ price: nb, hist, vol: (c.vol || 0) + qty });
-        await S.db.collection('ledger').add({ t: now, uid, kind: rep ? 'REP-SALE' : via && via !== 'Market order' ? 'FILL' : side, via, side, ticker: T, qty, price: px, after: r2(np), total });
-        return { px, np: r2(np) };
-    }
-    async function submitTicket() {
-        const T = route().startsWith('s-') ? route().slice(2).toUpperCase() : S.tt, q = Math.floor(+document.getElementById('qty').value || 0), sell = S.side === 'SELL';
-        if (q < 1)
-            return say('tmsg', 'Enter at least 1 share.', false);
-        const b = document.getElementById('go');
-        b.disabled = true;
-        try {
-            if (S.ot === 'market') {
-                const r = await execute({ uid: S.uid, T, side: S.side, qty: q, via: 'Market order' });
-                render();
-                say('tmsg', `${sell ? 'Sold' : 'Bought'} ${q.toLocaleString()} ${T} at ${$(r.px)}. The price moved to ${$(r.np)}.`, true);
-                return;
+    function execute(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ uid, T, side, qty, via, rep }) {
+            const cs = yield S.db.doc('companies/' + T).get();
+            if (!cs.exists)
+                throw Error('That stock is no longer listed.');
+            const c = cs.data();
+            if (c.rep && side === 'SELL' && !rep)
+                throw Error(`Sales of ${T} need a representative meeting.`);
+            const as = yield S.db.doc('accounts/' + uid).get();
+            if (!as.exists)
+                throw Error('Account not found.');
+            const a = clone(as.data());
+            a.holdings = a.holdings || {};
+            const now = Date.now(), px = r2(liveC(c, now)), total = r2(px * qty), h = a.holdings[T] || { q: 0, c: 0 };
+            if (side === 'BUY' && a.cash < total)
+                throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
+            if (side === 'SELL' && h.q < qty)
+                throw Error(`Only ${h.q} shares of ${T} are owned.`);
+            const m = impact(c, qty), np = Math.max(.01, px * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
+            if (side === 'BUY') {
+                h.q += qty;
+                h.c = r2(h.c + total);
+                a.cash = r2(a.cash - total);
             }
-            const lim = r2(+document.getElementById('lim').value || 0);
-            if (lim <= 0)
-                throw Error('Enter a price.');
-            if (sell && avail(T) < q)
-                throw Error(`You can sell up to ${avail(T)} shares (some may be tied up in other orders).`);
-            if (!sell && me().cash < lim * q)
-                throw Error(`This order could cost up to ${$(lim * q)}, which is more than your cash.`);
-            await S.db.collection('orders').add({ uid: S.uid, ticker: T, side: S.side, type: S.ot, qty: q, px: lim, tif: document.getElementById('tif').value, t: Date.now(), status: 'open' });
-            await log({ kind: 'ORDER', ticker: T, qty: q, price: lim, via: `${S.side} ${S.ot}` });
-            render();
-            say('tmsg', `${S.ot === 'limit' ? 'Limit' : 'Stop'} order placed: ${S.side.toLowerCase()} ${q} ${T} at ${$(lim)}.`, true);
-        }
-        catch (e) {
-            if (b)
-                b.disabled = false;
-            say('tmsg', e.message || 'The order could not be placed.', false);
-        }
+            else {
+                const avg = h.c / h.q;
+                h.q -= qty;
+                h.c = r2(h.c - avg * qty);
+                a.cash = r2(a.cash + total);
+            }
+            if (h.q > 0)
+                a.holdings[T] = h;
+            else
+                delete a.holdings[T];
+            yield S.db.doc('accounts/' + uid).set(a);
+            const hist = (Array.isArray(c.hist) ? c.hist.filter(Array.isArray) : []).concat([[now, nb]]).slice(-240);
+            yield S.db.doc('companies/' + T).update({ price: nb, hist, vol: (c.vol || 0) + qty });
+            yield S.db.collection('ledger').add({ t: now, uid, kind: rep ? 'REP-SALE' : via && via !== 'Market order' ? 'FILL' : side, via, side, ticker: T, qty, price: px, after: r2(np), total });
+            return { px, np: r2(np) };
+        });
+    }
+    function submitTicket() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const T = route().startsWith('s-') ? route().slice(2).toUpperCase() : S.tt, q = Math.floor(+document.getElementById('qty').value || 0), sell = S.side === 'SELL';
+            if (q < 1)
+                return say('tmsg', 'Enter at least 1 share.', false);
+            const b = document.getElementById('go');
+            b.disabled = true;
+            try {
+                if (S.ot === 'market') {
+                    const r = yield execute({ uid: S.uid, T, side: S.side, qty: q, via: 'Market order' });
+                    render();
+                    say('tmsg', `${sell ? 'Sold' : 'Bought'} ${q.toLocaleString()} ${T} at ${$(r.px)}. The price moved to ${$(r.np)}.`, true);
+                    return;
+                }
+                const lim = r2(+document.getElementById('lim').value || 0);
+                if (lim <= 0)
+                    throw Error('Enter a price.');
+                if (sell && avail(T) < q)
+                    throw Error(`You can sell up to ${avail(T)} shares (some may be tied up in other orders).`);
+                if (!sell && me().cash < lim * q)
+                    throw Error(`This order could cost up to ${$(lim * q)}, which is more than your cash.`);
+                yield S.db.collection('orders').add({ uid: S.uid, ticker: T, side: S.side, type: S.ot, qty: q, px: lim, tif: document.getElementById('tif').value, t: Date.now(), status: 'open' });
+                yield log({ kind: 'ORDER', ticker: T, qty: q, price: lim, via: `${S.side} ${S.ot}` });
+                render();
+                say('tmsg', `${S.ot === 'limit' ? 'Limit' : 'Stop'} order placed: ${S.side.toLowerCase()} ${q} ${T} at ${$(lim)}.`, true);
+            }
+            catch (e) {
+                if (b)
+                    b.disabled = false;
+                say('tmsg', e.message || 'The order could not be placed.', false);
+            }
+        });
     }
     let matching = false;
-    async function matchOrders() {
-        if (matching || !S.db || !S.canWrite || !S.uid)
-            return;
-        matching = true;
-        try {
-            for (const o of S.orders.filter(o => o.status === 'open')) {
-                const c = S.companies[o.ticker];
-                if (!c)
-                    continue;
-                const ref = S.db.doc('orders/' + o.id);
-                if (o.tif === 'day' && Date.now() - o.t > DAY) {
-                    if (o.uid === S.uid)
-                        await ref.update({ status: 'expired' });
-                    continue;
+    function matchOrders() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (matching || !S.db || !S.canWrite || !S.uid)
+                return;
+            matching = true;
+            try {
+                for (const o of S.orders.filter(o => o.status === 'open')) {
+                    const c = S.companies[o.ticker];
+                    if (!c)
+                        continue;
+                    const ref = S.db.doc('orders/' + o.id);
+                    if (o.tif === 'day' && Date.now() - o.t > DAY) {
+                        if (o.uid === S.uid)
+                            yield ref.update({ status: 'expired' });
+                        continue;
+                    }
+                    const p = liveC(c), buy = o.side === 'BUY', hit = o.type === 'limit' ? (buy ? p <= o.px : p >= o.px) : (buy ? p >= o.px : p <= o.px);
+                    if (!hit)
+                        continue;
+                    const l = yield ref.acquire({ holder: S.uid, ttlMs: 10000 });
+                    if (!l.acquired)
+                        continue;
+                    const fr = yield ref.get();
+                    if (!fr.exists || fr.data().status !== 'open')
+                        continue;
+                    try {
+                        const r = yield execute({ uid: o.uid, T: o.ticker, side: o.side, qty: o.qty, via: `${o.side} ${o.type} @ ${n2(o.px)}` });
+                        yield ref.update({ status: 'filled', fill: r.px, ft: Date.now() });
+                    }
+                    catch (e) {
+                        yield ref.update({ status: 'rejected', why: e.message || 'Could not fill' });
+                    }
                 }
-                const p = liveC(c), buy = o.side === 'BUY', hit = o.type === 'limit' ? (buy ? p <= o.px : p >= o.px) : (buy ? p >= o.px : p <= o.px);
-                if (!hit)
-                    continue;
-                const l = await ref.acquire({ holder: S.uid, ttlMs: 10000 });
+            }
+            catch (e) {
+                console.warn(e);
+            }
+            finally {
+                matching = false;
+            }
+        });
+    }
+    function repRequest(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const T = route().startsWith('s-') ? route().slice(2).toUpperCase() : S.tt, c = S.companies[T], q = Math.floor(+f.rq.value || 0);
+            if (q < 1)
+                return say('tmsg', 'Enter at least 1 share.', false);
+            if (q > avail(T))
+                return say('tmsg', `You can request up to ${avail(T)} shares.`, false);
+            try {
+                yield S.db.collection('requests').add({ uid: S.uid, ticker: T, qty: q, slot: +f.slot.value, note: f.rnote.value.trim(), rep: c.repName || T + ' Investor Relations', status: 'scheduled', t: Date.now() });
+                yield log({ kind: 'REP-REQ', ticker: T, qty: q, via: 'Meeting ' + when(+f.slot.value) });
+                render();
+                say('tmsg', `Meeting booked for ${when(+f.slot.value)}. Your ${q} shares are reserved until the representative decides.`, true);
+            }
+            catch (_a) {
+                say('tmsg', 'The request could not be sent. Try again.', false);
+            }
+        });
+    }
+    function repDecide(id, ok) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const r = S.reqs.find(x => x.id === id);
+            if (!r)
+                return;
+            const ref = S.db.doc('requests/' + id);
+            try {
+                const l = yield ref.acquire({ holder: S.uid, ttlMs: 10000 });
                 if (!l.acquired)
-                    continue;
-                const fr = await ref.get();
-                if (!fr.exists || fr.data().status !== 'open')
-                    continue;
-                try {
-                    const r = await execute({ uid: o.uid, T: o.ticker, side: o.side, qty: o.qty, via: `${o.side} ${o.type} @ ${n2(o.px)}` });
-                    await ref.update({ status: 'filled', fill: r.px, ft: Date.now() });
+                    return;
+                const fr = yield ref.get();
+                if (!fr.exists || fr.data().status !== 'scheduled')
+                    return;
+                if (!ok) {
+                    yield ref.update({ status: 'declined', dt: Date.now() });
+                    yield log({ kind: 'CANCEL', ticker: r.ticker, qty: r.qty, via: 'Representative declined sale' });
+                    return;
                 }
-                catch (e) {
-                    await ref.update({ status: 'rejected', why: e.message || 'Could not fill' });
+                const x = yield execute({ uid: r.uid, T: r.ticker, side: 'SELL', qty: r.qty, via: 'Approved by ' + (r.rep || 'representative'), rep: true });
+                yield ref.update({ status: 'completed', fill: x.px, dt: Date.now() });
+                say('cm_' + r.ticker, `Sale approved: ${r.qty} shares sold at ${$(x.px)}. Price is now ${$(x.np)}.`, true);
+            }
+            catch (e) {
+                say('cm_' + r.ticker, e.message || 'Could not complete the sale.', false);
+            }
+        });
+    }
+    function fileIPO(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const T = f.ticker.value.trim().toUpperCase(), nm = f.name.value.trim(), pr = r2(+f.price.value), sh = Math.floor(+f.shares.value), of = Math.floor(+f.offered.value);
+            if (!/^[A-Z]{1,5}$/.test(T))
+                return say('ipomsg', 'Tickers are 1 to 5 letters.', false);
+            if (!nm || pr < .5 || sh < 1000 || of < 100 || of > sh)
+                return say('ipomsg', 'Check the name, price (at least $0.50) and share counts. Shares offered can\'t exceed total shares.', false);
+            try {
+                if (S.companies[T] || S.ipos[T])
+                    return say('ipomsg', `${T} is already taken.`, false);
+                const ref = S.db.doc('ipos/' + T), l = yield ref.acquire({ holder: S.uid, ttlMs: 5000 });
+                if (!l.acquired)
+                    return say('ipomsg', 'Someone is filing that ticker right now.', false);
+                const ex = yield ref.get();
+                if (ex.exists && ex.data().ticker)
+                    return say('ipomsg', `${T} is already taken.`, false);
+                yield ref.set({ ticker: T, name: nm, sector: f.sector.value, about: f.about.value.trim(), price: pr, shares: sh, offered: of, closes: Date.now() + (+f.win.value), owner: S.uid, status: 'open', subs: {}, rep: f.rep.checked, repName: f.repName.value.trim() || nm + ' Investor Relations', t: Date.now() });
+                yield log({ kind: 'IPO', via: 'Filed', ticker: T, qty: of, price: pr });
+                f.reset();
+                say('ipomsg', `${T} IPO filed. Investors can subscribe now.`, true);
+            }
+            catch (e) {
+                say('ipomsg', e.code === 'quota_exceeded' ? 'The exchange database is full.' : 'Filing failed. Try again.', false);
+            }
+        });
+    }
+    function subscribe(T, q) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const i = S.ipos[T];
+            if (!i)
+                return;
+            const cost = r2(q * i.price), a = me();
+            if (q < 1)
+                return say('im_' + T, 'Request at least 1 share.', false);
+            if (a.cash < cost)
+                return say('im_' + T, `That needs ${$(cost)} and you have ${$(a.cash)}.`, false);
+            try {
+                const as = yield S.db.doc('accounts/' + S.uid).get();
+                const ac = clone(as.data());
+                if (ac.cash < cost)
+                    throw Error('Not enough cash.');
+                ac.cash = r2(ac.cash - cost);
+                yield S.db.doc('accounts/' + S.uid).set(ac);
+                const cur = ((_a = i.subs) === null || _a === void 0 ? void 0 : _a[S.uid]) || { q: 0, paid: 0 };
+                yield S.db.doc('ipos/' + T).update({ subs: { [S.uid]: { q: cur.q + q, paid: r2(cur.paid + cost) } } });
+                yield log({ kind: 'IPO-SUB', ticker: T, qty: q, price: i.price });
+                say('im_' + T, `Requested ${q} shares. ${$(cost)} is held until listing.`, true);
+            }
+            catch (e) {
+                say('im_' + T, e.message || 'Could not subscribe.', false);
+            }
+        });
+    }
+    function refund(uid, amt) {
+        return __awaiter(this, void 0, void 0, function* () { if (!(amt > 0))
+            return; const as = yield S.db.doc('accounts/' + uid).get(); if (!as.exists)
+            return; const a = clone(as.data()); a.cash = r2(a.cash + amt); yield S.db.doc('accounts/' + uid).set(a); });
+    }
+    function unsub(T) {
+        return __awaiter(this, void 0, void 0, function* () { var _a; const i = S.ipos[T], v = (_a = i === null || i === void 0 ? void 0 : i.subs) === null || _a === void 0 ? void 0 : _a[S.uid]; if (!(v === null || v === void 0 ? void 0 : v.q))
+            return; try {
+            yield S.db.doc('ipos/' + T).update({ subs: { [S.uid]: { q: 0, paid: 0 } } });
+            yield refund(S.uid, v.paid);
+            yield log({ kind: 'CANCEL', ticker: T, qty: v.q, via: 'IPO request withdrawn' });
+        }
+        catch (_b) {
+            say('im_' + T, 'Could not cancel.', false);
+        } });
+    }
+    function launchIPO(T) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ref = S.db.doc('ipos/' + T);
+            try {
+                const l = yield ref.acquire({ holder: S.uid, ttlMs: 60000 });
+                if (!l.acquired)
+                    return;
+                const s = yield ref.get();
+                if (!s.exists)
+                    return;
+                const ip = s.data();
+                if (ip.status !== 'open')
+                    return;
+                if ((yield S.db.doc('companies/' + T).get()).exists)
+                    throw Error(`${T} is already trading.`);
+                const subs = Object.entries(ip.subs || {}).filter(([, v]) => v.q > 0), R = subs.reduce((x, [, v]) => x + v.q, 0), fill = R > ip.offered ? ip.offered / R : 1;
+                let sold = 0;
+                for (const [uid, v] of subs) {
+                    const alloc = Math.floor(v.q * fill), cost = r2(alloc * ip.price), back = r2(v.paid - cost);
+                    const as = yield S.db.doc('accounts/' + uid).get();
+                    if (!as.exists)
+                        continue;
+                    const a = clone(as.data());
+                    a.holdings = a.holdings || {};
+                    if (alloc > 0) {
+                        const h = a.holdings[T] || { q: 0, c: 0 };
+                        h.q += alloc;
+                        h.c = r2(h.c + cost);
+                        a.holdings[T] = h;
+                    }
+                    a.cash = r2(a.cash + back);
+                    yield S.db.doc('accounts/' + uid).set(a);
+                    sold += alloc;
                 }
+                const pop = Math.max(-.3, Math.min(.6, .12 * Math.log(Math.max(R, 1) / ip.offered))), open = r2(ip.price * (1 + pop)), now = Date.now();
+                yield S.db.doc('companies/' + T).set({ ticker: T, name: ip.name, sector: ip.sector, about: ip.about || '', price: open, hist: [[now, open]], t0: now, since: now, shares: ip.shares, vf: ip.price * ip.shares < 1e9 ? 2 : 1, owner: ip.owner, dow: false, rep: !!ip.rep, repName: ip.repName || '', vol: sold, ipo: ip.price, created: now });
+                yield ref.update({ status: 'listed', listed: now, openPx: open, sold, demand: R });
+                yield log({ kind: 'IPO', via: 'Listed', ticker: T, qty: sold, price: ip.price, after: open });
+                location.hash = 's-' + T.toLowerCase();
             }
-        }
-        catch (e) {
-            console.warn(e);
-        }
-        finally {
-            matching = false;
-        }
-    }
-    async function repRequest(f) {
-        const T = route().startsWith('s-') ? route().slice(2).toUpperCase() : S.tt, c = S.companies[T], q = Math.floor(+f.rq.value || 0);
-        if (q < 1)
-            return say('tmsg', 'Enter at least 1 share.', false);
-        if (q > avail(T))
-            return say('tmsg', `You can request up to ${avail(T)} shares.`, false);
-        try {
-            await S.db.collection('requests').add({ uid: S.uid, ticker: T, qty: q, slot: +f.slot.value, note: f.rnote.value.trim(), rep: c.repName || T + ' Investor Relations', status: 'scheduled', t: Date.now() });
-            await log({ kind: 'REP-REQ', ticker: T, qty: q, via: 'Meeting ' + when(+f.slot.value) });
-            render();
-            say('tmsg', `Meeting booked for ${when(+f.slot.value)}. Your ${q} shares are reserved until the representative decides.`, true);
-        }
-        catch (_a) {
-            say('tmsg', 'The request could not be sent. Try again.', false);
-        }
-    }
-    async function repDecide(id, ok) {
-        const r = S.reqs.find(x => x.id === id);
-        if (!r)
-            return;
-        const ref = S.db.doc('requests/' + id);
-        try {
-            const l = await ref.acquire({ holder: S.uid, ttlMs: 10000 });
-            if (!l.acquired)
-                return;
-            const fr = await ref.get();
-            if (!fr.exists || fr.data().status !== 'scheduled')
-                return;
-            if (!ok) {
-                await ref.update({ status: 'declined', dt: Date.now() });
-                await log({ kind: 'CANCEL', ticker: r.ticker, qty: r.qty, via: 'Representative declined sale' });
-                return;
+            catch (e) {
+                say('cm_' + T, e.message || 'Listing failed. Try again.', false);
             }
-            const x = await execute({ uid: r.uid, T: r.ticker, side: 'SELL', qty: r.qty, via: 'Approved by ' + (r.rep || 'representative'), rep: true });
-            await ref.update({ status: 'completed', fill: x.px, dt: Date.now() });
-            say('cm_' + r.ticker, `Sale approved: ${r.qty} shares sold at ${$(x.px)}. Price is now ${$(x.np)}.`, true);
-        }
-        catch (e) {
-            say('cm_' + r.ticker, e.message || 'Could not complete the sale.', false);
-        }
+        });
     }
-    async function fileIPO(f) {
-        const T = f.ticker.value.trim().toUpperCase(), nm = f.name.value.trim(), pr = r2(+f.price.value), sh = Math.floor(+f.shares.value), of = Math.floor(+f.offered.value);
-        if (!/^[A-Z]{1,5}$/.test(T))
-            return say('ipomsg', 'Tickers are 1 to 5 letters.', false);
-        if (!nm || pr < .5 || sh < 1000 || of < 100 || of > sh)
-            return say('ipomsg', 'Check the name, price (at least $0.50) and share counts. Shares offered can\'t exceed total shares.', false);
-        try {
-            if (S.companies[T] || S.ipos[T])
-                return say('ipomsg', `${T} is already taken.`, false);
-            const ref = S.db.doc('ipos/' + T), l = await ref.acquire({ holder: S.uid, ttlMs: 5000 });
-            if (!l.acquired)
-                return say('ipomsg', 'Someone is filing that ticker right now.', false);
-            const ex = await ref.get();
-            if (ex.exists && ex.data().ticker)
-                return say('ipomsg', `${T} is already taken.`, false);
-            await ref.set({ ticker: T, name: nm, sector: f.sector.value, about: f.about.value.trim(), price: pr, shares: sh, offered: of, closes: Date.now() + (+f.win.value), owner: S.uid, status: 'open', subs: {}, rep: f.rep.checked, repName: f.repName.value.trim() || nm + ' Investor Relations', t: Date.now() });
-            await log({ kind: 'IPO', via: 'Filed', ticker: T, qty: of, price: pr });
-            f.reset();
-            say('ipomsg', `${T} IPO filed. Investors can subscribe now.`, true);
-        }
-        catch (e) {
-            say('ipomsg', e.code === 'quota_exceeded' ? 'The exchange database is full.' : 'Filing failed. Try again.', false);
-        }
-    }
-    async function subscribe(T, q) {
-        var _a;
-        const i = S.ipos[T];
-        if (!i)
-            return;
-        const cost = r2(q * i.price), a = me();
-        if (q < 1)
-            return say('im_' + T, 'Request at least 1 share.', false);
-        if (a.cash < cost)
-            return say('im_' + T, `That needs ${$(cost)} and you have ${$(a.cash)}.`, false);
-        try {
-            const as = await S.db.doc('accounts/' + S.uid).get();
-            const ac = clone(as.data());
-            if (ac.cash < cost)
-                throw Error('Not enough cash.');
-            ac.cash = r2(ac.cash - cost);
-            await S.db.doc('accounts/' + S.uid).set(ac);
-            const cur = ((_a = i.subs) === null || _a === void 0 ? void 0 : _a[S.uid]) || { q: 0, paid: 0 };
-            await S.db.doc('ipos/' + T).update({ subs: { [S.uid]: { q: cur.q + q, paid: r2(cur.paid + cost) } } });
-            await log({ kind: 'IPO-SUB', ticker: T, qty: q, price: i.price });
-            say('im_' + T, `Requested ${q} shares. ${$(cost)} is held until listing.`, true);
-        }
-        catch (e) {
-            say('im_' + T, e.message || 'Could not subscribe.', false);
-        }
-    }
-    async function refund(uid, amt) { if (!(amt > 0))
-        return; const as = await S.db.doc('accounts/' + uid).get(); if (!as.exists)
-        return; const a = clone(as.data()); a.cash = r2(a.cash + amt); await S.db.doc('accounts/' + uid).set(a); }
-    async function unsub(T) { var _a; const i = S.ipos[T], v = (_a = i === null || i === void 0 ? void 0 : i.subs) === null || _a === void 0 ? void 0 : _a[S.uid]; if (!(v === null || v === void 0 ? void 0 : v.q))
-        return; try {
-        await S.db.doc('ipos/' + T).update({ subs: { [S.uid]: { q: 0, paid: 0 } } });
-        await refund(S.uid, v.paid);
-        await log({ kind: 'CANCEL', ticker: T, qty: v.q, via: 'IPO request withdrawn' });
-    }
-    catch (_b) {
-        say('im_' + T, 'Could not cancel.', false);
-    } }
-    async function launchIPO(T) {
-        const ref = S.db.doc('ipos/' + T);
-        try {
-            const l = await ref.acquire({ holder: S.uid, ttlMs: 60000 });
-            if (!l.acquired)
-                return;
-            const s = await ref.get();
-            if (!s.exists)
-                return;
+    function cancelIPO(T) {
+        return __awaiter(this, void 0, void 0, function* () { const ref = S.db.doc('ipos/' + T); try {
+            const s = yield ref.get();
             const ip = s.data();
             if (ip.status !== 'open')
                 return;
-            if ((await S.db.doc('companies/' + T).get()).exists)
-                throw Error(`${T} is already trading.`);
-            const subs = Object.entries(ip.subs || {}).filter(([, v]) => v.q > 0), R = subs.reduce((x, [, v]) => x + v.q, 0), fill = R > ip.offered ? ip.offered / R : 1;
-            let sold = 0;
-            for (const [uid, v] of subs) {
-                const alloc = Math.floor(v.q * fill), cost = r2(alloc * ip.price), back = r2(v.paid - cost);
-                const as = await S.db.doc('accounts/' + uid).get();
-                if (!as.exists)
-                    continue;
-                const a = clone(as.data());
-                a.holdings = a.holdings || {};
-                if (alloc > 0) {
-                    const h = a.holdings[T] || { q: 0, c: 0 };
-                    h.q += alloc;
-                    h.c = r2(h.c + cost);
-                    a.holdings[T] = h;
-                }
-                a.cash = r2(a.cash + back);
-                await S.db.doc('accounts/' + uid).set(a);
-                sold += alloc;
-            }
-            const pop = Math.max(-.3, Math.min(.6, .12 * Math.log(Math.max(R, 1) / ip.offered))), open = r2(ip.price * (1 + pop)), now = Date.now();
-            await S.db.doc('companies/' + T).set({ ticker: T, name: ip.name, sector: ip.sector, about: ip.about || '', price: open, hist: [[now, open]], t0: now, since: now, shares: ip.shares, vf: ip.price * ip.shares < 1e9 ? 2 : 1, owner: ip.owner, dow: false, rep: !!ip.rep, repName: ip.repName || '', vol: sold, ipo: ip.price, created: now });
-            await ref.update({ status: 'listed', listed: now, openPx: open, sold, demand: R });
-            await log({ kind: 'IPO', via: 'Listed', ticker: T, qty: sold, price: ip.price, after: open });
-            location.hash = 's-' + T.toLowerCase();
+            yield ref.update({ status: 'withdrawn' });
+            for (const [uid, v] of Object.entries(ip.subs || {}))
+                yield refund(uid, v.paid);
+            yield log({ kind: 'CANCEL', ticker: T, via: 'IPO withdrawn' });
         }
-        catch (e) {
-            say('cm_' + T, e.message || 'Listing failed. Try again.', false);
-        }
+        catch (_a) {
+            say('cm_' + T, 'Could not withdraw.', false);
+        } });
     }
-    async function cancelIPO(T) { const ref = S.db.doc('ipos/' + T); try {
-        const s = await ref.get();
-        const ip = s.data();
-        if (ip.status !== 'open')
+    /* ================= LIVE LOGO: the line inside the emblem follows the B40's move today ================= */
+    function logo() {
+        const f = IDX[0].f, now = Date.now(), v = f(now), p = f(now - DAY);
+        if (!v || !p)
             return;
-        await ref.update({ status: 'withdrawn' });
-        for (const [uid, v] of Object.entries(ip.subs || {}))
-            await refund(uid, v.paid);
-        await log({ kind: 'CANCEL', ticker: T, via: 'IPO withdrawn' });
+        const ch = v / p - 1, up = ch >= 0;
+        const ln = document.getElementById('lgLine'), dt = document.getElementById('lgDot'), tx = document.getElementById('lgx');
+        const k = Math.min(1, Math.abs(ch) * 60 + .35), y0 = 20 + (up ? 5 : -5) * k, y1 = 20 - (up ? 6 : -6) * k;
+        if (ln)
+            ln.setAttribute('d', 'M11 ' + y0.toFixed(1) + ' L16.5 ' + (20 + (up ? 1 : -1) * k).toFixed(1) + ' L21.5 ' + (y0 - (up ? 1.5 : -1.5) * k).toFixed(1) + ' L29 ' + y1.toFixed(1));
+        if (dt) {
+            dt.setAttribute('cy', y1.toFixed(1));
+            dt.setAttribute('fill', up ? '#2fd27a' : '#ff5a5f');
+        }
+        if (tx) {
+            tx.textContent = 'B40 ' + n2(v) + ' ' + (up ? '▲' : '▼') + Math.abs(ch * 100).toFixed(2) + '%';
+            tx.className = up ? 'up' : 'dn';
+        }
     }
-    catch (_a) {
-        say('cm_' + T, 'Could not withdraw.', false);
-    } }
     /* ================= EVENTS ================= */
-    app.addEventListener('click', async (e) => {
+    app.addEventListener('click', (e) => __awaiter(this, void 0, void 0, function* () {
         const t = e.target.closest('[data-tf]');
         if (t) {
             const [k, v] = t.dataset.tf.split(':');
@@ -1063,32 +1141,32 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         b.disabled = true;
         try {
             if (act === 'open') {
-                await S.db.doc('accounts/' + S.uid).set({ cash: START, holdings: {}, watch: [], created: Date.now() });
-                await log({ kind: 'OPEN', price: START });
+                yield S.db.doc('accounts/' + S.uid).set({ cash: START, holdings: {}, watch: [], created: Date.now() });
+                yield log({ kind: 'OPEN', price: START });
             }
             if (act === 'watch') {
                 const T = route().slice(2).toUpperCase(), w = new Set(me().watch || []);
                 w.has(T) ? w.delete(T) : w.add(T);
-                await S.db.doc('accounts/' + S.uid).update({ watch: [...w] });
+                yield S.db.doc('accounts/' + S.uid).update({ watch: [...w] });
             }
             if (act === 'cancel-order') {
-                await S.db.doc('orders/' + b.dataset.id).update({ status: 'cancelled' });
+                yield S.db.doc('orders/' + b.dataset.id).update({ status: 'cancelled' });
                 const o = S.orders.find(x => x.id === b.dataset.id);
-                await log({ kind: 'CANCEL', ticker: o === null || o === void 0 ? void 0 : o.ticker, qty: o === null || o === void 0 ? void 0 : o.qty, via: 'Order cancelled' });
+                yield log({ kind: 'CANCEL', ticker: o === null || o === void 0 ? void 0 : o.ticker, qty: o === null || o === void 0 ? void 0 : o.qty, via: 'Order cancelled' });
             }
             if (act === 'cancel-req') {
-                await S.db.doc('requests/' + b.dataset.id).update({ status: 'cancelled' });
+                yield S.db.doc('requests/' + b.dataset.id).update({ status: 'cancelled' });
             }
             if (act === 'rep-approve')
-                await repDecide(b.dataset.id, true);
+                yield repDecide(b.dataset.id, true);
             if (act === 'rep-decline')
-                await repDecide(b.dataset.id, false);
+                yield repDecide(b.dataset.id, false);
             if (act === 'ipo-unsub')
-                await unsub(b.dataset.t);
+                yield unsub(b.dataset.t);
             if (act === 'ipo-launch')
-                await launchIPO(b.dataset.t);
+                yield launchIPO(b.dataset.t);
             if (act === 'ipo-cancel')
-                await cancelIPO(b.dataset.t);
+                yield cancelIPO(b.dataset.t);
         }
         catch (err) {
             if (err.code === 'invalid_argument' && act === 'open') {
@@ -1100,7 +1178,7 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         finally {
             b.disabled = false;
         }
-    });
+    }));
     app.addEventListener('input', e => { const id = e.target.id; if (id === 'q') {
         S.q = e.target.value;
         render();
@@ -1140,49 +1218,52 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         document.querySelectorAll('[data-ch]').forEach(el => { const v = dayChg(el.dataset.ch); el.textContent = sg(v * 100); el.classList.toggle('up', v >= 0); el.classList.toggle('dn', v < 0); });
         est();
         matchOrders();
+        logo();
     }, 3000);
     setInterval(() => { const a = document.activeElement; if (S.loaded && !(a && app.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)))
         render(); }, 20000);
     /* ================= DATA ================= */
-    async function resolveNames() {
-        var _a;
-        if (!S.user)
-            return;
-        const ids = [...new Set([...Object.keys(S.accounts), ...S.ledger.map(l => l.uid), ...S.reqs.map(r => r.uid)])].filter(id => id && !id.startsWith('seed-') && !S.names[id]);
-        if (!ids.length)
-            return;
-        try {
-            const ps = await S.user.profiles(ids);
-            let ch = 0;
-            for (const id of ids) {
-                const n = (_a = ps === null || ps === void 0 ? void 0 : ps[id]) === null || _a === void 0 ? void 0 : _a.name;
-                if (n) {
-                    S.names[id] = n;
-                    ch = 1;
+    function resolveNames() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            if (!S.user)
+                return;
+            const ids = [...new Set([...Object.keys(S.accounts), ...S.ledger.map(l => l.uid), ...S.reqs.map(r => r.uid)])].filter(id => id && !id.startsWith('seed-') && !S.names[id]);
+            if (!ids.length)
+                return;
+            try {
+                const ps = yield S.user.profiles(ids);
+                let ch = 0;
+                for (const id of ids) {
+                    const n = (_a = ps === null || ps === void 0 ? void 0 : ps[id]) === null || _a === void 0 ? void 0 : _a.name;
+                    if (n) {
+                        S.names[id] = n;
+                        ch = 1;
+                    }
                 }
+                if (ch)
+                    render();
             }
-            if (ch)
-                render();
-        }
-        catch (_b) { }
+            catch (_b) { }
+        });
     }
     let rt = 0;
     const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); }, 80); };
-    (async () => {
-        const [db, user] = await Promise.all([SOLO.use('db'), SOLO.use('user')]);
+    (() => __awaiter(this, void 0, void 0, function* () {
+        const [db, user] = yield Promise.all([SOLO.use('db'), SOLO.use('user')]);
         S.db = db;
         S.user = user;
         if (user) {
             try {
-                S.uid = await user.id();
+                S.uid = yield user.id();
             }
             catch (_a) { }
             try {
-                S.isOwner = !!(await user.isOwner());
+                S.isOwner = !!(yield user.isOwner());
             }
             catch (_b) { }
             try {
-                if (await user.can('data.write') === false)
+                if ((yield user.can('data.write')) === false)
                     S.canWrite = false;
             }
             catch (_c) { }
@@ -1204,8 +1285,8 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         db.collection('orders').orderBy('t', 'desc').limit(400).onSnapshot(s => { S.orders = s.docs.map(d => (Object.assign(Object.assign({}, d.data()), { id: d.id }))); soon(); }, fail);
         db.collection('ipos').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); S.ipos = o; soon(); }, fail);
         db.collection('requests').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.reqs = s.docs.map(d => (Object.assign(Object.assign({}, d.data()), { id: d.id }))); soon(); }, fail);
-    })();
+    }))();
     render();
-}
+})();
 </script>
 </body></html>
