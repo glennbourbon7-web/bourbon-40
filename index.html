@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="Ānanda"><meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png"><link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png"><link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><link rel="manifest" href="manifest.webmanifest">
 <title>Ānanda Capital</title>
 <script>window.__errs=[];window.onerror=function(m,src,l,c,e){var t=(e&&e.message)||m;window.__errs.push(t+' @'+l+':'+c);var a=document.getElementById('app');if(a){a.innerHTML='<div style="background:#3a0f16;color:#ffc6cc;border-radius:12px;padding:14px;font:14px/1.5 -apple-system,sans-serif">Something broke while loading. Screenshot this and send it:<br><b>'+String(window.__errs.join(' | ')).replace(/[<>&]/g,'')+'</b><br>'+navigator.userAgent.replace(/[<>&]/g,'')+'</div>'}};window.addEventListener('unhandledrejection',function(ev){window.onerror('Promise: '+(ev.reason&&ev.reason.message||ev.reason),'',0,0)});</script>
 <script>if(!Object.fromEntries)Object.fromEntries=function(it){var o={};Array.from(it).forEach(function(p){o[p[0]]=p[1]});return o};if(!Array.prototype.flat)Array.prototype.flat=function(){return [].concat.apply([],this)};if(!Array.prototype.flatMap)Array.prototype.flatMap=function(f,t){return [].concat.apply([],this.map(f,t))};if(!window.requestAnimationFrame)window.requestAnimationFrame=function(f){return setTimeout(f,16)};</script>
@@ -152,8 +156,25 @@ a{color:#fff}.note a,.li a{color:#d1d1d6}
 nav a{position:relative}.nbadge{position:absolute;top:2px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff453a;color:#fff;font:700 10.5px/17px Inter,sans-serif;font-style:normal;text-align:center}
 @media(min-width:701px){.nbadge{position:static;margin-left:4px}}
 .pill.rd{background:#3a1412}
+#splash{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;z-index:50;background:radial-gradient(700px 420px at 50% 40%,#1c1c1e 0,#000 70%);display:flex;align-items:center;justify-content:center;transition:opacity .55s ease,transform .55s ease}
+#splash.out{opacity:0;transform:scale(1.04);pointer-events:none}
+.sp-in{display:grid;justify-items:center;gap:22px;padding:0 24px}
+.sp-word{font:600 clamp(22px,6.5vw,40px)/1 Sora,Inter,system-ui,sans-serif;letter-spacing:.2em;color:#fff;white-space:nowrap}
+.sp-word span{display:inline-block;opacity:0;transform:translateY(14px);animation:spUp .6s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes spUp{to{opacity:1;transform:none}}
+.sp-line{width:min(70vw,320px);height:70px;overflow:visible}
+.sp-line path{stroke-dasharray:420;stroke-dashoffset:420;animation:spDraw 1.5s .1s ease-out forwards;filter:drop-shadow(0 0 8px rgba(48,209,88,.55))}
+@keyframes spDraw{to{stroke-dashoffset:0}}
+.sp-bar{width:120px;height:2px;background:#2c2c2e;border-radius:2px;overflow:hidden}.sp-bar i{display:block;height:100%;width:0;background:#fff;animation:spBar 2.2s .2s ease-in-out forwards}
+@keyframes spBar{to{width:100%}}
+@media(prefers-reduced-motion:reduce){.sp-word span,.sp-line path,.sp-bar i{animation-duration:.01s}}
+header{padding-top:max(10px,env(safe-area-inset-top))}
+.k-WITHDRAW{color:#ff453a}.k-WD-REQ{color:#d1d1d6}
 </style>
 </head><body>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="sp-word"><span style="animation-delay:0.25s">Ā</span><span style="animation-delay:0.31s">N</span><span style="animation-delay:0.37s">A</span><span style="animation-delay:0.43s">N</span><span style="animation-delay:0.49s">D</span><span style="animation-delay:0.55s">A</span><span style="animation-delay:0.61s">&nbsp;</span><span style="animation-delay:0.67s">C</span><span style="animation-delay:0.73s">A</span><span style="animation-delay:0.79s">P</span><span style="animation-delay:0.85s">I</span><span style="animation-delay:0.91s">T</span><span style="animation-delay:0.97s">A</span><span style="animation-delay:1.03s">L</span></div><div class="sp-bar"><i></i></div></div></div>
+
 
 <header>
   <a class="logo" href="#home" aria-label="Ānanda Capital home"><span class="wm"><b>ĀNANDA CAPITAL</b><small id="lgx">B40 · loading</small></span></a>
@@ -444,12 +465,12 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const DIV = 0.11742, START = 0, DAYLIM = 50000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
+    const DIV = 0.11742, START = 0, WDLIM = 50000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
     const S = { db: null, user: null, uid: null, canWrite: true, isOwner: false, companies: {}, accounts: {}, ledger: [], orders: [], ipos: {}, reqs: [], names: {},
-        bets: {}, deps: [], users: {}, logins: [], loaded: false, stale: false, tf: '1D', ptf: '1M', stf: '1D', side: 'BUY', ot: 'market', q: '', sector: 'all', lk: 'all', tt: null };
+        bets: {}, deps: [], wds: [], users: {}, logins: [], loaded: false, stale: false, tf: '1D', ptf: '1M', stf: '1D', side: 'BUY', ot: 'market', q: '', sector: 'all', lk: 'all', tt: null };
     const app = document.getElementById('app');
     /* ================= HELPERS ================= */
     const esc = v => String(v !== null && v !== void 0 ? v : '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -793,7 +814,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
      <p class="note" style="margin:4px 0 0">${tab === 'emp' ? '<a href="#" data-auth="in">Back to customer sign in<\/a>' : '<a href="#" data-auth="emp">Employee sign in<\/a>'}<\/p><\/form><\/div><\/div><\/section>
    <section class="band"><h2>Today on the B40<\/h2><div class="chips" style="margin-top:10px">${mv.map(x => `<span class="tick"><b>${esc(x.c.ticker)}<\/b> <span class="mono">${$(live(x.c.ticker))}<\/span> <span class="${cls(x.d)}">${sg(x.d * 100)}<\/span><\/span>`).join('')}<\/div>
    <div class="g3">${[['Trade', 'Buy and sell all 40 companies in the B40, with market, limit and stop orders and live charts.'], ['IPOs', 'Take a company public: set its valuation and share count, and investors request shares before it lists.'], ['Bets', 'File a betting board on anything, or put money on someone else’s. Winners split the pot.']].map(x => `<div class="card pad"><h3>${x[0]}<\/h3><p class="mut" style="margin:6px 0 0">${x[1]}<\/p><\/div>`).join('')}<\/div>
-   <p class="note" style="margin-top:22px">Ānanda Capital is a parody brokerage with play money. Prices aren't real quotes.<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version 2 · connected to the shared database<\/p><\/section>`;
+   <p class="note" style="margin-top:22px">© Ānanda Capital<\/p><p class="note" style="margin-top:6px"><span class="livedot"><\/span>Version 2 · connected to the shared database<\/p><\/section>`;
     }
     function afterLanding() {
         const svg = document.getElementById('herobg');
@@ -959,7 +980,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
    <label>Shares${sell ? ` (you can sell ${av.toLocaleString()})` : ''}<input id="qty" name="qty" type="number" min="1" step="1" value="10" inputmode="numeric"><\/label>
    <div class="qq"><button type="button" class="sm-b" data-qq="1" data-for="qty">1<\/button><button type="button" class="sm-b" data-qq="10" data-for="qty">10<\/button><button type="button" class="sm-b" data-qq="100" data-for="qty">100<\/button><button type="button" class="sm-b" data-qq="${sell ? av : Math.max(1, Math.floor(a.cash / p / 1.01))}" data-for="qty">Max<\/button><\/div>
    ${S.ot !== 'market' ? `<div class="frow"><label>${S.ot === 'limit' ? 'Limit' : 'Stop'} price<input id="lim" name="lim" type="number" min="0.01" step="0.01" value="${r2(p)}" inputmode="decimal"><\/label><label>Good for<select id="tif" name="tif"><option value="day">Today (24 hours)<\/option><option value="gtc">Until cancelled<\/option><\/select><\/label><\/div>` : ''}
-   <div class="est" id="est"><\/div><p class="note" style="margin:0">Traded today: ${$(usedToday())} of ${$(DAYLIM)} daily limit${a.cash <= 0 && !sell ? ' · <a href="#funding">Add money first<\/a>' : ''}<\/p>
+   <div class="est" id="est"><\/div>${a.cash <= 0 && !sell ? '<p class="note" style="margin:0"><a href="#funding">Add money first<\/a><\/p>' : ''}
    <button class="${sell ? 'sell' : 'pri'}" id="go">${S.ot === 'market' ? (sell ? 'Sell' : 'Buy') + ' now' : 'Place ' + S.ot + ' order'}<\/button><div class="msg" id="tmsg"><\/div><\/form><\/section>`;
     }
     function meetSlots() { const out = [], d = new Date(); d.setHours(0, 0, 0, 0); while (out.length < 15) {
@@ -1189,7 +1210,7 @@ No<\/textarea><\/label>
     /* ---------- ADD MONEY (through a representative) ---------- */
     function depositDesk() { const pend = S.deps.filter(d => d.status === 'scheduled'); return `<section class="card"><div class="ch-h"><h2>Representative desk<\/h2><span class="note">${pend.length} waiting<\/span><\/div>${pend.length ? `<div class="list">${pend.map(d => `<form class="li depf" data-id="${esc(d.id)}" style="cursor:default;flex-wrap:wrap;gap:10px"><span class="grow" style="min-width:180px"><b>${esc(name(d.uid))} wants to add ${$(d.amt)}<\/b><small>Meeting ${esc(when(d.slot))}${d.note ? ' · “' + esc(d.note) + '”' : ''}<\/small><\/span><input name="amt_${esc(d.id)}" type="number" min="1" step="1" value="${d.amt}" style="width:130px" aria-label="Amount to approve"><button class="sm-b ok">Approve<\/button><button type="button" class="sm-b" data-act="dep-decline" data-id="${esc(d.id)}">Decline<\/button><\/form>`).join('')}<\/div>` : '<div class="empty">No deposit requests right now.<\/div>'}<div class="msg" id="depdesk" style="margin:0 18px 14px"><\/div><\/section>`; }
     const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
-    const usedToday = () => { const a = me(); return a && a.day && a.day.d === dayKey() ? a.day.v : 0; };
+    const wdToday = uid => S.wds.filter(w => w.uid === uid && w.day === dayKey() && (w.status === 'pending' || w.status === 'paid')).reduce((x, w) => x + w.amt, 0);
     function funding() {
         const a = me();
         if (!a)
@@ -1201,7 +1222,9 @@ No<\/textarea><\/label>
    <label>Meeting time<select name="dslot">${meetSlots().map(t => `<option value="${t}">${esc(new Date(t).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}<\/option>`).join('')}<\/select><\/label>
    <label>Note for the representative (optional)<textarea name="dnote" rows="2" maxlength="300"><\/textarea><\/label><button class="pri">Request meeting<\/button><div class="msg" id="depmsg"><\/div><\/form><\/section><\/div>
    <div class="stackc"><section class="card"><div class="ch-h"><h2>Your requests<\/h2><\/div>${mine.length ? `<div class="list">${mine.map(d => `<div class="li" style="cursor:default"><span class="grow"><b>${$(d.approved || d.amt)}<\/b><small>Meeting ${esc(when(d.slot))}<\/small><\/span><span class="pill ${d.status === 'approved' ? 'gr' : d.status === 'declined' ? 'rd' : 'bl'}">${esc(d.status === 'scheduled' ? 'waiting' : d.status)}<\/span>${d.status === 'scheduled' ? `<button class="sm-b" data-act="dep-cancel" data-id="${esc(d.id)}">Cancel<\/button>` : ''}<\/div>`).join('')}<\/div>` : '<div class="empty">No requests yet.<\/div>'}<\/section>
-   <section class="card pad"><h3>Trading limit<\/h3><p class="mut" style="margin:6px 0 0">Each account can trade up to ${$(DAYLIM)} a day, buys and sells added together. It resets at midnight. You've traded ${$(usedToday())} today.<\/p><\/section><\/div><\/div>`;
+   <section class="card pad"><h2>Withdraw money<\/h2><p class="mut" style="margin:6px 0 12px">Withdraw up to ${$(WDLIM)} a day. The money leaves your cash right away and an Ānanda representative completes the withdrawal. You've withdrawn ${$(wdToday(S.uid))} today.<\/p>
+    <form id="wdf" class="form"><label>Amount<input name="wamt" type="number" min="1" step="1" value="${Math.max(1, Math.min(Math.floor(a.cash), WDLIM - wdToday(S.uid)))}" inputmode="numeric"><\/label><button class="pri">Request withdrawal<\/button><div class="msg" id="wdmsg"><\/div><\/form><\/section>
+   <section class="card"><div class="ch-h"><h2>Your withdrawals<\/h2><\/div>${S.wds.filter(w => w.uid === S.uid).length ? `<div class="list">${S.wds.filter(w => w.uid === S.uid).map(w => `<div class="li" style="cursor:default"><span class="grow"><b>${$(w.amt)}<\/b><small>${esc(when(w.t))}<\/small><\/span><span class="pill ${w.status === 'paid' ? 'gr' : w.status === 'declined' ? 'rd' : 'bl'}">${esc(w.status === 'pending' ? 'processing' : w.status)}<\/span>${w.status === 'pending' ? `<button class="sm-b" data-act="wd-cancel" data-id="${esc(w.id)}">Cancel<\/button>` : ''}<\/div>`).join('')}<\/div>` : '<div class="empty">No withdrawals yet.<\/div>'}<\/section><\/div><\/div>`;
     }
     function requestDeposit(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1257,6 +1280,7 @@ No<\/textarea><\/label>
         Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, kind: 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' }));
         Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, kind: 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#bets', open: b.status === 'open' }));
         S.deps.forEach(d => out.push({ id: 'dep' + d.id, t: d.t || 0, kind: 'Deposit request', text: `${name(d.uid)} wants to add ${$(d.amt)}`, href: '#staff', open: d.status === 'scheduled' }));
+        S.wds.forEach(w => out.push({ id: 'wd' + w.id, t: w.t || 0, kind: 'Withdrawal', text: `${name(w.uid)} is withdrawing ${$(w.amt)}`, href: '#staff', open: w.status === 'pending' }));
         S.reqs.forEach(r => out.push({ id: 'req' + r.id, t: r.t || 0, kind: 'Sale request', text: `${name(r.uid)} wants to sell ${Number(r.qty).toLocaleString()} ${r.ticker}`, href: '#staff', open: r.status === 'scheduled' }));
         Object.entries(S.accounts).forEach(([id, a]) => { if (!a.seed && a.created)
             out.push({ id: 'acct' + id, t: a.created, kind: 'New account', text: `${a.label || id} opened an account (@${String(id).replace(/^u:/, '')})`, href: '#staff', open: false }); });
@@ -1308,6 +1332,48 @@ No<\/textarea><\/label>
         el.id = 'toast';
         document.body.appendChild(el);
     } el.href = href || '#staff'; el.textContent = '🔔 ' + msg; el.className = 'show'; clearTimeout(toast._t); toast._t = setTimeout(() => { el.className = ''; }, 7000); }
+    function requestWithdrawal(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const a = me(), amt = r2(+f.wamt.value || 0), left = WDLIM - wdToday(S.uid);
+            if (!(amt >= 1))
+                return say('wdmsg', 'Enter an amount.', false);
+            if (amt > left)
+                return say('wdmsg', `Daily withdrawal limit: you can withdraw ${$(Math.max(0, left))} more today.`, false);
+            try {
+                const as = yield S.db.doc('accounts/' + S.uid).get(), ac = clone(as.data());
+                if (ac.cash < amt)
+                    return say('wdmsg', `You only have ${$(ac.cash)} in cash.`, false);
+                ac.cash = r2(ac.cash - amt);
+                yield S.db.doc('accounts/' + S.uid).set(ac);
+                yield S.db.collection('withdrawals').add({ uid: S.uid, amt, day: dayKey(), status: 'pending', t: Date.now() });
+                yield log({ kind: 'WD-REQ', price: amt });
+                say('wdmsg', `Withdrawal of ${$(amt)} requested. A representative will complete it.`, true);
+            }
+            catch (e) {
+                say('wdmsg', 'Could not request the withdrawal.', false);
+            }
+        });
+    }
+    function decideWithdrawal(id, ok) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const w = S.wds.find(x => x.id === id);
+            if (!w)
+                return;
+            const ref = S.db.doc('withdrawals/' + id), cur = yield ref.get();
+            if (!cur.exists || cur.data().status !== 'pending')
+                return;
+            if (ok) {
+                yield ref.update({ status: 'paid', dt: Date.now() });
+                yield S.db.collection('ledger').add({ t: Date.now(), uid: w.uid, kind: 'WITHDRAW', price: w.amt, via: 'Completed by ' + name(S.uid) });
+            }
+            else {
+                yield refund(w.uid, w.amt);
+                yield ref.update({ status: ok === null ? 'cancelled' : 'declined', dt: Date.now() });
+                yield S.db.collection('ledger').add({ t: Date.now(), uid: w.uid, kind: 'CANCEL', price: w.amt, via: ok === null ? 'Withdrawal cancelled' : 'Withdrawal declined, money returned' });
+            }
+        });
+    }
+    function withdrawDesk() { const p = S.wds.filter(w => w.status === 'pending'); return `<section class="card"><div class="ch-h"><h2>Withdrawal requests<\/h2><span class="pill ${p.length ? 'bl' : ''}">${p.length} waiting<\/span><\/div>${p.length ? `<div class="list">${p.map(w => `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="grow" style="min-width:170px"><b>${esc(name(w.uid))} is withdrawing ${$(w.amt)}<\/b><small>${esc(when(w.t))} · ${$(wdToday(w.uid))} withdrawn today<\/small><\/span><button class="sm-b ok" data-act="wd-approve" data-id="${esc(w.id)}">Complete<\/button><button class="sm-b" data-act="wd-decline" data-id="${esc(w.id)}">Decline<\/button><\/div>`).join('')}<\/div>` : '<div class="empty">No withdrawals waiting.<\/div>'}<\/section>`; }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1341,13 +1407,13 @@ No<\/textarea><\/label>
         const sec = (t, n, body) => `<section class="card"><div class="ch-h"><h2>${t}<\/h2><span class="pill ${n ? 'bl' : ''}">${n} waiting<\/span><\/div>${body}<\/section>`;
         return `<div class="stackc"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Employee dashboard<\/h1><span class="pill gr">Signed in as ${esc(name(S.uid))}<\/span><\/div>
   ${inbox()}
-  <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Open betting boards<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
-  <div class="cols"><div class="stackc">${depositDesk()}
+  <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${S.wds.filter(w => w.status === 'pending').length}<\/b><span>Withdrawals<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Open betting boards<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
+  <div class="cols"><div class="stackc">${depositDesk()}${withdrawDesk()}
    ${sec('Share sale requests', sales.length, sales.length ? `<div class="list">${sales.map(saleRow).join('')}<\/div>` : '<div class="empty">No sale requests right now.<\/div>')}
    ${sec('IPOs', ipo.length, ipo.length ? `<div class="list">${ipo.map(ipoRow).join('')}<\/div>` : '<div class="empty">No open IPOs.<\/div>')}
    ${sec('Betting boards', toSettle.length, toSettle.length ? `<div class="list">${toSettle.map(betRow).join('')}<\/div>` : `<div class="empty">No open betting boards.<\/div>`)}
    <div class="msg" id="cm_staff"><\/div><\/div>
-  <div class="stackc"><section class="card"><div class="ch-h"><h2>All accounts<\/h2><span class="note">${accts.length}<\/span><\/div>${accts.length ? `<div class="list">${accts.map(x => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(x.id))}<\/b><small>@${esc(String(x.id).replace(/^u:/, ''))} · traded ${$(x.a.day && x.a.day.d === dk ? x.a.day.v : 0)} today<\/small><\/span><span class="rt"><b class="mono">${$(x.a.cash + x.v)}<\/b><small class="mut">${$(x.a.cash)} cash<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No accounts yet.<\/div>'}<\/section>
+  <div class="stackc"><section class="card"><div class="ch-h"><h2>All accounts<\/h2><span class="note">${accts.length}<\/span><\/div>${accts.length ? `<div class="list">${accts.map(x => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(x.id))}<\/b><small>@${esc(String(x.id).replace(/^u:/, ''))} · withdrew ${$(wdToday(x.id))} today<\/small><\/span><span class="rt"><b class="mono">${$(x.a.cash + x.v)}<\/b><small class="mut">${$(x.a.cash)} cash<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No accounts yet.<\/div>'}<\/section>
    <section class="card"><div class="ch-h"><h2>Logins<\/h2><span class="note">${Object.keys(S.users).length} accounts<\/span><\/div>
     <div class="list">${Object.entries(S.users).sort((x, y) => (y[1].last || y[1].created || 0) - (x[1].last || x[1].created || 0)).map(([un, u]) => `<form class="li pwf" data-u="${esc(un)}" style="cursor:default;flex-wrap:wrap;gap:8px"><span class="grow" style="min-width:160px"><b>${esc(u.name || un)}${u.emp ? ' <span class="pill gr">employee<\/span>' : ''}<\/b><small>@${esc(un)} · ${u.last ? 'last signed in ' + esc(when(u.last)) : 'never signed in'}${u.reset ? ' · reset ' + esc(when(u.reset)) : ''}<\/small><\/span><input name="np_${esc(un)}" type="text" autocomplete="off" autocapitalize="none" placeholder="New password" style="width:150px"><button class="sm-b">Reset password<\/button><\/form>`).join('')}<\/div><div class="msg" id="pwmsg" style="margin:0 18px 14px"><\/div><\/section>
    <section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>Sign-in log<\/h2><span class="note">latest 30<\/span><\/div>${S.logins.length ? `<div class="list">${S.logins.slice(0, 30).map(l => `<div class="li" style="cursor:default"><span class="side ${l.ok ? 'up' : 'dn'}">${l.ok ? 'OK' : 'FAILED'}<\/span><span class="grow"><b>@${esc(l.un)}<\/b><small>${esc(l.why || '')} · ${esc(l.dev || '')}<\/small><\/span><span class="rt"><small class="mut">${esc(when(l.t))}<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No sign-ins yet.<\/div>'}<\/section>
@@ -1365,13 +1431,13 @@ No<\/textarea><\/label>
         return `<div class="cols"><section class="card"><div class="ch-h"><h2>More<\/h2><\/div><div class="list">
    ${S.isOwner ? it('staff', 'Employee dashboard', 'All deposit requests, sale requests, IPOs, betting boards and accounts') : ''}
    ${it('corporate', 'Corporate dashboard', 'Market cap, shareholders, representative requests and IPO books for your companies')}
-   ${it('funding', 'Add money', 'Book a meeting with a representative to fund your account')}
+   ${it('funding', 'Add or withdraw money', 'Fund your account through a representative, or withdraw up to $50,000 a day')}
    ${it('meetings', 'Representative meetings', 'Your requests to sell shares that need approval')}
    ${it('ledger', 'System ledger', 'Every account, order, trade, IPO and listing on the exchange')}
    ${it('bets', 'Betting boards', 'Bet play money on outcomes, or file your own board')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
    <section class="card pad"><h2>Your login<\/h2><p class="mut" style="margin:6px 0 12px">Signed in as <b style="color:var(--ink)">${esc(name(S.uid))}<\/b> (@${esc(String(S.uid).replace(/^u:/, ''))})<\/p><button data-act="signout">Sign out<\/button><\/section>
-   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="note"><span class="livedot"><\/span>Version 2 · shared database<\/p><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings from every phone are stored in one system. Prices aren't real quotes.<\/p><\/section><\/div>`;
+   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="note"><span class="livedot"><\/span>Version 2 · shared database<\/p><p class="mut">Everyone trades in one shared market: accounts, orders, trades and listings from every phone are stored in one system.<\/p><\/section><\/div>`;
     }
     /* ---------- CORPORATE ---------- */
     function corporate() {
@@ -1412,7 +1478,7 @@ No<\/textarea><\/label>
         }).join('')}<\/tbody><\/table>`;
     }
     function ledger() {
-        const kinds = ['all', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
+        const kinds = ['all', 'OPEN', 'DEP-REQ', 'DEPOSIT', 'WD-REQ', 'WITHDRAW', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
         const rows = S.ledger.filter(l => S.lk === 'all' || l.kind === S.lk);
         return `<section class="card"><div class="ch-h"><div><h2>System ledger<\/h2><p class="note" style="margin:2px 0 0">Every event on the exchange, newest first (latest 300).<\/p><\/div><select id="lk" data-st="1" style="width:auto">${kinds.map(k => `<option value="${k}"${S.lk === k ? ' selected' : ''}>${k === 'all' ? 'All events' : k}<\/option>`).join('')}<\/select><\/div>${ledgerTable(rows)}<\/section>`;
     }
@@ -1487,10 +1553,6 @@ No<\/textarea><\/label>
                 throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
             if (side === 'SELL' && h.q < qty)
                 throw Error(`Only ${h.q} shares of ${T} are owned.`);
-            const dk = dayKey(), used = a.day && a.day.d === dk ? a.day.v : 0;
-            if (used + total > DAYLIM)
-                throw Error(`Daily trading limit reached: ${$(Math.max(0, DAYLIM - used))} left today out of ${$(DAYLIM)}. This trade is ${$(total)}.`);
-            a.day = { d: dk, v: r2(used + total) };
             const m = impact(c, qty), np = Math.max(.01, px * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
             if (side === 'BUY') {
                 h.q += qty;
@@ -1866,6 +1928,12 @@ No<\/textarea><\/label>
                 yield resolveBoard(b.dataset.id, +b.dataset.o);
             if (act === 'bet-void')
                 yield voidBoard(b.dataset.id);
+            if (act === 'wd-approve')
+                yield decideWithdrawal(b.dataset.id, true);
+            if (act === 'wd-decline')
+                yield decideWithdrawal(b.dataset.id, false);
+            if (act === 'wd-cancel')
+                yield decideWithdrawal(b.dataset.id, null);
             if (act === 'dep-decline') {
                 yield S.db.doc('deposits/' + b.dataset.id).update({ status: 'declined' });
             }
@@ -1923,7 +1991,8 @@ No<\/textarea><\/label>
         fileIPO(f); if (f.id === 'betf')
         fileBoard(f); if (f.id === 'authf')
         authSubmit(f); if (f.id === 'depf')
-        requestDeposit(f); if (f.id === 'givef')
+        requestDeposit(f); if (f.id === 'wdf')
+        requestWithdrawal(f); if (f.id === 'givef')
         giveMoney(f); if (f.classList.contains('pwf')) {
         const un = f.dataset.u, pw = f.querySelector('input').value;
         SOLO.auth.resetPassword(un, pw).then(() => { say('pwmsg', `Password for @${un} is now: ${pw}. Tell them to sign in with it.`, true); f.querySelector('input').value = ''; }).catch(err => say('pwmsg', err.message, false));
@@ -1988,6 +2057,10 @@ No<\/textarea><\/label>
     }
     let rt = 0;
     const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); }, 80); };
+    setTimeout(() => { const sp = document.getElementById('splash'); if (sp) {
+        sp.classList.add('out');
+        setTimeout(() => sp.remove(), 600);
+    } }, 2600);
     (() => __awaiter(this, void 0, void 0, function* () {
         const [db, user] = yield Promise.all([SOLO.use('db'), SOLO.use('user')]);
         S.db = db;
@@ -2024,6 +2097,7 @@ No<\/textarea><\/label>
         db.collection('orders').orderBy('t', 'desc').limit(400).onSnapshot(s => { S.orders = s.docs.map(d => (Object.assign(Object.assign({}, d.data()), { id: d.id }))); soon(); }, fail);
         db.collection('users').onSnapshot(s => { const o = {}; s.docs.forEach(d => { o[d.id] = d.data(); }); S.users = o; soon(); }, fail);
         db.collection('logins').orderBy('t', 'desc').limit(200).onSnapshot(s => { S.logins = s.docs.map(d => d.data()); soon(); }, fail);
+        db.collection('withdrawals').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.wds = s.docs.map(d => Object.assign({}, d.data(), { id: d.id })); soon(); }, fail);
         db.collection('deposits').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.deps = s.docs.map(d => Object.assign({}, d.data(), { id: d.id })); soon(); }, fail);
         db.collection('bets').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = Object.assign({}, d.data(), { id: d.id })); S.bets = o; soon(); }, fail);
         db.collection('ipos').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); S.ipos = o; soon(); }, fail);

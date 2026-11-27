@@ -1,7 +1,5 @@
 # Ānanda Capital
 
-A parody brokerage with play money: the B40 index of 40 made-up companies plus GNS, logins, limit/stop orders, IPOs and betting boards.
+Trade the B40, file IPOs and betting boards, all in one shared market.
 
 Live site: https://glennbourbon7-web.github.io/bourbon-40/
-
-Prices are simulated, not real quotes. All accounts, trades and requests are stored in one shared Firebase database.
