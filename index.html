@@ -4,7 +4,7 @@
 <script>window.__errs=[];window.onerror=function(m,src,l,c,e){var t=(e&&e.message)||m;window.__errs.push(t+' @'+l+':'+c);var a=document.getElementById('app');if(a){a.innerHTML='<div style="background:#3a0f16;color:#ffc6cc;border-radius:12px;padding:14px;font:14px/1.5 -apple-system,sans-serif">Something broke while loading. Screenshot this and send it:<br><b>'+String(window.__errs.join(' | ')).replace(/[<>&]/g,'')+'</b><br>'+navigator.userAgent.replace(/[<>&]/g,'')+'</div>'}};window.addEventListener('unhandledrejection',function(ev){window.onerror('Promise: '+(ev.reason&&ev.reason.message||ev.reason),'',0,0)});</script>
 <script>if(!Object.fromEntries)Object.fromEntries=function(it){var o={};Array.from(it).forEach(function(p){o[p[0]]=p[1]});return o};if(!Array.prototype.flat)Array.prototype.flat=function(){return [].concat.apply([],this)};if(!Array.prototype.flatMap)Array.prototype.flatMap=function(f,t){return [].concat.apply([],this.map(f,t))};if(!window.requestAnimationFrame)window.requestAnimationFrame=function(f){return setTimeout(f,16)};</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>/* VOICE: a pro brokerage app at night — dense, exact, calm.
    IDEA: the broker's "Markets" screen: index lines racing on black, grouped lists with chevrons.
    PICTURE: the multi-line Indices chart with timeframe switch, and touchable price charts.
@@ -106,15 +106,31 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
 .logo{display:flex;gap:11px;align-items:center;color:var(--ink);text-decoration:none}
 .wm{display:grid;line-height:1}
 .wm small{font:600 11.5px/1.2 Inter,sans-serif;margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(max-width:700px){@media(prefers-reduced-motion:reduce){.shine{display:none}}
-.wm b{font:600 21px/1 Inter,system-ui,sans-serif;letter-spacing:-.02em;color:#fff}.wm b span{font-weight:400;color:#c9d3e6}
+
 .k-BET,.k-BOARD{color:var(--b2)}.k-BET-WIN{color:var(--up)}.k-BET-VOID{color:var(--mut)}
-@media(max-width:700px){nav{grid-template-columns:repeat(6,1fr)}nav a{font-size:10px}nav svg{width:22px;height:22px}.wm b{font-size:19px}}
+@media(max-width:700px){nav{grid-template-columns:repeat(6,1fr)}nav a{font-size:10px}nav svg{width:22px;height:22px}}
+.wm b{font:600 17px/1 Sora,Inter,system-ui,sans-serif;letter-spacing:.16em;color:#fff;white-space:nowrap}
+@media(max-width:700px){.wm b{font-size:15px;letter-spacing:.13em}}
+body.guest header,body.guest nav{display:none}
+body.guest main{max-width:none;padding:0}
+.hero{position:relative;overflow:hidden;min-height:min(92vh,760px);display:flex;align-items:center;background:radial-gradient(900px 500px at 80% 10%,#0b2a5c 0,transparent 65%),linear-gradient(180deg,#05070b,#030409);border-bottom:1px solid var(--ln)}
+.herobg{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%;opacity:.9}
+.herobg .draw{stroke-dasharray:3000;stroke-dashoffset:3000;animation:drw 2.6s ease-out forwards}@keyframes drw{to{stroke-dashoffset:0}}
+.herogrid{position:relative;z-index:1;width:100%;max-width:1200px;margin:0 auto;padding:40px max(4vw,18px);display:grid;gap:28px;grid-template-columns:minmax(0,1.2fr) minmax(0,400px);align-items:center}
+.herocopy h1{font:700 clamp(38px,6.5vw,68px)/1.02 Sora,Inter,sans-serif;letter-spacing:-.03em;margin:18px 0 14px}
+.herocopy p{font-size:17px;color:#c4cde0;max-width:520px;margin:0 0 10px}
+.big-wm b{font-size:20px}
+.heroidx{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.authcard{background:rgba(10,14,22,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--ln);border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.band{max-width:1200px;margin:0 auto;padding:28px max(4vw,18px) 60px}
+.tick{flex:none;display:inline-flex;gap:8px;align-items:baseline;padding:9px 13px;border:1px solid var(--ln);border-radius:999px;background:var(--p);font-size:13.5px}
+.g3{display:grid;gap:14px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:20px}
+@media(max-width:800px){.herogrid{grid-template-columns:minmax(0,1fr);padding-top:28px}.g3{grid-template-columns:minmax(0,1fr)}.hero{min-height:auto}.herobg{height:45%}}
 </style>
 </head><body>
-<div class="banner">Ānanda Capital is a parody brokerage with play money. Prices aren't real quotes, and your account is saved on this device.</div>
+
 <header>
-  <a class="logo" href="#home" aria-label="Ānanda Capital home"><span class="wm"><b>Ānanda <span>Capital</span></b><small id="lgx">B40 · loading</small></span></a>
+  <a class="logo" href="#home" aria-label="Ānanda Capital home"><span class="wm"><b>ĀNANDA CAPITAL</b><small id="lgx">B40 · loading</small></span></a>
   <nav id="nav">
    <a href="#home" data-n="home"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Accounts</span></a>
    <a href="#markets" data-n="markets"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span>Markets</span></a>
@@ -135,9 +151,9 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector": "Technology", "price": 270, "hist": [[1795657029791, 270]], "t0": 1795657029791, "since": 1732585029791, "shares": 14800000000, "vf": 0.7, "owner": null, "about": "Consumer electronics, software and services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/AMGN": { "ticker": "AMGN", "name": "Amgen", "sector": "Health care", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 540000000, "vf": 1.208, "owner": null, "about": "Biotechnology medicines.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/AMZN": { "ticker": "AMZN", "name": "Amazon", "sector": "Consumer", "price": 230, "hist": [[1795657029791, 230]], "t0": 1795657029791, "since": 1732585029791, "shares": 10700000000, "vf": 1.115, "owner": null, "about": "Online retail and cloud computing.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/AXP": { "ticker": "AXP", "name": "American Express", "sector": "Financials", "price": 340, "hist": [[1795657029791, 340]], "t0": 1795657029791, "since": 1732585029791, "shares": 700000000, "vf": 1.023, "owner": null, "about": "Payment cards and travel services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/BA": { "ticker": "BA", "name": "Boeing", "sector": "Industrials", "price": 215, "hist": [[1795657029791, 215]], "t0": 1795657029791, "since": 1732585029791, "shares": 760000000, "vf": 0.931, "owner": null, "about": "Commercial jets, defense and space.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CAT": { "ticker": "CAT", "name": "Caterpillar", "sector": "Industrials", "price": 520, "hist": [[1795657029791, 520]], "t0": 1795657029791, "since": 1732585029791, "shares": 470000000, "vf": 0.838, "owner": null, "about": "Construction and mining equipment.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CRM": { "ticker": "CRM", "name": "Salesforce", "sector": "Technology", "price": 240, "hist": [[1795657029791, 240]], "t0": 1795657029791, "since": 1732585029791, "shares": 960000000, "vf": 0.746, "owner": null, "about": "Customer-relationship software.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CSCO": { "ticker": "CSCO", "name": "Cisco Systems", "sector": "Technology", "price": 70, "hist": [[1795657029791, 70]], "t0": 1795657029791, "since": 1732585029791, "shares": 3950000000, "vf": 1.254, "owner": null, "about": "Networking hardware and security.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/CVX": { "ticker": "CVX", "name": "Chevron", "sector": "Energy", "price": 155, "hist": [[1795657029791, 155]], "t0": 1795657029791, "since": 1732585029791, "shares": 2000000000, "vf": 1.162, "owner": null, "about": "Integrated oil and gas.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/DIS": { "ticker": "DIS", "name": "Walt Disney", "sector": "Media", "price": 112, "hist": [[1795657029791, 112]], "t0": 1795657029791, "since": 1732585029791, "shares": 1800000000, "vf": 1.069, "owner": null, "about": "Entertainment, parks and streaming.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/GOOGL": { "ticker": "GOOGL", "name": "Alphabet", "sector": "Technology", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 12100000000, "vf": 0.977, "owner": null, "about": "Search, advertising and cloud.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/GS": { "ticker": "GS", "name": "Goldman Sachs", "sector": "Financials", "price": 780, "hist": [[1795657029791, 780]], "t0": 1795657029791, "since": 1732585029791, "shares": 310000000, "vf": 0.885, "owner": null, "about": "Investment banking and asset management.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/HD": { "ticker": "HD", "name": "Home Depot", "sector": "Consumer", "price": 380, "hist": [[1795657029791, 380]], "t0": 1795657029791, "since": 1732585029791, "shares": 1000000000, "vf": 0.792, "owner": null, "about": "Home-improvement retail.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/HON": { "ticker": "HON", "name": "Honeywell", "sector": "Industrials", "price": 205, "hist": [[1795657029791, 205]], "t0": 1795657029791, "since": 1732585029791, "shares": 640000000, "vf": 0.7, "owner": null, "about": "Aerospace, automation and building tech.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/IBM": { "ticker": "IBM", "name": "IBM", "sector": "Technology", "price": 290, "hist": [[1795657029791, 290]], "t0": 1795657029791, "since": 1732585029791, "shares": 930000000, "vf": 1.208, "owner": null, "about": "Hybrid cloud, software and consulting.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/JNJ": { "ticker": "JNJ", "name": "Johnson & Johnson", "sector": "Health care", "price": 195, "hist": [[1795657029791, 195]], "t0": 1795657029791, "since": 1732585029791, "shares": 2400000000, "vf": 1.115, "owner": null, "about": "Pharmaceuticals and medical devices.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/JPM": { "ticker": "JPM", "name": "JPMorgan Chase", "sector": "Financials", "price": 305, "hist": [[1795657029791, 305]], "t0": 1795657029791, "since": 1732585029791, "shares": 2750000000, "vf": 1.023, "owner": null, "about": "Banking and financial services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/KO": { "ticker": "KO", "name": "Coca-Cola", "sector": "Consumer", "price": 70, "hist": [[1795657029791, 70]], "t0": 1795657029791, "since": 1732585029791, "shares": 4300000000, "vf": 0.931, "owner": null, "about": "Beverages.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MCD": { "ticker": "MCD", "name": "McDonald's", "sector": "Consumer", "price": 300, "hist": [[1795657029791, 300]], "t0": 1795657029791, "since": 1732585029791, "shares": 710000000, "vf": 0.838, "owner": null, "about": "Fast-food restaurants.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MMM": { "ticker": "MMM", "name": "3M", "sector": "Industrials", "price": 160, "hist": [[1795657029791, 160]], "t0": 1795657029791, "since": 1732585029791, "shares": 530000000, "vf": 0.746, "owner": null, "about": "Industrial and consumer products.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MRK": { "ticker": "MRK", "name": "Merck", "sector": "Health care", "price": 95, "hist": [[1795657029791, 95]], "t0": 1795657029791, "since": 1732585029791, "shares": 2500000000, "vf": 1.254, "owner": null, "about": "Pharmaceuticals and vaccines.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/MSFT": { "ticker": "MSFT", "name": "Microsoft", "sector": "Technology", "price": 500, "hist": [[1795657029791, 500]], "t0": 1795657029791, "since": 1732585029791, "shares": 7430000000, "vf": 1.162, "owner": null, "about": "Software, cloud and AI.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/NKE": { "ticker": "NKE", "name": "Nike", "sector": "Consumer", "price": 65, "hist": [[1795657029791, 65]], "t0": 1795657029791, "since": 1732585029791, "shares": 1480000000, "vf": 1.069, "owner": null, "about": "Athletic footwear and apparel.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/NVDA": { "ticker": "NVDA", "name": "Nvidia", "sector": "Technology", "price": 185, "hist": [[1795657029791, 185]], "t0": 1795657029791, "since": 1732585029791, "shares": 24300000000, "vf": 0.977, "owner": null, "about": "GPUs and AI computing.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/PG": { "ticker": "PG", "name": "Procter & Gamble", "sector": "Consumer", "price": 150, "hist": [[1795657029791, 150]], "t0": 1795657029791, "since": 1732585029791, "shares": 2340000000, "vf": 0.885, "owner": null, "about": "Household and personal-care brands.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/SHW": { "ticker": "SHW", "name": "Sherwin-Williams", "sector": "Materials", "price": 340, "hist": [[1795657029791, 340]], "t0": 1795657029791, "since": 1732585029791, "shares": 250000000, "vf": 0.792, "owner": null, "about": "Paints and coatings.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/TRV": { "ticker": "TRV", "name": "Travelers", "sector": "Financials", "price": 280, "hist": [[1795657029791, 280]], "t0": 1795657029791, "since": 1732585029791, "shares": 220000000, "vf": 0.7, "owner": null, "about": "Property and casualty insurance.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/UNH": { "ticker": "UNH", "name": "UnitedHealth Group", "sector": "Health care", "price": 330, "hist": [[1795657029791, 330]], "t0": 1795657029791, "since": 1732585029791, "shares": 910000000, "vf": 1.208, "owner": null, "about": "Health insurance and care services.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/V": { "ticker": "V", "name": "Visa", "sector": "Financials", "price": 345, "hist": [[1795657029791, 345]], "t0": 1795657029791, "since": 1732585029791, "shares": 1930000000, "vf": 1.115, "owner": null, "about": "Global payments network.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/WMT": { "ticker": "WMT", "name": "Walmart", "sector": "Consumer", "price": 105, "hist": [[1795657029791, 105]], "t0": 1795657029791, "since": 1732585029791, "shares": 7980000000, "vf": 1.023, "owner": null, "about": "Discount retail and groceries.", "vol": 0, "rep": false, "b40": true, "dow": false }, "companies/GNS": { "ticker": "GNS", "name": "GNS", "sector": "Media", "price": 9.6, "hist": [[1795657029791, 9.6]], "t0": 1795657029791, "since": 1732585029791, "shares": 437500, "vf": 2, "owner": "artifact-owner", "about": "News, streaming (GNS+) and kids entertainment (GNS Kids).", "vol": 0, "rep": true, "repName": "GNS Investor Relations", "ref": 9.6, "b40": true, "dow": false }, "accounts/seed-gns-01": { "label": "GNS Founders Trust", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 60000, "c": 576000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-02": { "label": "Marcus Bell", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 25000, "c": 240000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-03": { "label": "Lena Ortiz", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 12000, "c": 115200.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-04": { "label": "Harbor Point Capital", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 8000, "c": 76800.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-05": { "label": "Dana Whitfield", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 5000, "c": 48000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-06": { "label": "Ray Okafor", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 4000, "c": 38400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-07": { "label": "Priya Natarajan", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 2500, "c": 24000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-08": { "label": "Sam Kowalski", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1500, "c": 14400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-09": { "label": "Tasha Greene", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-10": { "label": "Eli Brandt", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 }, "companies/TSLA": { "ticker": "TSLA", "name": "Tesla", "sector": "Consumer", "price": 420, "hist": [], "t0": 0, "since": 0, "shares": 3200000000, "vf": 0.75, "dow": false, "b40": true, "owner": null, "about": "Electric vehicles, batteries and energy storage.", "vol": 0, "rep": false }, "companies/META": { "ticker": "META", "name": "Meta Platforms", "sector": "Technology", "price": 640, "hist": [], "t0": 0, "since": 0, "shares": 2520000000, "vf": 1.028, "dow": false, "b40": true, "owner": null, "about": "Social apps and AI.", "vol": 0, "rep": false }, "companies/NFLX": { "ticker": "NFLX", "name": "Netflix", "sector": "Media", "price": 110, "hist": [], "t0": 0, "since": 0, "shares": 4250000000, "vf": 0.806, "dow": false, "b40": true, "owner": null, "about": "Streaming entertainment.", "vol": 0, "rep": false }, "companies/COST": { "ticker": "COST", "name": "Costco", "sector": "Consumer", "price": 920, "hist": [], "t0": 0, "since": 0, "shares": 443000000, "vf": 1.083, "dow": false, "b40": true, "owner": null, "about": "Membership warehouse retail.", "vol": 0, "rep": false }, "companies/XOM": { "ticker": "XOM", "name": "Exxon Mobil", "sector": "Energy", "price": 115, "hist": [], "t0": 0, "since": 0, "shares": 4300000000, "vf": 0.861, "dow": false, "b40": true, "owner": null, "about": "Oil, gas and chemicals.", "vol": 0, "rep": false }, "companies/PFE": { "ticker": "PFE", "name": "Pfizer", "sector": "Health care", "price": 25, "hist": [], "t0": 0, "since": 0, "shares": 5700000000, "vf": 1.139, "dow": false, "b40": true, "owner": null, "about": "Pharmaceuticals and vaccines.", "vol": 0, "rep": false }, "companies/ORCL": { "ticker": "ORCL", "name": "Oracle", "sector": "Technology", "price": 220, "hist": [], "t0": 0, "since": 0, "shares": 2800000000, "vf": 0.917, "dow": false, "b40": true, "owner": null, "about": "Databases and cloud infrastructure.", "vol": 0, "rep": false }, "companies/AMD": { "ticker": "AMD", "name": "AMD", "sector": "Technology", "price": 220, "hist": [], "t0": 0, "since": 0, "shares": 1620000000, "vf": 1.194, "dow": false, "b40": true, "owner": null, "about": "Processors and AI chips.", "vol": 0, "rep": false }, "companies/BAC": { "ticker": "BAC", "name": "Bank of America", "sector": "Financials", "price": 52, "hist": [], "t0": 0, "since": 0, "shares": 7600000000, "vf": 0.972, "dow": false, "b40": true, "owner": null, "about": "Consumer and commercial banking.", "vol": 0, "rep": false } };
+window.__SEED = { "companies/LMBT": { "ticker": "LMBT", "name": "Lumenbyte Systems", "sector": "Technology", "price": 312, "hist": [], "t0": 0, "since": 0, "shares": 3100000000, "vf": 0.75, "dow": false, "b40": true, "owner": null, "about": "Chips and software for smart devices.", "vol": 0, "rep": false }, "companies/QRAI": { "ticker": "QRAI", "name": "Quarry AI", "sector": "Technology", "price": 188, "hist": [], "t0": 0, "since": 0, "shares": 2400000000, "vf": 1.1, "dow": false, "b40": true, "owner": null, "about": "AI models for businesses.", "vol": 0, "rep": false }, "companies/NVSC": { "ticker": "NVSC", "name": "Northvale Semiconductor", "sector": "Technology", "price": 142, "hist": [], "t0": 0, "since": 0, "shares": 1900000000, "vf": 0.9, "dow": false, "b40": true, "owner": null, "about": "Memory and power chips.", "vol": 0, "rep": false }, "companies/CBLT": { "ticker": "CBLT", "name": "Cobalt Cloud", "sector": "Technology", "price": 96, "hist": [], "t0": 0, "since": 0, "shares": 1600000000, "vf": 1.25, "dow": false, "b40": true, "owner": null, "about": "Cloud hosting and storage.", "vol": 0, "rep": false }, "companies/HLXR": { "ticker": "HLXR", "name": "Helix Robotics", "sector": "Technology", "price": 64, "hist": [], "t0": 0, "since": 0, "shares": 900000000, "vf": 1.05, "dow": false, "b40": true, "owner": null, "about": "Warehouse and factory robots.", "vol": 0, "rep": false }, "companies/ARCW": { "ticker": "ARCW", "name": "Arcwave Networks", "sector": "Technology", "price": 48, "hist": [], "t0": 0, "since": 0, "shares": 2200000000, "vf": 0.85, "dow": false, "b40": true, "owner": null, "about": "Network gear and fiber.", "vol": 0, "rep": false }, "companies/VNTR": { "ticker": "VNTR", "name": "Vantor Software", "sector": "Technology", "price": 226, "hist": [], "t0": 0, "since": 0, "shares": 650000000, "vf": 1.2, "dow": false, "b40": true, "owner": null, "about": "Business and accounting software.", "vol": 0, "rep": false }, "companies/PNCD": { "ticker": "PNCD", "name": "Pinecrest Data", "sector": "Technology", "price": 37, "hist": [], "t0": 0, "since": 0, "shares": 1100000000, "vf": 1.0, "dow": false, "b40": true, "owner": null, "about": "Data centers and analytics.", "vol": 0, "rep": false }, "companies/RLYM": { "ticker": "RLYM", "name": "Relay Mobile", "sector": "Technology", "price": 29, "hist": [], "t0": 0, "since": 0, "shares": 4000000000, "vf": 0.8, "dow": false, "b40": true, "owner": null, "about": "Wireless phone service.", "vol": 0, "rep": false }, "companies/HRBM": { "ticker": "HRBM", "name": "Harbor & Main Bank", "sector": "Financials", "price": 58, "hist": [], "t0": 0, "since": 0, "shares": 3000000000, "vf": 1.15, "dow": false, "b40": true, "owner": null, "about": "Consumer and small-business banking.", "vol": 0, "rep": false }, "companies/STCF": { "ticker": "STCF", "name": "Sterling Crest Financial", "sector": "Financials", "price": 171, "hist": [], "t0": 0, "since": 0, "shares": 800000000, "vf": 0.95, "dow": false, "b40": true, "owner": null, "about": "Investment banking and trading.", "vol": 0, "rep": false }, "companies/MRDM": { "ticker": "MRDM", "name": "Meridian Mutual", "sector": "Financials", "price": 83, "hist": [], "t0": 0, "since": 0, "shares": 1200000000, "vf": 0.75, "dow": false, "b40": true, "owner": null, "about": "Home, auto and life insurance.", "vol": 0, "rep": false }, "companies/IRBC": { "ticker": "IRBC", "name": "Ironbridge Capital", "sector": "Financials", "price": 412, "hist": [], "t0": 0, "since": 0, "shares": 300000000, "vf": 1.1, "dow": false, "b40": true, "owner": null, "about": "Asset management.", "vol": 0, "rep": false }, "companies/KYPY": { "ticker": "KYPY", "name": "Keystone Payments", "sector": "Financials", "price": 254, "hist": [], "t0": 0, "since": 0, "shares": 1500000000, "vf": 0.9, "dow": false, "b40": true, "owner": null, "about": "Card payments network.", "vol": 0, "rep": false }, "companies/SOLH": { "ticker": "SOLH", "name": "Solace Health", "sector": "Health care", "price": 118, "hist": [], "t0": 0, "since": 0, "shares": 1800000000, "vf": 1.25, "dow": false, "b40": true, "owner": null, "about": "Hospitals and clinics.", "vol": 0, "rep": false }, "companies/VRDT": { "ticker": "VRDT", "name": "Veridia Therapeutics", "sector": "Health care", "price": 77, "hist": [], "t0": 0, "since": 0, "shares": 1300000000, "vf": 1.05, "dow": false, "b40": true, "owner": null, "about": "Cancer and heart medicines.", "vol": 0, "rep": false }, "companies/CLDB": { "ticker": "CLDB", "name": "Calder Biotech", "sector": "Health care", "price": 43, "hist": [], "t0": 0, "since": 0, "shares": 600000000, "vf": 0.85, "dow": false, "b40": true, "owner": null, "about": "Gene therapies.", "vol": 0, "rep": false }, "companies/NSMD": { "ticker": "NSMD", "name": "Northstar Medical", "sector": "Health care", "price": 161, "hist": [], "t0": 0, "since": 0, "shares": 900000000, "vf": 1.2, "dow": false, "b40": true, "owner": null, "about": "Medical devices.", "vol": 0, "rep": false }, "companies/ATLF": { "ticker": "ATLF", "name": "Atlas Forge", "sector": "Industrials", "price": 289, "hist": [], "t0": 0, "since": 0, "shares": 500000000, "vf": 1.0, "dow": false, "b40": true, "owner": null, "about": "Heavy machinery.", "vol": 0, "rep": false }, "companies/RDLA": { "ticker": "RDLA", "name": "Redline Aerospace", "sector": "Industrials", "price": 204, "hist": [], "t0": 0, "since": 0, "shares": 700000000, "vf": 0.8, "dow": false, "b40": true, "owner": null, "about": "Jet engines and defense.", "vol": 0, "rep": false }, "companies/GRNR": { "ticker": "GRNR", "name": "Granite Rail", "sector": "Industrials", "price": 132, "hist": [], "t0": 0, "since": 0, "shares": 600000000, "vf": 1.15, "dow": false, "b40": true, "owner": null, "about": "Freight railroad.", "vol": 0, "rep": false }, "companies/TDWL": { "ticker": "TDWL", "name": "Tidewater Logistics", "sector": "Industrials", "price": 71, "hist": [], "t0": 0, "since": 0, "shares": 900000000, "vf": 0.95, "dow": false, "b40": true, "owner": null, "about": "Shipping and delivery.", "vol": 0, "rep": false }, "companies/JNPA": { "ticker": "JNPA", "name": "Juniper Air", "sector": "Industrials", "price": 34, "hist": [], "t0": 0, "since": 0, "shares": 700000000, "vf": 0.75, "dow": false, "b40": true, "owner": null, "about": "Passenger airline.", "vol": 0, "rep": false }, "companies/BRWM": { "ticker": "BRWM", "name": "Brightway Markets", "sector": "Consumer", "price": 91, "hist": [], "t0": 0, "since": 0, "shares": 3500000000, "vf": 1.1, "dow": false, "b40": true, "owner": null, "about": "Supercenters and online retail.", "vol": 0, "rep": false }, "companies/CPKF": { "ticker": "CPKF", "name": "Copper Kettle Foods", "sector": "Consumer", "price": 62, "hist": [], "t0": 0, "since": 0, "shares": 2000000000, "vf": 0.9, "dow": false, "b40": true, "owner": null, "about": "Snacks and drinks.", "vol": 0, "rep": false }, "companies/STRD": { "ticker": "STRD", "name": "Stride Athletics", "sector": "Consumer", "price": 79, "hist": [], "t0": 0, "since": 0, "shares": 1500000000, "vf": 1.25, "dow": false, "b40": true, "owner": null, "about": "Sneakers and sportswear.", "vol": 0, "rep": false }, "companies/WLFN": { "ticker": "WLFN", "name": "Willow & Finch", "sector": "Consumer", "price": 146, "hist": [], "t0": 0, "since": 0, "shares": 400000000, "vf": 1.05, "dow": false, "b40": true, "owner": null, "about": "Home goods and furniture.", "vol": 0, "rep": false }, "companies/SUNM": { "ticker": "SUNM", "name": "Sunline Motors", "sector": "Consumer", "price": 238, "hist": [], "t0": 0, "since": 0, "shares": 3200000000, "vf": 0.85, "dow": false, "b40": true, "owner": null, "about": "Electric cars.", "vol": 0, "rep": false }, "companies/ORCG": { "ticker": "ORCG", "name": "Orchard Grocers", "sector": "Consumer", "price": 44, "hist": [], "t0": 0, "since": 0, "shares": 1100000000, "vf": 1.2, "dow": false, "b40": true, "owner": null, "about": "Grocery stores.", "vol": 0, "rep": false }, "companies/EMBR": { "ticker": "EMBR", "name": "Ember Energy", "sector": "Energy", "price": 109, "hist": [], "t0": 0, "since": 0, "shares": 3800000000, "vf": 1.0, "dow": false, "b40": true, "owner": null, "about": "Oil and natural gas.", "vol": 0, "rep": false }, "companies/CSTP": { "ticker": "CSTP", "name": "Coastline Petroleum", "sector": "Energy", "price": 67, "hist": [], "t0": 0, "since": 0, "shares": 1900000000, "vf": 0.8, "dow": false, "b40": true, "owner": null, "about": "Refining and fuel stations.", "vol": 0, "rep": false }, "companies/SKYS": { "ticker": "SKYS", "name": "Skyfield Solar", "sector": "Energy", "price": 26, "hist": [], "t0": 0, "since": 0, "shares": 1200000000, "vf": 1.15, "dow": false, "b40": true, "owner": null, "about": "Solar farms and panels.", "vol": 0, "rep": false }, "companies/RVBP": { "ticker": "RVBP", "name": "Riverbend Power", "sector": "Energy", "price": 81, "hist": [], "t0": 0, "since": 0, "shares": 800000000, "vf": 0.95, "dow": false, "b40": true, "owner": null, "about": "Electric utility.", "vol": 0, "rep": false }, "companies/LNTN": { "ticker": "LNTN", "name": "Lantern Studios", "sector": "Media", "price": 104, "hist": [], "t0": 0, "since": 0, "shares": 1800000000, "vf": 0.75, "dow": false, "b40": true, "owner": null, "about": "Films, parks and streaming.", "vol": 0, "rep": false }, "companies/SGST": { "ticker": "SGST", "name": "Signal Street Media", "sector": "Media", "price": 31, "hist": [], "t0": 0, "since": 0, "shares": 1400000000, "vf": 1.1, "dow": false, "b40": true, "owner": null, "about": "TV networks and news.", "vol": 0, "rep": false }, "companies/PLFG": { "ticker": "PLFG", "name": "Playfield Games", "sector": "Media", "price": 88, "hist": [], "t0": 0, "since": 0, "shares": 700000000, "vf": 0.9, "dow": false, "b40": true, "owner": null, "about": "Video games.", "vol": 0, "rep": false }, "companies/BLST": { "ticker": "BLST", "name": "Bluestone Materials", "sector": "Materials", "price": 153, "hist": [], "t0": 0, "since": 0, "shares": 400000000, "vf": 1.25, "dow": false, "b40": true, "owner": null, "about": "Cement and building materials.", "vol": 0, "rep": false }, "companies/RDGS": { "ticker": "RDGS", "name": "Ridgeway Steel", "sector": "Materials", "price": 47, "hist": [], "t0": 0, "since": 0, "shares": 900000000, "vf": 1.05, "dow": false, "b40": true, "owner": null, "about": "Steel mills.", "vol": 0, "rep": false }, "companies/CLWC": { "ticker": "CLWC", "name": "Clearwater Chemical", "sector": "Materials", "price": 72, "hist": [], "t0": 0, "since": 0, "shares": 800000000, "vf": 0.85, "dow": false, "b40": true, "owner": null, "about": "Industrial chemicals.", "vol": 0, "rep": false }, "companies/GNS": { "ticker": "GNS", "name": "GNS", "sector": "Media", "price": 9.6, "hist": [[1795657029791, 9.6]], "t0": 1795657029791, "since": 1732585029791, "shares": 437500, "vf": 2, "dow": false, "owner": "artifact-owner", "about": "News, streaming (GNS+) and kids entertainment (GNS Kids).", "vol": 0, "rep": true, "repName": "GNS Investor Relations", "ref": 9.6, "b40": true }, "accounts/seed-gns-01": { "label": "GNS Founders Trust", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 60000, "c": 576000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-02": { "label": "Marcus Bell", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 25000, "c": 240000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-03": { "label": "Lena Ortiz", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 12000, "c": 115200.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-04": { "label": "Harbor Point Capital", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 8000, "c": 76800.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-05": { "label": "Dana Whitfield", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 5000, "c": 48000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-06": { "label": "Ray Okafor", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 4000, "c": 38400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-07": { "label": "Priya Natarajan", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 2500, "c": 24000.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-08": { "label": "Sam Kowalski", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1500, "c": 14400.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-09": { "label": "Tasha Greene", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 }, "accounts/seed-gns-10": { "label": "Eli Brandt", "seed": true, "cash": 0, "holdings": { "GNS": { "q": 1000, "c": 9600.0 } }, "watch": [], "created": 1795657029791 } };
 (() => {
-    const KEY = 'b40-market-v1';
+    const KEY = 'ananda-market-v1';
     let saved = null;
     try {
         saved = JSON.parse(localStorage.getItem(KEY) || 'null');
@@ -188,8 +204,41 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         return mk();
     };
     const db = { doc: docRef, collection: colRef };
-    const user = { id: () => __awaiter(void 0, void 0, void 0, function* () { return 'u-me'; }), isOwner: () => __awaiter(void 0, void 0, void 0, function* () { return true; }), can: () => __awaiter(void 0, void 0, void 0, function* () { return true; }), profiles: (ids) => __awaiter(void 0, void 0, void 0, function* () { return Object.fromEntries(ids.map(i => [i, { name: i === 'u-me' ? 'You' : 'Investor' }])); }) };
-    window.SOLO = { use: (n) => __awaiter(void 0, void 0, void 0, function* () { return n === 'db' ? db : n === 'user' ? user : null; }) };
+    const UK = 'ananda-users-v1', SK = 'ananda-session-v1';
+    const lsGet = (k, d) => { try {
+        return JSON.parse(localStorage.getItem(k) || 'null') || d;
+    }
+    catch (e) {
+        return d;
+    } };
+    const lsSet = (k, v) => { try {
+        localStorage.setItem(k, JSON.stringify(v));
+    }
+    catch (e) { } };
+    function hashPw(pw, salt) {
+        return __awaiter(this, void 0, void 0, function* () { const txt = salt + ':' + pw; try {
+            if (window.crypto && crypto.subtle) {
+                const b = yield crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+                return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+            }
+        }
+        catch (e) { } let h = 5381; for (let i = 0; i < txt.length; i++)
+            h = ((h << 5) + h + txt.charCodeAt(i)) | 0; return 'f' + (h >>> 0).toString(16); });
+    }
+    const auth = {
+        current: () => { const s = lsGet(SK, null); return s && lsGet(UK, {})[s] ? 'u:' + s : null; },
+        signUp: (un, dn, pw) => __awaiter(void 0, void 0, void 0, function* () { const us = lsGet(UK, {}); if (us[un])
+            throw Error('That username is taken.'); if (!pw || pw.length < 4)
+            throw Error('Use at least 4 characters for the password.'); const salt = Math.random().toString(36).slice(2, 10); us[un] = { name: dn, salt, hash: yield hashPw(pw, salt), created: Date.now() }; lsSet(UK, us); lsSet(SK, un); return 'u:' + un; }),
+        signIn: (un, pw) => __awaiter(void 0, void 0, void 0, function* () { const us = lsGet(UK, {}), u = us[un]; if (!u || u.hash !== (yield hashPw(pw, u.salt)))
+            throw Error('Wrong username or password.'); lsSet(SK, un); return 'u:' + un; }),
+        signOut: () => { try {
+            localStorage.removeItem(SK);
+        }
+        catch (e) { } }
+    };
+    const user = { id: () => __awaiter(void 0, void 0, void 0, function* () { return auth.current(); }), isOwner: () => __awaiter(void 0, void 0, void 0, function* () { return ['u:glennbourbonvp', 'u:glennbourbon'].indexOf(auth.current()) >= 0; }), can: () => __awaiter(void 0, void 0, void 0, function* () { return true; }), profiles: (ids) => __awaiter(void 0, void 0, void 0, function* () { return Object.fromEntries(ids.map(i => [i, { name: (store.get('accounts/' + i) || {}).label || '' }])); }) };
+    window.SOLO = { auth, use: (n) => __awaiter(void 0, void 0, void 0, function* () { return n === 'db' ? db : n === 'user' ? user : null; }) };
 })();
 </script><script>var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -202,7 +251,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const DIV = 0.26409, START = 100000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
+    const DIV = 0.11742, START = 100000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
@@ -283,9 +332,9 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
                     s += v;
                     k++;
                 } return k ? s / DIV : null; } },
-        { id: 'tm', name: 'BOURBON TOTAL', full: 'Bourbon Total Market (cap-weighted)', color: '#ff9f43', f: t => capSum(t, () => true) / 1e10 || null },
-        { id: 'tc', name: 'BOURBON TECH', full: 'Bourbon Tech Composite', color: '#9aa3b5', f: t => capSum(t, c => c.sector === 'Technology') / 1e9 || null },
-        { id: 'sc', name: 'SMALL CAPS', full: 'Bourbon Small Caps (under $1B)', color: '#6a7bff', f: t => { var _a; let s = 0, k = 0; for (const c of L())
+        { id: 'tm', name: 'ĀNANDA TOTAL', full: 'Ānanda Total Market (cap-weighted)', color: '#ff9f43', f: t => capSum(t, () => true) / 2e8 || null },
+        { id: 'tc', name: 'ĀNANDA TECH', full: 'Ānanda Tech Composite', color: '#9aa3b5', f: t => capSum(t, c => c.sector === 'Technology') / 1e9 || null },
+        { id: 'sc', name: 'SMALL CAPS', full: 'Ānanda Small Caps (under $1B)', color: '#6a7bff', f: t => { var _a; let s = 0, k = 0; for (const c of L())
                 if (c.price * c.shares < 1e9) {
                     const v = liveC(c, t);
                     if (v == null)
@@ -432,9 +481,15 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         const r = route(), tab = r.startsWith('s-') ? 'markets' : ['corporate', 'ledger', 'how', 'meetings'].includes(r) ? 'more' : r;
         document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.n === tab));
         const a = me();
-        document.getElementById('cashChip').textContent = !S.db ? 'Sign in to trade' : a ? 'Cash ' + $(a.cash) : 'No account';
+        document.getElementById('cashChip').textContent = !S.uid ? '' : a ? 'Cash ' + $(a.cash) : 'No account';
         if (!S.loaded) {
             app.innerHTML = `<p class="mut">${S.stale ? 'Market data can\'t be reached yet. It will appear as soon as the connection answers.' : 'Loading market data…'}<\/p>`;
+            return;
+        }
+        document.body.classList.toggle('guest', !S.uid);
+        if (!S.uid) {
+            app.innerHTML = landing();
+            afterLanding();
             return;
         }
         const keep = {}, fe = document.activeElement, fk = fe && app.contains(fe) && !fe.dataset.st ? (fe.id || fe.name) : null;
@@ -485,11 +540,63 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         est();
         calc();
         logo();
+        ipoPrev();
     }
     const openAcct = () => !S.db ? `<div class="card pad"><h3>Sign in to trade<\/h3><p class="mut">Open this page while signed in to get an investor account.<\/p><\/div>`
         : !S.canWrite ? `<div class="card pad"><h3>View-only access<\/h3><p class="mut">You can watch the market, but your access doesn't allow trading. Ask the owner for Contributor access.<\/p><\/div>`
             : `<div class="card pad"><h2>Open your investor account<\/h2><p class="mut">Start with ${$(START)} in play money. Your account, trades and orders are all recorded in the system ledger.<\/p><button class="pri" data-act="open">Open account<\/button><\/div>`;
     function stockRow(c, extra = '') { const T = c.ticker, d = dayChg(T); return `<a class="li" href="#s-${esc(T.toLowerCase())}"><span class="tk">${esc(T)}<\/span><span class="grow"><b>${esc(c.name)}<\/b><small>${extra || esc(c.sector)}<\/small><\/span>${spark(T)}<span class="rt"><b data-px="${esc(T)}">${$(live(T))}<\/b><small><span class="cbox ${cls(d)}" data-ch="${esc(T)}">${sg(d * 100)}<\/span><\/small><\/span><\/a>`; }
+    /* ---------- LOGIN / WELCOME PAGE ---------- */
+    function landing() {
+        const mv = L().map(c => ({ c, d: dayChg(c.ticker) })).sort((x, y) => Math.abs(y.d) - Math.abs(x.d)).slice(0, 8);
+        const f = IDX[0].f, v = f(Date.now()), p = f(Date.now() - DAY), ch = v && p ? v / p - 1 : 0, tab = S.authTab || 'in';
+        return `<section class="hero"><svg class="herobg" id="herobg" preserveAspectRatio="none" viewBox="0 0 1000 400"><\/svg>
+   <div class="herogrid"><div class="herocopy"><div class="wm big-wm"><b>ĀNANDA CAPITAL<\/b><\/div>
+     <h1>Invest in what's next.<\/h1><p>Trade the 40 companies of the B40, back new companies at their IPO and bet on how things turn out. Everything runs on play money.<\/p>
+     <p class="heroidx"><span class="mut">B40 index<\/span> <b class="mono">${n2(v)}<\/b> <span class="${cls(ch)}">${sg(ch * 100)} today<\/span><\/p><\/div>
+   <div class="authcard"><div class="seg" style="margin:0 0 16px"><button data-auth="in" class="${tab === 'in' ? 'on' : ''}">Sign in<\/button><button data-auth="up" class="${tab === 'up' ? 'on' : ''}">Create account<\/button><\/div>
+     <form id="authf" class="form">${tab === 'up' ? `<label>Your name<input name="dn" required maxlength="40" autocomplete="name" placeholder="Glenn Bourbon"><\/label>` : ''}
+     <label>Username<input name="un" required maxlength="24" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="glennbourbon"><\/label>
+     <label>Password<input name="pw" type="password" required minlength="4" autocomplete="${tab === 'up' ? 'new-password' : 'current-password'}"><\/label>
+     <button class="pri">${tab === 'up' ? 'Create account' : 'Sign in'}<\/button><div class="msg" id="authmsg"><\/div>
+     <p class="note" style="margin:0">${tab === 'up' ? `New accounts start with ${$(START)} in play money.` : 'No account yet? Tap Create account.'}<\/p><\/form><\/div><\/div><\/section>
+   <section class="band"><h2>Today on the B40<\/h2><div class="chips" style="margin-top:10px">${mv.map(x => `<span class="tick"><b>${esc(x.c.ticker)}<\/b> <span class="mono">${$(live(x.c.ticker))}<\/span> <span class="${cls(x.d)}">${sg(x.d * 100)}<\/span><\/span>`).join('')}<\/div>
+   <div class="g3">${[['Trade', 'Buy and sell all 40 companies in the B40, with market, limit and stop orders and live charts.'], ['IPOs', 'Take a company public: set its valuation and share count, and investors request shares before it lists.'], ['Bets', 'File a betting board on anything, or put money on someone else’s. Winners split the pot.']].map(x => `<div class="card pad"><h3>${x[0]}<\/h3><p class="mut" style="margin:6px 0 0">${x[1]}<\/p><\/div>`).join('')}<\/div>
+   <p class="note" style="margin-top:22px">Ānanda Capital is a parody brokerage. Prices aren't real quotes, and accounts are saved on this device.<\/p><\/section>`;
+    }
+    function afterLanding() {
+        const svg = document.getElementById('herobg');
+        if (!svg)
+            return;
+        const pts = series(IDX[0].f, '1Y', 140);
+        if (pts.length < 2)
+            return;
+        const vs = pts.map(p => p[1]), mn = Math.min(...vs), mx = Math.max(...vs), sp = mx - mn || 1;
+        const d = vs.map((v, i) => (i ? 'L' : 'M') + (i * 1000 / (vs.length - 1)).toFixed(1) + ',' + (330 - (v - mn) / sp * 220).toFixed(1)).join('');
+        svg.innerHTML = `<defs><linearGradient id="hg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1e8bff" stop-opacity=".35"/><stop offset="1" stop-color="#1e8bff" stop-opacity="0"/><\/linearGradient><\/defs><path d="${d}L1000,400L0,400Z" fill="url(#hg)"/><path class="draw" d="${d}" fill="none" stroke="#4fb3ff" stroke-width="2.5" vector-effect="non-scaling-stroke"/>`;
+    }
+    function authSubmit(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const up = S.authTab === 'up', un = f.un.value.trim().toLowerCase(), pw = f.pw.value;
+            if (!/^[a-z0-9_.]{3,24}$/.test(un))
+                return say('authmsg', 'Usernames are 3 to 24 letters, numbers, dots or underscores.', false);
+            try {
+                if (up) {
+                    const dn = f.dn.value.trim() || un;
+                    const uid = yield SOLO.auth.signUp(un, dn, pw);
+                    yield S.db.doc('accounts/' + uid).set({ label: dn, cash: START, holdings: {}, watch: [], created: Date.now() });
+                    yield S.db.collection('ledger').add({ t: Date.now(), uid, kind: 'OPEN', price: START });
+                }
+                else
+                    yield SOLO.auth.signIn(un, pw);
+                location.hash = 'home';
+                location.reload();
+            }
+            catch (e) {
+                say('authmsg', e.message || 'Something went wrong. Try again.', false);
+            }
+        });
+    }
     /* ---------- HOME / ACCOUNTS ---------- */
     function home() {
         const a = me(), st = acctStats(a);
@@ -666,7 +773,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         const form = S.db && S.canWrite ? `<form id="ipof" class="form">
     <div class="frow"><label>Ticker<input name="ticker" maxlength="5" required placeholder="ACME" style="text-transform:uppercase" autocomplete="off"><\/label><label>Company name<input name="name" required maxlength="60" placeholder="Acme Holdings"><\/label><\/div>
     <div class="frow"><label>Sector<select name="sector">${SECTORS.map(s => `<option>${s}<\/option>`).join('')}<\/select><\/label><label>Subscription window<select name="win"><option value="${36e5}">1 hour<\/option><option value="${DAY}">1 day<\/option><option value="${3 * DAY}" selected>3 days<\/option><option value="${7 * DAY}">7 days<\/option><option value="${14 * DAY}">14 days<\/option><\/select><\/label><\/div>
-    <div class="frow"><label>IPO price per share<input name="price" type="number" min="0.5" step="0.01" required value="20"><\/label><label>Total shares<input name="shares" type="number" min="1000" step="1" required value="1000000"><\/label><label>Shares offered to the public<input name="offered" type="number" min="100" step="1" required value="250000"><\/label><\/div>
+    <div class="frow"><label>Company valuation ($)<input name="val" type="number" min="10000" step="1000" required value="20000000" inputmode="numeric"><\/label><label>Number of shares<input name="shares" type="number" min="1000" step="1" required value="1000000" inputmode="numeric"><\/label><label>Shares to sell in the IPO<input name="offered" type="number" min="100" step="1" required value="250000" inputmode="numeric"><\/label><\/div>
     <label>About the company<textarea name="about" rows="2" maxlength="400"><\/textarea><\/label>
     <label style="display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" name="rep" style="width:22px;height:22px"> Shareholders must meet a representative to sell<\/label>
     <label>Representative name<input name="repName" maxlength="60" placeholder="Acme Investor Relations"><\/label>
@@ -828,6 +935,7 @@ No<\/textarea><\/label>
    ${it('ledger', 'System ledger', 'Every account, order, trade, IPO and listing on the exchange')}
    ${it('bets', 'Betting boards', 'Bet play money on outcomes, or file your own board')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
+   <section class="card pad"><h2>Your login<\/h2><p class="mut" style="margin:6px 0 12px">Signed in as <b style="color:var(--ink)">${esc(name(S.uid))}<\/b> (@${esc(String(S.uid).replace(/^u:/, ''))})<\/p><button data-act="signout">Sign out<\/button><\/section>
    <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings are stored in a single system and visible to all participants. Prices aren't real quotes.<\/p><\/section><\/div>`;
     }
     /* ---------- CORPORATE ---------- */
@@ -1090,11 +1198,13 @@ No<\/textarea><\/label>
     }
     function fileIPO(f) {
         return __awaiter(this, void 0, void 0, function* () {
-            const T = f.ticker.value.trim().toUpperCase(), nm = f.name.value.trim(), pr = r2(+f.price.value), sh = Math.floor(+f.shares.value), of = Math.floor(+f.offered.value);
+            const T = f.ticker.value.trim().toUpperCase(), nm = f.name.value.trim(), val = +f.val.value, sh = Math.floor(+f.shares.value), of = Math.floor(+f.offered.value), pr = r2(val / sh);
             if (!/^[A-Z]{1,5}$/.test(T))
                 return say('ipomsg', 'Tickers are 1 to 5 letters.', false);
-            if (!nm || pr < .5 || sh < 1000 || of < 100 || of > sh)
-                return say('ipomsg', 'Check the name, price (at least $0.50) and share counts. Shares offered can\'t exceed total shares.', false);
+            if (!nm || !(val >= 10000) || sh < 1000 || of < 100 || of > sh)
+                return say('ipomsg', 'Check the name, valuation (at least $10,000) and share counts. Shares sold can\'t exceed the number of shares.', false);
+            if (pr < .01)
+                return say('ipomsg', 'That works out to under 1 cent a share. Raise the valuation or use fewer shares.', false);
             try {
                 if (S.companies[T] || S.ipos[T])
                     return say('ipomsg', `${T} is already taken.`, false);
@@ -1239,6 +1349,12 @@ No<\/textarea><\/label>
     }
     /* ================= EVENTS ================= */
     app.addEventListener('click', (e) => __awaiter(this, void 0, void 0, function* () {
+        const au = e.target.closest('[data-auth]');
+        if (au) {
+            S.authTab = au.dataset.auth;
+            render();
+            return;
+        }
         const t = e.target.closest('[data-tf]');
         if (t) {
             const [k, v] = t.dataset.tf.split(':');
@@ -1309,6 +1425,11 @@ No<\/textarea><\/label>
                 yield resolveBoard(b.dataset.id, +b.dataset.o);
             if (act === 'bet-void')
                 yield voidBoard(b.dataset.id);
+            if (act === 'signout') {
+                SOLO.auth.signOut();
+                location.hash = '';
+                location.reload();
+            }
         }
         catch (err) {
             if (err.code === 'invalid_argument' && act === 'open') {
@@ -1344,13 +1465,14 @@ No<\/textarea><\/label>
         submitTicket(); if (f.id === 'repf')
         repRequest(f); if (f.id === 'ipof')
         fileIPO(f); if (f.id === 'betf')
-        fileBoard(f); if (f.classList.contains('wagerf'))
+        fileBoard(f); if (f.id === 'authf')
+        authSubmit(f); if (f.classList.contains('wagerf'))
         placeBet(f.dataset.id, f); if (f.classList.contains('subf')) {
         const T = f.dataset.t;
         subscribe(T, Math.floor(+f.querySelector('input').value || 0));
     } });
     function ipoPrev() { const f = document.getElementById('ipof'), el = document.getElementById('ipoPrev'); if (!f || !el)
-        return; el.textContent = `Valuation ${big((+f.price.value || 0) * (+f.shares.value || 0))} · raising ${big((+f.price.value || 0) * (+f.offered.value || 0))}`; }
+        return; const v = +f.val.value || 0, sh = +f.shares.value || 0, of = +f.offered.value || 0, p = sh ? v / sh : 0; el.innerHTML = `IPO price <b class="mono" style="color:var(--ink)">${$(p)}<\/b> per share · selling ${sh ? (of / sh * 100).toFixed(1) : 0}% of the company · raising ${big(p * of)}`; }
     addEventListener('hashchange', () => { if (route().startsWith('s-'))
         S.ot = S.ot; render(); scrollTo(0, 0); });
     /* ================= LIVE TICK ================= */
