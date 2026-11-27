@@ -517,8 +517,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795762748';
-    const START = 0, WDLIM = 50000, DAY = 864e5;
+    const BUILD = '1795764017';
+    const START = 0, WDLIM = 50000, SHARECAP = 450000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
@@ -1057,7 +1057,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px"><span class="big" data-px="${esc(T)}">${$(p)}<\/span>${(() => { const lm = lastMove(T); if (!lm)
             return `<span class="${cls(ch)}" style="font-weight:700">${sg(ch * 100)} · ${newL ? 'since listing' : TFL[S.stf]}<\/span>`; return `<span class="${lm.sold ? 'dn' : 'up'}" style="font-weight:700">${lm.sold ? '▼' : '▲'} ${Math.abs(lm.p * 100) < 0.1 ? Math.abs(lm.p * 100).toFixed(3) : Math.abs(lm.p * 100).toFixed(2)}% · last trade ${lm.sold ? '(sold)' : '(bought)'}<\/span><span class="note" style="display:block;width:100%">${esc(name(lm.who))} ${lm.sold ? 'sold' : 'bought'} ${Number(lm.qty).toLocaleString()} shares · ${ago(lm.t)}<\/span>`; })()}<\/div><\/div>
     ${figHtml('sfig', 'tall')}${segHtml('s', S.stf)}
-    <div class="stats" style="margin-top:8px"><div><b>${big(p * c.shares)}<\/b><span>Market cap<\/span><\/div><div><b>${cnt(c.shares)}<\/b><span>Shares outstanding<\/span><\/div><div><b>${(c.vol || 0).toLocaleString()}<\/b><span>Shares traded<\/span><\/div><div><b>${holders(T)}<\/b><span>Investors<\/span><\/div><div><b>${y.length ? $(Math.max(...y)) : '—'}<\/b><span>1-year high<\/span><\/div><div><b>${y.length ? $(Math.min(...y)) : '—'}<\/b><span>1-year low<\/span><\/div>${c.ipo ? `<div><b>${$(c.ipo)}<\/b><span>IPO price<\/span><\/div>` : ''}<\/div>
+    <div class="stats" style="margin-top:8px"><div><b>${big(p * c.shares)}<\/b><span>Market cap<\/span><\/div><div><b>${cnt(c.shares)}<\/b><span>Shares outstanding<\/span><\/div><div><b>${cnt(Math.max(0, c.shares - ownedShares(T)))}<\/b><span>Shares available<\/span><\/div><div><b>${(c.vol || 0).toLocaleString()}<\/b><span>Shares traded<\/span><\/div><div><b>${holders(T)}<\/b><span>Investors<\/span><\/div><div><b>${y.length ? $(Math.max(...y)) : '—'}<\/b><span>1-year high<\/span><\/div><div><b>${y.length ? $(Math.min(...y)) : '—'}<\/b><span>1-year low<\/span><\/div>${c.ipo ? `<div><b>${$(c.ipo)}<\/b><span>IPO price<\/span><\/div>` : ''}<\/div>
     ${c.about ? `<p class="mut pad" style="margin:0">${esc(c.about)}<\/p>` : ''}<\/section>
    <section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>Live ${esc(T)} trades<\/h2><span class="note">who bought and sold<\/span><\/div>${tracker(T, 20)}<\/section>
    <section class="card"><div class="ch-h"><h2>Top 10 shareholders<\/h2><span class="note">${holders(T)} in total<\/span><\/div>${holderList(T)}<\/section><\/div>
@@ -1089,7 +1089,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
    <form id="ticket" class="form" style="margin-top:14px">
    <label>Order type<select id="ot" data-st="1"><option value="market"${S.ot === 'market' ? ' selected' : ''}>Market: fill now<\/option><option value="limit"${S.ot === 'limit' ? ' selected' : ''}>Limit: fill at my price or better<\/option><option value="stop"${S.ot === 'stop' ? ' selected' : ''}>Stop: trigger when price crosses<\/option><\/select><\/label>
    <label>Shares${sell ? ` (you can sell ${av.toLocaleString()})` : ''}<input id="qty" name="qty" type="number" min="1" step="1" value="10" inputmode="numeric"><\/label>
-   <div class="qq"><button type="button" class="sm-b" data-qq="1" data-for="qty">1<\/button><button type="button" class="sm-b" data-qq="10" data-for="qty">10<\/button><button type="button" class="sm-b" data-qq="100" data-for="qty">100<\/button><button type="button" class="sm-b" data-qq="${sell ? av : Math.max(1, Math.floor(a.cash / p / 1.15))}" data-for="qty">Max<\/button><\/div>
+   <div class="qq"><button type="button" class="sm-b" data-qq="1" data-for="qty">1<\/button><button type="button" class="sm-b" data-qq="10" data-for="qty">10<\/button><button type="button" class="sm-b" data-qq="100" data-for="qty">100<\/button><button type="button" class="sm-b" data-qq="${sell ? av : Math.max(1, Math.min(Math.floor(a.cash / p / 1.15), c.shares - ownedShares(T)))}" data-for="qty">Max<\/button><\/div>
    ${S.ot !== 'market' ? `<div class="frow"><label>${S.ot === 'limit' ? 'Limit' : 'Stop'} price<input id="lim" name="lim" type="number" min="0.01" step="0.01" value="${r2(p)}" inputmode="decimal"><\/label><label>Good for<select id="tif" name="tif"><option value="day">Today (24 hours)<\/option><option value="gtc">Until cancelled<\/option><\/select><\/label><\/div>` : ''}
    <div class="est" id="est"><\/div><p class="note" id="buyleft" style="margin:0"><\/p>${a.cash <= 0 && !sell ? '<p class="note" style="margin:0"><a href="#funding">Add money first<\/a><\/p>' : ''}
    <button class="${sell ? 'sell' : 'pri'}" id="go">${S.ot === 'market' ? (sell ? 'Sell' : 'Buy') + ' now' : 'Place ' + S.ot + ' order'}<\/button><div class="msg" id="tmsg"><\/div><\/form><\/section>`;
@@ -1132,9 +1132,9 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             if (sell)
                 bl.textContent = '';
             else {
-                const left = BUYMAX - buysUsed(me(), T, q);
-                bl.textContent = `Buys left today for ${BUCKETS[bucketOf(q)][2]} shares of ${T}: ${Math.max(0, left)} of ${BUYMAX}`;
-                bl.style.color = left > 0 ? '' : '#ff453a';
+                const left = BUYMAX - buysUsed(me(), T, q), avl = Math.max(0, c.shares - ownedShares(T));
+                bl.textContent = `Shares available: ${avl.toLocaleString()} · Buys left today for ${BUCKETS[bucketOf(q)][2]} shares: ${Math.max(0, left)} of ${BUYMAX}`;
+                bl.style.color = left > 0 && q <= avl ? '' : '#ff453a';
             }
         }
         el.innerHTML = `<div><span class="mut">Price now<\/span><b>${$(p)}<\/b><\/div><div><span class="mut">Average price you ${sell ? 'get' : 'pay'}<\/span><b>${$(p * ip.avg)}<\/b><\/div><div><span class="mut">Estimated ${sell ? 'proceeds' : 'cost'}<\/span><b>${$(p * ip.avg * q)}<\/b><\/div><div><span class="mut">Your price impact<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div><span class="mut">Price after your trade<\/span><b>${$(np)}<\/b><\/div>${cond ? `<div class="note" style="display:block">${esc(cond)}<\/div>` : ''}`;
@@ -1175,7 +1175,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const form = S.db && S.canWrite ? `<form id="ipof" class="form">
     <div class="frow"><label>Ticker<input name="ticker" maxlength="5" required placeholder="ACME" style="text-transform:uppercase" autocomplete="off"><\/label><label>Company name<input name="name" required maxlength="60" placeholder="Acme Holdings"><\/label><\/div>
     <div class="frow"><label>Sector<select name="sector">${SECTORS.map(s => `<option>${s}<\/option>`).join('')}<\/select><\/label><label>Subscription window<select name="win"><option value="${36e5}">1 hour<\/option><option value="${DAY}">1 day<\/option><option value="${3 * DAY}" selected>3 days<\/option><option value="${7 * DAY}">7 days<\/option><option value="${14 * DAY}">14 days<\/option><\/select><\/label><\/div>
-    <div class="frow"><label>Company valuation ($)<input name="val" type="number" min="10000" step="1000" required value="20000000" inputmode="numeric"><\/label><label>Number of shares<input name="shares" type="number" min="1000" step="1" required value="1000000" inputmode="numeric"><\/label><label>Shares to sell in the IPO<input name="offered" type="number" min="100" step="1" required value="250000" inputmode="numeric"><\/label><\/div>
+    <div class="frow"><label>Company valuation ($)<input name="val" type="number" min="10000" step="1000" required value="20000000" inputmode="numeric"><\/label><label>Number of shares (max 450,000)<input name="shares" type="number" min="1000" step="1" required value="300000" inputmode="numeric"><\/label><label>Shares to sell in the IPO<input name="offered" type="number" min="100" step="1" required value="75000" inputmode="numeric"><\/label><\/div>
     <label>About the company<textarea name="about" rows="2" maxlength="400"><\/textarea><\/label>
     <label style="display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" name="rep" style="width:22px;height:22px"> Shareholders must meet a representative to sell<\/label>
     <label>Representative name<input name="repName" maxlength="60" placeholder="Acme Investor Relations"><\/label>
@@ -1945,6 +1945,7 @@ No<\/textarea><\/label>
    <ul class="mut"><li><b>Trade value ÷ company value:<\/b> buying 10% of a company's worth pushes its price up about 10%. $10,000 barely moves a $100M company but clearly moves a $4M one.<\/li>
    <li><b>Impact shrinks as more is bought:<\/b> the first shares of a company move its price the most. Once investors own half of it, each share moves the price a third as much, and when they own all of it, a fifth as much.<\/li>
    <li><b>You pay the average:<\/b> a big buy pays more as its own order pushes the price up, and a big sale gets less as it pushes the price down. Buying and selling straight back earns exactly $0, so you can't pump a stock for free money.<\/li>
+   <li><b>Shares are limited:<\/b> nobody can own more shares than a company has. When every share is owned, you can buy once someone sells. New companies can have up to 450,000 shares.<\/li>
    <li><b>Buy limit:<\/b> each account can make 10 buys a day of each stock in each size range (1–15, 16–150, 151–1,500, 1,501–15,000 and over 15,000 shares).<\/li>
    <li><b>No shortcuts:<\/b> ten trades of 100 shares move the price exactly as much as one trade of 1,000 shares, so spamming small orders gets you nothing extra.<\/li>
    <li><b>Investors holding<\/b> is market depth. With more shareholders there are more people on the other side of a trade, so each order moves the price less.<\/li>
@@ -2012,6 +2013,11 @@ No<\/textarea><\/label>
                 throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
             if (side === 'SELL' && h.q < qty)
                 throw Error(`Only ${h.q} shares of ${T} are owned.`);
+            if (side === 'BUY') {
+                const left = Math.max(0, c.shares - ownedShares(T));
+                if (qty > left)
+                    throw Error(left ? `Only ${left.toLocaleString()} shares of ${T} are left to buy.` : `Every share of ${T} is owned. You can buy once someone sells.`);
+            }
             if (side === 'BUY') {
                 const bi = bucketOf(qty), k = T + '_' + bi, used = buysUsed(a, T, qty);
                 if (used >= BUYMAX)
@@ -2174,6 +2180,8 @@ No<\/textarea><\/label>
             const T = f.ticker.value.trim().toUpperCase(), nm = f.name.value.trim(), val = +f.val.value, sh = Math.floor(+f.shares.value), of = Math.floor(+f.offered.value), pr = r2(val / sh);
             if (!/^[A-Z]{1,5}$/.test(T))
                 return say('ipomsg', 'Tickers are 1 to 5 letters.', false);
+            if (sh > SHARECAP)
+                return say('ipomsg', `A company can have at most ${SHARECAP.toLocaleString()} shares.`, false);
             if (!nm || !(val >= 10000) || sh < 1000 || of < 100 || of > sh)
                 return say('ipomsg', 'Check the name, valuation (at least $10,000) and share counts. Shares sold can\'t exceed the number of shares.', false);
             if (pr < .01)
