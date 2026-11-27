@@ -4,4 +4,4 @@ A parody brokerage with play money: the B40 index of 40 made-up companies plus G
 
 Live site: https://glennbourbon7-web.github.io/bourbon-40/
 
-Prices are simulated, not real quotes. Accounts are saved on each device.
+Prices are simulated, not real quotes. All accounts, trades and requests are stored in one shared Firebase database.
