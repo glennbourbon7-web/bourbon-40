@@ -191,6 +191,8 @@ header .logo{flex:none}
 .gstep .grow{flex:1}.gstep p{margin:2px 0 0;font-size:14px}
 .gn{flex:none;width:30px;height:30px;border-radius:15px;background:#fff;color:#000;font-weight:800;display:grid;place-items:center}
 .gic{flex:none;width:44px;height:44px;border-radius:12px;background:#2c2c2e;display:grid;place-items:center}.gi{width:24px;height:24px;fill:none;stroke:#0a84ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#updbar{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;background:#30d158;color:#000;border:0;font-weight:700;border-radius:999px;padding:0 18px;min-height:44px;box-shadow:0 10px 30px rgba(0,0,0,.6);white-space:nowrap}
+@media(min-width:701px){#updbar{bottom:24px}}
 </style>
 </head><body>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -262,11 +264,15 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         let es;
         try {
             es = new EventSource(DB + '/.json');
+            esRef = es;
         }
         catch (e) {
             poll();
             return;
         }
+        /* some networks open the live stream but never send anything: fall back to checking every few seconds */
+        setTimeout(() => { if (!ready)
+            poll(); }, 5000);
         const onEv = (kind) => ev => {
             let m;
             try {
@@ -293,18 +299,16 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         }
         catch (e) { } poll(); });
         es.onerror = () => { if (!ready)
-            setTimeout(() => { if (!ready) {
-                try {
-                    es.close();
-                }
-                catch (e) { }
-                poll();
-            } }, 6000); };
+            setTimeout(() => { if (!ready)
+                poll(); }, 1500); };
     }
     /* fallback if live streaming is blocked: refresh every few seconds */
-    let polling = false;
+    let polling = false, esRef = null;
     function poll() { if (polling)
-        return; polling = true; const go = () => fetch(DB + '/.json').then(r => r.json()).then(d => { tree = d || {}; markReady(); fire(); }).catch(() => { }).then(() => setTimeout(go, 4000)); go(); }
+        return; polling = true; try {
+        esRef && esRef.close();
+    }
+    catch (e) { } const go = () => fetch(DB + '/.json').then(r => r.json()).then(d => { tree = d || {}; markReady(); fire(); }).catch(() => { }).then(() => setTimeout(go, 4000)); go(); }
     function req(method, p, body) {
         return __awaiter(this, void 0, void 0, function* () { const r = yield fetch(DB + '/' + segs(p).join('/') + '.json', { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) }); if (!r.ok)
             throw { code: r.status === 401 || r.status === 403 ? 'invalid_argument' : 'unavailable', message: 'Database error ' + r.status }; return r; });
@@ -486,6 +490,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
+    const BUILD = '1795758838';
     const START = 0, WDLIM = 50000, Y = 10, CAP = 0.08, FLOOR = 0.0005, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -750,7 +755,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             ch.style.display = S.uid ? '' : 'none';
         }
         if (!S.loaded) {
-            app.innerHTML = `<p class="mut">${S.stale ? 'Market data can\'t be reached yet. It will appear as soon as the connection answers.' : 'Loading market data…'}<\/p>`;
+            app.innerHTML = `<div class="getapp"><p class="mut">${S.stale ? 'Still connecting… This can take a moment on slow connections.' : 'Loading market data…'}<\/p>${S.stale ? '<button class="pri" onclick="location.reload()">Try again<\/button>' : ''}<\/div>`;
             return;
         }
         document.body.classList.toggle('guest', !S.uid);
@@ -902,7 +907,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             body = `${installEvt ? '<button class="pri big-b" data-act="install">Install app<\/button>' : ''}<div class="gsteps">${step(1, 'Tap the menu', 'Tap ⋮ at the top right of Chrome.')}${step(2, 'Tap “Install app” or “Add to Home screen”', 'Then tap Install.')}${step(3, 'Open Ānanda from your home screen', 'It opens full-screen like any other app.')}<\/div>`;
         else
             body = `${installEvt ? '<button class="pri big-b" data-act="install">Install app<\/button>' : ''}<p class="mut">On a computer, use Chrome or Edge and click the install icon in the address bar. On a phone, open <b>glennbourbon7-web.github.io/bourbon-40/app<\/b> and follow the steps.<\/p>`;
-        function iosSteps() { return `<div class="gsteps">${step(1, 'Tap the Share button', `It's the square with an arrow at the bottom of Safari.`, shareIc)}${step(2, 'Scroll down and tap “Add to Home Screen”', 'It's in the list under the row of apps.', addIc)}${step(3, 'Tap “Add”', 'The name will already say Ānanda.')}${step(4, 'Open Ānanda from your home screen', 'It opens full-screen with no address bar, just like an app.')}<\/div>`; }
+        function iosSteps() { return `<div class="gsteps">${step(1, 'Tap the Share button', `It's the square with an arrow at the bottom of Safari.`, shareIc)}${step(2, 'Scroll down and tap “Add to Home Screen”', 'It’s in the list under the row of apps.', addIc)}${step(3, 'Tap “Add”', 'The name will already say Ānanda.')}${step(4, 'Open Ānanda from your home screen', 'It opens full-screen with no address bar, just like an app.')}<\/div>`; }
         return `<section class="getapp"><img src="icons/icon-512.png" alt="Ānanda Capital app icon" class="appicon"><div class="wm" style="justify-items:center"><b>ĀNANDA CAPITAL<\/b><\/div>
    <h1>Get the app<\/h1><p class="mut" style="max-width:440px;margin:0 auto 22px">Put Ānanda Capital on your home screen. It opens full-screen, with live prices, your portfolio and alerts, one tap away.<\/p>
    <div class="card pad" style="text-align:left;max-width:520px;margin:0 auto">${body}<\/div>
@@ -2409,6 +2414,28 @@ No<\/textarea><\/label>
         return; const v = +f.val.value || 0, sh = +f.shares.value || 0, of = +f.offered.value || 0, p = sh ? v / sh : 0; el.innerHTML = `IPO price <b class="mono" style="color:var(--ink)">${$(p)}<\/b> per share · selling ${sh ? (of / sh * 100).toFixed(1) : 0}% of the company · raising ${big(p * of)}`; }
     addEventListener('hashchange', () => { setTimeout(staffAlerts, 50); if (route().startsWith('s-'))
         S.ot = S.ot; render(); scrollTo(0, 0); });
+    /* ---------- UPDATES: tell people (and the home-screen app) when a newer version is live ---------- */
+    function checkUpdate() {
+        try {
+            fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+                if (!v || !v.build || v.build === BUILD)
+                    return;
+                let bar = document.getElementById('updbar');
+                if (!bar) {
+                    bar = document.createElement('button');
+                    bar.id = 'updbar';
+                    bar.textContent = 'New version available · Update';
+                    bar.onclick = () => { location.replace(location.pathname.replace(/index\.html$/, '') + '?v=' + v.build + (location.hash || '')); };
+                    document.body.appendChild(bar);
+                }
+            }).catch(() => { });
+        }
+        catch (e) { }
+    }
+    setTimeout(checkUpdate, 4000);
+    setInterval(checkUpdate, 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden)
+        checkUpdate(); });
     /* ================= LIVE TICK ================= */
     setInterval(() => {
         if (!S.loaded)
@@ -2451,6 +2478,10 @@ No<\/textarea><\/label>
     }
     let rt = 0;
     const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); }, 80); };
+    setTimeout(() => { if (!S.loaded) {
+        S.stale = true;
+        render();
+    } }, 12000);
     setTimeout(() => { const sp = document.getElementById('splash'); if (sp) {
         sp.classList.add('out');
         setTimeout(() => sp.remove(), 600);
