@@ -490,7 +490,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795761784';
+    const BUILD = '1795762255';
     const START = 0, WDLIM = 50000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -555,12 +555,13 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     const ownedShares = T => Object.values(S.accounts).reduce((x, a) => x + ((a.holdings && a.holdings[T] && a.holdings[T].q) || 0), 0);
     /* each share moves the price less as more of the company is owned: the push is the area under 1/(1+4·owned/total),
        so many small orders add up to exactly the same move as one big order */
-    function impactParts(c, qty, sell) {
-        const S0 = c.shares, Q = Math.min(ownedShares(c.ticker), S0), h = holders(c.ticker), depth = 1 / (1 + 0.1 * h), frac = qty / S0;
+    function impactParts(c, qty, sell, uid) {
+        const S0 = c.shares, Q = Math.min(ownedShares(c.ticker), S0), h = Object.entries(S.accounts).filter(([id, a]) => id !== uid && ((a.holdings && a.holdings[c.ticker] && a.holdings[c.ticker].q) || 0) > 0).length, depth = 1 / (1 + 0.1 * h), frac = qty / S0;
         const F = n => Math.log(1 + SHRINK * Math.max(0, n) / S0) / SHRINK, area = sell ? F(Q) - F(Q - qty) : F(Q + qty) - F(Q), x = area * depth;
-        return { frac, h, depth, x, owned: Q / S0, shrink: 1 / (1 + SHRINK * Q / S0), m: sell ? 1 - Math.exp(-x) : Math.exp(x) - 1 };
+        /* every share is filled at the price it actually moves through, so the order pays (or gets) the average */
+        const avg = x < 1e-9 ? 1 : sell ? (1 - Math.exp(-x)) / x : (Math.exp(x) - 1) / x;
+        return { frac, h, depth, x, avg, owned: Q / S0, shrink: 1 / (1 + SHRINK * Q / S0), m: sell ? 1 - Math.exp(-x) : Math.exp(x) - 1 };
     }
-    const impact = (c, q, sell) => impactParts(c, q, sell).m;
     function series(fn, tf, n) { const [span, N] = TF[tf]; n = n || N; const now = Date.now(), out = []; for (let i = 0; i < n; i++) {
         const t = now - span + i * span / (n - 1), v = fn(t);
         if (v != null && isFinite(v) && v > 0)
@@ -1061,7 +1062,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
    <form id="ticket" class="form" style="margin-top:14px">
    <label>Order type<select id="ot" data-st="1"><option value="market"${S.ot === 'market' ? ' selected' : ''}>Market: fill now<\/option><option value="limit"${S.ot === 'limit' ? ' selected' : ''}>Limit: fill at my price or better<\/option><option value="stop"${S.ot === 'stop' ? ' selected' : ''}>Stop: trigger when price crosses<\/option><\/select><\/label>
    <label>Shares${sell ? ` (you can sell ${av.toLocaleString()})` : ''}<input id="qty" name="qty" type="number" min="1" step="1" value="10" inputmode="numeric"><\/label>
-   <div class="qq"><button type="button" class="sm-b" data-qq="1" data-for="qty">1<\/button><button type="button" class="sm-b" data-qq="10" data-for="qty">10<\/button><button type="button" class="sm-b" data-qq="100" data-for="qty">100<\/button><button type="button" class="sm-b" data-qq="${sell ? av : Math.max(1, Math.floor(a.cash / p / 1.01))}" data-for="qty">Max<\/button><\/div>
+   <div class="qq"><button type="button" class="sm-b" data-qq="1" data-for="qty">1<\/button><button type="button" class="sm-b" data-qq="10" data-for="qty">10<\/button><button type="button" class="sm-b" data-qq="100" data-for="qty">100<\/button><button type="button" class="sm-b" data-qq="${sell ? av : Math.max(1, Math.floor(a.cash / p / 1.15))}" data-for="qty">Max<\/button><\/div>
    ${S.ot !== 'market' ? `<div class="frow"><label>${S.ot === 'limit' ? 'Limit' : 'Stop'} price<input id="lim" name="lim" type="number" min="0.01" step="0.01" value="${r2(p)}" inputmode="decimal"><\/label><label>Good for<select id="tif" name="tif"><option value="day">Today (24 hours)<\/option><option value="gtc">Until cancelled<\/option><\/select><\/label><\/div>` : ''}
    <div class="est" id="est"><\/div>${a.cash <= 0 && !sell ? '<p class="note" style="margin:0"><a href="#funding">Add money first<\/a><\/p>' : ''}
    <button class="${sell ? 'sell' : 'pri'}" id="go">${S.ot === 'market' ? (sell ? 'Sell' : 'Buy') + ' now' : 'Place ' + S.ot + ' order'}<\/button><div class="msg" id="tmsg"><\/div><\/form><\/section>`;
@@ -1092,14 +1093,14 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             el.innerHTML = '<div><span>Enter at least 1 share.<\/span><\/div>';
             return;
         }
-        const sell = S.side === 'SELL', p = live(T), ip = impactParts(c, q, sell), np = p * (sell ? 1 - ip.m : 1 + ip.m);
+        const sell = S.side === 'SELL', p = live(T), ip = impactParts(c, q, sell, S.uid), np = p * (sell ? 1 - ip.m : 1 + ip.m);
         const lim = +((_a = document.getElementById('lim')) === null || _a === void 0 ? void 0 : _a.value) || 0;
         let cond = '';
         if (S.ot === 'limit' && lim)
             cond = sell ? `Fills automatically once the price reaches ${$(lim)} or higher.` : `Fills automatically once the price falls to ${$(lim)} or lower.`;
         if (S.ot === 'stop' && lim)
             cond = sell ? `Sells automatically if the price drops to ${$(lim)} or lower.` : `Buys automatically if the price rises to ${$(lim)} or higher.`;
-        el.innerHTML = `<div><span class="mut">Price now<\/span><b>${$(p)}<\/b><\/div><div><span class="mut">Estimated ${sell ? 'proceeds' : 'cost'}<\/span><b>${$(p * q)}<\/b><\/div><div><span class="mut">Your price impact<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div><span class="mut">Price after your trade<\/span><b>${$(np)}<\/b><\/div>${cond ? `<div class="note" style="display:block">${esc(cond)}<\/div>` : ''}`;
+        el.innerHTML = `<div><span class="mut">Price now<\/span><b>${$(p)}<\/b><\/div><div><span class="mut">Average price you ${sell ? 'get' : 'pay'}<\/span><b>${$(p * ip.avg)}<\/b><\/div><div><span class="mut">Estimated ${sell ? 'proceeds' : 'cost'}<\/span><b>${$(p * ip.avg * q)}<\/b><\/div><div><span class="mut">Your price impact<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div><span class="mut">Price after your trade<\/span><b>${$(np)}<\/b><\/div>${cond ? `<div class="note" style="display:block">${esc(cond)}<\/div>` : ''}`;
     }
     /* ---------- TRADE TAB ---------- */
     function trade() {
@@ -1742,7 +1743,7 @@ No<\/textarea><\/label>
                 return;
             resetBusy = true;
             try {
-                const done = yield S.db.doc('meta/reset1').get();
+                const done = yield S.db.doc('meta/reset2').get();
                 if (done.exists)
                     return;
                 const c1 = yield S.db.doc('meta/cleanup1').get();
@@ -1750,7 +1751,7 @@ No<\/textarea><\/label>
                     resetBusy = false;
                     return;
                 }
-                yield S.db.doc('meta/reset1').set({ started: Date.now(), by: S.uid });
+                yield S.db.doc('meta/reset2').set({ started: Date.now(), by: S.uid });
                 const now = Date.now();
                 for (const c of L()) {
                     const orig = r2(c.ipo || c.ref || (c.ticker === 'GNS' ? 9.6 : refPx(c)));
@@ -1780,8 +1781,8 @@ No<\/textarea><\/label>
                         nb.wagers = {};
                         yield S.db.doc('bets/' + b.id).set(nb);
                     }
-                yield S.db.doc('meta/reset1').update({ done: Date.now() });
-                yield log({ kind: 'RESET', via: 'All stock prices reset to their original price and every account reset to $50,000' });
+                yield S.db.doc('meta/reset2').update({ done: Date.now() });
+                yield log({ kind: 'RESET', via: 'Price loophole fixed: all stock prices reset to their original price and every account reset to $50,000' });
             }
             catch (e) {
                 console.warn(e);
@@ -1911,6 +1912,7 @@ No<\/textarea><\/label>
    <div class="formula">Each share's push = 1 ÷ (1 + 4 × share of the company already owned) ÷ (1 + 0.1 × investors holding)<br>Buy: new price = price × e<sup>total push<\/sup> · Sell: new price = price × e<sup>−total push<\/sup><\/div>
    <ul class="mut"><li><b>Trade value ÷ company value:<\/b> buying 10% of a company's worth pushes its price up about 10%. $10,000 barely moves a $100M company but clearly moves a $4M one.<\/li>
    <li><b>Impact shrinks as more is bought:<\/b> the first shares of a company move its price the most. Once investors own half of it, each share moves the price a third as much, and when they own all of it, a fifth as much.<\/li>
+   <li><b>You pay the average:<\/b> a big buy pays more as its own order pushes the price up, and a big sale gets less as it pushes the price down. Buying and selling straight back earns exactly $0, so you can't pump a stock for free money.<\/li>
    <li><b>No shortcuts:<\/b> ten trades of 100 shares move the price exactly as much as one trade of 1,000 shares, so spamming small orders gets you nothing extra.<\/li>
    <li><b>Investors holding<\/b> is market depth. With more shareholders there are more people on the other side of a trade, so each order moves the price less.<\/li>
    <li>The new base price is then saved and logged, so every viewer sees the same new price instantly.<\/li><\/ul>
@@ -1931,12 +1933,12 @@ No<\/textarea><\/label>
         const c = S.companies[document.getElementById('cT').value];
         if (!c)
             return;
-        const q = Math.max(1, Math.floor(+document.getElementById('cQ').value || 1)), sell = document.getElementById('cS').value === 'SELL', p = live(c.ticker), ip = impactParts(c, q, sell), np = p * (sell ? 1 - ip.m : 1 + ip.m);
+        const q = Math.max(1, Math.floor(+document.getElementById('cQ').value || 1)), sell = document.getElementById('cS').value === 'SELL', p = live(c.ticker), ip = impactParts(c, q, sell, S.uid), np = p * (sell ? 1 - ip.m : 1 + ip.m);
         el.innerHTML = `<div><span class="mut">Price now<\/span><b>${$(p)}<\/b><\/div><div><span class="mut">Trade value<\/span><b>${$(p * q)}<\/b><\/div><div><span class="mut">Market cap<\/span><b>${big(p * c.shares)}<\/b><\/div>
   <div><span class="mut">Trade ÷ company value<\/span><b>${(ip.frac * 100).toPrecision(3)}%<\/b><\/div>
   <div><span class="mut">Already owned by investors<\/span><b>${(ip.owned * 100).toFixed(1)}% → each share counts ${(ip.shrink * 100).toFixed(0)}%<\/b><\/div>
   <div><span class="mut">Investors holding<\/span><b>${ip.h} → × ${ip.depth.toFixed(3)}<\/b><\/div><div><span class="mut">Push<\/span><b>${(ip.x * 100).toFixed(3)}%<\/b><\/div>
-  <div><span class="mut">Price move<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div style="border:0"><span>New price<\/span><b style="font-size:20px">${$(np)}<\/b><\/div>`;
+  <div><span class="mut">Price move<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div><span class="mut">Average price ${sell ? 'received' : 'paid'}<\/span><b>${$(p * ip.avg)}<\/b><\/div><div><span class="mut">${sell ? 'You get' : 'You pay'}<\/span><b>${$(p * ip.avg * q)}<\/b><\/div><div style="border:0"><span>New price<\/span><b style="font-size:20px">${$(np)}<\/b><\/div>`;
     }
     /* ================= WRITES ================= */
     S.msgs = {};
@@ -1967,12 +1969,12 @@ No<\/textarea><\/label>
                 throw Error('Account not found.');
             const a = clone(as.data());
             a.holdings = a.holdings || {};
-            const now = Date.now(), rawPx = liveC(c, now), px = r2(rawPx), total = r2(px * qty), h = a.holdings[T] || { q: 0, c: 0 };
+            const now = Date.now(), rawPx = liveC(c, now), ip = impactParts(c, qty, side === 'SELL', uid), fill = rawPx * ip.avg, px = r2(fill), total = r2(fill * qty), h = a.holdings[T] || { q: 0, c: 0 };
             if (side === 'BUY' && a.cash < total)
                 throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
             if (side === 'SELL' && h.q < qty)
                 throw Error(`Only ${h.q} shares of ${T} are owned.`);
-            const m = impact(c, qty, side === 'SELL'), np = Math.max(.01, rawPx * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
+            const m = ip.m, np = Math.max(.01, rawPx * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
             if (side === 'BUY') {
                 h.q += qty;
                 h.c = r2(h.c + total);
