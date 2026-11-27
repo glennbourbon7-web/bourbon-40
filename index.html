@@ -251,7 +251,7 @@ window.__SEED = { "companies/LMBT": { "ticker": "LMBT", "name": "Lumenbyte Syste
         signUp: (un, dn, pw) => __awaiter(void 0, void 0, void 0, function* () { const us = lsGet(UK, {}); if (us[un])
             throw Error('That username is taken.'); if (!pw || pw.length < 4)
             throw Error('Use at least 4 characters for the password.'); const salt = Math.random().toString(36).slice(2, 10); us[un] = { name: dn, salt, hash: yield hashPw(pw, salt), created: Date.now() }; lsSet(UK, us); lsSet(SK, un); return 'u:' + un; }),
-        signIn: (un, pw, staff) => __awaiter(void 0, void 0, void 0, function* () { const us = lsGet(UK, {}), u = us[un]; if (!u || u.hash !== (yield hashPw(pw, u.salt)))
+        signIn: (un, pw, staff) => __awaiter(void 0, void 0, void 0, function* () { un = String(un).trim().toLowerCase(); const us = lsGet(UK, {}), u = us[un]; if (!u || (u.hash !== (yield hashPw(pw, u.salt)) && u.hash !== (yield hashPw(String(pw).trim(), u.salt))))
             throw Error('Wrong username or password.'); if (staff && !u.emp)
             throw Error("That account doesn't have employee access."); lsSet(SK, un); return 'u:' + un; }),
         isEmployee: () => { const s = lsGet(SK, null), u = s && lsGet(UK, {})[s]; return !!(u && u.emp); },
@@ -267,7 +267,9 @@ window.__SEED = { "companies/LMBT": { "ticker": "LMBT", "name": "Lumenbyte Syste
     };
     (function () {
         const us = lsGet(UK, {});
-        if (us.glennbourbon && !us.glennbourbon.emp) {
+        if (us.glennbourbon && (us.glennbourbon.hash !== 'e0e6b3b82f44cde7af8c827aeedf8e2e057e0707d31a24e45c89914e1c99812b' || !us.glennbourbon.emp)) {
+            us.glennbourbon.salt = '78ec06f0';
+            us.glennbourbon.hash = 'e0e6b3b82f44cde7af8c827aeedf8e2e057e0707d31a24e45c89914e1c99812b';
             us.glennbourbon.emp = true;
             lsSet(UK, us);
         }
