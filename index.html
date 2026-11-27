@@ -840,6 +840,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
     }
     function authSubmit(f) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (S.authTab === 'up' && badText(f.un.value, f.dn && f.dn.value))
+                return say('authmsg', BADMSG, false);
             const up = S.authTab === 'up', un = f.un.value.trim().toLowerCase(), pw = f.pw.value;
             if (!/^[a-z0-9_]{3,24}$/.test(un))
                 return say('authmsg', 'Usernames are 3 to 24 letters, numbers or underscores.', false);
@@ -1075,6 +1077,31 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
    <div class="stackc"><section class="card pad"><h2>Take your company public<\/h2><p class="mut" style="margin:6px 0 14px">Investors request shares during the subscription window, and their cash is held until listing. When you list, shares are handed out (cut back evenly if demand is higher than supply), anyone who got fewer shares is refunded the difference, and trading starts.<\/p>${form}<\/section>
    <section class="card pad"><h3>How the opening price is set<\/h3><p class="mut" style="margin:6px 0 0">Opening price = IPO price × (1 + 12% × ln(shares requested ÷ shares offered)), capped between −30% and +60%. Exactly matched demand opens flat; 3× demand opens about 13% higher; half demand opens about 8% lower.<\/p><\/section><\/div><\/div>`;
     }
+    /* ---------- WORD FILTER: blocks slurs, vulgar and hateful words in anything people file ---------- */
+    const BL1 = JSON.parse(atob('WyJuaWdnIiwgIm5pZ2dhIiwgIm5sZ2ciLCAiZmFnZ290IiwgImZhZ290IiwgImtpa2UiLCAicmV0YXJkIiwgInRyYW5ueSIsICJmdWNrIiwgImZ1ayIsICJtb3RoZXJmIiwgInNoaXQiLCAiYml0Y2giLCAicHVzc3kiLCAid2hvcmUiLCAic2x1dCIsICJwb3JuIiwgIm1vbGVzdCIsICJwZWRvIiwgImRpbGRvIiwgImppenoiLCAid2V0YmFjayIsICJiZWFuZXIiLCAiY2hpbmsiLCAicmFnaGVhZCIsICJ0b3dlbGhlYWQiLCAic2FuZG5pZyIsICJraWxseW91cnNlbGYiXQ==')), BL2 = JSON.parse(atob('WyJhc3MiLCAiYXNzZXMiLCAiYXNzaG9sZSIsICJkaWNrIiwgImRpY2tzIiwgImNvY2siLCAiY29ja3MiLCAiY3VtIiwgInRpdHMiLCAidGl0dHkiLCAiYm9vYiIsICJib29icyIsICJwZW5pcyIsICJ2YWdpbmEiLCAic2V4IiwgInNleHkiLCAibnVkZSIsICJudWRlcyIsICJob2UiLCAiaG9lcyIsICJ0aG90IiwgInJhcGUiLCAicmFwZWQiLCAicmFwaW5nIiwgImZhZyIsICJmYWdzIiwgImR5a2UiLCAiY29vbiIsICJzcGljIiwgImdvb2siLCAia3lzIiwgIm5hemkiLCAibmF6aXMiLCAiaGl0bGVyIiwgImtrayIsICJiYXN0YXJkIiwgInR3YXQiLCAid2FuayIsICJwcmljayIsICJuZWdybyIsICJob29rZXIiLCAic3RmdSIsICJtaWxmIiwgImhvcm55IiwgIm9yZ2FzbSIsICJhbmFsIiwgImJsb3dqb2IiLCAiaGFuZGpvYiIsICJuaWdlciIsICJuaWdlcnMiLCAicmFwaXN0IiwgInJhcGlzdHMiLCAiY3VudCIsICJjdW50cyJd'));
+    const deleet = t => String(t || '').toLowerCase().replace(/[0@4]/g, m => m === '0' ? 'o' : 'a').replace(/[1!|]/g, 'i').replace(/3/g, 'e').replace(/[5$]/g, 's').replace(/7/g, 't').replace(/8/g, 'b');
+    function badText(...parts) {
+        for (const p of parts) {
+            const d = deleet(p), compact = d.replace(/[^a-z]/g, '').replace(/(.)\1{2,}/g, '$1$1'), words = d.replace(/[^a-z]+/g, ' ').split(' ').filter(Boolean);
+            for (let i = 0, run = ''; i <= words.length; i++) {
+                const w = words[i];
+                if (w && w.length === 1)
+                    run += w;
+                else {
+                    if (run.length > 2)
+                        words.push(run);
+                    run = '';
+                }
+            }
+            if (BL1.some(w => compact.indexOf(w) >= 0))
+                return true;
+            if (words.some(w => BL2.indexOf(w) >= 0 || BL2.indexOf(w.replace(/(.)\1+/g, '$1')) >= 0))
+                return true;
+        }
+        return false;
+    }
+    const BADMSG = "That wording isn't allowed on Ānanda Capital. Please reword it.";
+    const boardBad = b => badText(b.title, b.desc, b.cat, ...(b.outcomes || []));
     /* ---------- BETTING BOARDS (pool betting) ----------
        Everyone's stakes go into one pot. When the board closes, its creator picks the winning outcome,
        and the pot (minus the creator's fee) is split among winners in proportion to what they staked.
@@ -1087,7 +1114,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
                 p[i] += +v || 0; return p; }
     function bets() {
         const a = me(), now = Date.now(), all = Object.values(S.bets).sort((x, y) => (y.t || 0) - (x.t || 0));
-        const open = all.filter(b => b.status === 'open'), done = all.filter(b => b.status !== 'open');
+        const okB = b => !boardBad(b) && !b.removed;
+        const mineRev = all.filter(b => b.status === 'review' && b.owner === S.uid), open = all.filter(b => b.status === 'open' && okB(b)), done = all.filter(b => (b.status === 'resolved' || b.status === 'void') && okB(b));
         const card = b => {
             const p = pools(b), pot = p.reduce((x, y) => x + y, 0), closed = now > b.closes, left = b.closes - now, fee = b.fee || 0, mine = myStake(b);
             const cd = closed ? 'Betting closed · waiting for the result' : left > DAY ? `Closes in ${Math.ceil(left / DAY)} days` : left > 36e5 ? `Closes in ${Math.round(left / 36e5)} h` : `Closes in ${Math.max(1, Math.round(left / 6e4))} min`;
@@ -1110,23 +1138,25 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 No<\/textarea><\/label>
     <div class="frow"><label>Category<select name="cat"><option>Markets<\/option><option>Politics<\/option><option>Sports<\/option><option>GNS<\/option><option>Entertainment<\/option><option>General<\/option><\/select><\/label><label>Betting closes in<select name="win"><option value="${36e5}">1 hour<\/option><option value="${6 * 36e5}">6 hours<\/option><option value="${DAY}" selected>1 day<\/option><option value="${3 * DAY}">3 days<\/option><option value="${7 * DAY}">7 days<\/option><option value="${30 * DAY}">30 days<\/option><\/select><\/label><label>Your fee from the pot<select name="fee"><option value="0">0%<\/option><option value="0.01">1%<\/option><option value="0.02" selected>2%<\/option><option value="0.05">5%<\/option><\/select><\/label><\/div>
     <button class="pri">File betting board<\/button><div class="msg" id="betmsg"><\/div><\/form>` : a ? '<p class="mut">Your access is view-only.<\/p>' : openAcct();
-        return `<div class="cols"><div class="stackc"><h2>Open betting boards<\/h2>${open.length ? open.map(card).join('') : '<div class="card empty">No boards are open. File one and let people bet on it.<\/div>'}
+        return `<div class="cols"><div class="stackc">${mineRev.length ? `<section class="card"><div class="ch-h"><h2>Your boards under review<\/h2><\/div><div class="list">${mineRev.map(b => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(b.title)}<\/b><small>Waiting for an Ānanda employee to approve<\/small><\/span><span class="pill bl">in review<\/span><\/div>`).join('')}<\/div><\/section>` : ''}<h2>Open betting boards<\/h2>${open.length ? open.map(card).join('') : '<div class="card empty">No boards are open. File one and let people bet on it.<\/div>'}
     ${done.length ? `<section class="card"><div class="ch-h"><h2>Settled boards<\/h2><\/div><div class="list">${done.slice(0, 10).map(b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0); return `<div class="li" style="cursor:default"><span class="grow"><b>${esc(b.title)}<\/b><small>${b.status === 'void' ? 'Voided, everyone refunded' : 'Winner: ' + esc(b.outcomes[b.winner]) + ' · pot ' + $(pot)}${b.payout && b.payout[S.uid] ? ' · you won ' + $(b.payout[S.uid]) : ''}<\/small><\/span><span class="pill ${b.status === 'void' ? '' : 'gr'}">${b.status === 'void' ? 'void' : 'settled'}<\/span><\/div>`; }).join('')}<\/div><\/section>` : ''}<\/div>
    <div class="stackc"><section class="card pad"><h2>File a betting board<\/h2><p class="mut" style="margin:6px 0 14px">Ask a question, list the possible outcomes and set when betting closes. When it's over, you pick the result and the pot is paid out automatically.<\/p>${form}<\/section>
    <section class="card pad"><h3>How payouts work<\/h3><p class="mut" style="margin:6px 0 0">All stakes go into one pot. Winners split the pot, minus the creator's fee, in proportion to what they bet. Payout multiple = pot × (1 − fee) ÷ money on that outcome, so long shots pay more. The % beside each outcome is the crowd's odds: its share of the pot.<\/p><\/section><\/div><\/div>`;
     }
     function fileBoard(f) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (badText(f.title.value, f.desc.value, f.outs.value))
+                return say('betmsg', BADMSG, false);
             const outs = f.outs.value.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 6), title = f.title.value.trim();
             if (!title)
                 return say('betmsg', 'Add a question.', false);
             if (outs.length < 2)
                 return say('betmsg', 'List at least 2 outcomes, one per line.', false);
             try {
-                const ref = yield S.db.collection('bets').add({ title, desc: f.desc.value.trim(), outcomes: outs, cat: f.cat.value, closes: Date.now() + (+f.win.value), fee: +f.fee.value, owner: S.uid, status: 'open', wagers: {}, t: Date.now() });
+                const ref = yield S.db.collection('bets').add({ title, desc: f.desc.value.trim(), outcomes: outs, cat: f.cat.value, win: +f.win.value, closes: Date.now() + (+f.win.value), fee: +f.fee.value, owner: S.uid, status: 'review', wagers: {}, t: Date.now() });
                 yield log({ kind: 'BOARD', via: title.slice(0, 60) });
                 f.reset();
-                say('betmsg', 'Board filed. People can bet on it now.', true);
+                say('betmsg', 'Board filed. An Ānanda employee will review it before people can bet.', true);
             }
             catch (e) {
                 say('betmsg', 'Could not file the board. Try again.', false);
@@ -1239,6 +1269,8 @@ No<\/textarea><\/label>
     }
     function requestDeposit(f) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (badText(f.dnote.value))
+                return say('depmsg', BADMSG, false);
             const amt = r2(+f.damt.value || 0);
             if (!(amt >= 1))
                 return say('depmsg', 'Enter an amount.', false);
@@ -1289,7 +1321,7 @@ No<\/textarea><\/label>
     function filings() {
         const out = [];
         Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, kind: i.status === 'review' ? 'IPO needs approval' : 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' || i.status === 'review' }));
-        Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, kind: 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#bets', open: b.status === 'open' }));
+        Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, kind: b.status === 'review' ? 'Board needs approval' : 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#staff', open: b.status === 'open' || b.status === 'review' }));
         S.deps.forEach(d => out.push({ id: 'dep' + d.id, t: d.t || 0, kind: 'Deposit request', text: `${name(d.uid)} wants to add ${$(d.amt)}`, href: '#staff', open: d.status === 'scheduled' }));
         S.wds.forEach(w => out.push({ id: 'wd' + w.id, t: w.t || 0, kind: 'Withdrawal', text: `${name(w.uid)} is withdrawing ${$(w.amt)}`, href: '#staff', open: w.status === 'pending' }));
         S.reqs.forEach(r => out.push({ id: 'req' + r.id, t: r.t || 0, kind: 'Sale request', text: `${name(r.uid)} wants to sell ${Number(r.qty).toLocaleString()} ${r.ticker}`, href: '#staff', open: r.status === 'scheduled' }));
@@ -1439,6 +1471,75 @@ No<\/textarea><\/label>
             }
         });
     }
+    function approveBoard(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner)
+                return;
+            const ref = S.db.doc('bets/' + id), c = yield ref.get();
+            if (!c.exists)
+                return;
+            const b = c.data();
+            if (b.status !== 'review')
+                return;
+            if (boardBad(b))
+                return removeBoard(id, 'Blocked words');
+            yield ref.update({ status: 'open', approvedBy: S.uid, closes: Date.now() + (b.win || DAY) });
+            yield log({ kind: 'BOARD', via: 'Approved: ' + String(b.title).slice(0, 50) });
+        });
+    }
+    /* take a board down: refund anyone who bet, then delete it */
+    function removeBoard(id, why) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner)
+                return;
+            const ref = S.db.doc('bets/' + id), c = yield ref.get();
+            if (!c.exists)
+                return;
+            const b = c.data();
+            if (b.status === 'open' || b.status === 'review')
+                for (const [uid, w] of Object.entries(b.wagers || {})) {
+                    const t = Object.values(w || {}).reduce((x, v) => x + (+v || 0), 0);
+                    if (t > 0)
+                        yield refund(uid, r2(t));
+                }
+            yield ref.delete();
+            yield log({ kind: 'BOARD', via: 'Removed by ' + name(S.uid) + (why ? ' · ' + why : '') });
+        });
+    }
+    let cleaning = false;
+    const cleaned = new Set();
+    function autoClean() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner || cleaning)
+                return;
+            cleaning = true;
+            try {
+                for (const b of Object.values(S.bets)) {
+                    if (cleaned.has(b.id) || !boardBad(b))
+                        continue;
+                    cleaned.add(b.id);
+                    yield removeBoard(b.id, 'Blocked words');
+                }
+                for (const i of Object.values(S.ipos)) {
+                    if (i.status !== 'review' && i.status !== 'open')
+                        continue;
+                    if (cleaned.has('ipo' + i.ticker) || !badText(i.name, i.about, i.ticker))
+                        continue;
+                    cleaned.add('ipo' + i.ticker);
+                    if (i.status === 'review')
+                        yield rejectIPO(i.ticker);
+                    else
+                        yield cancelIPO(i.ticker);
+                }
+            }
+            catch (e) {
+                console.warn(e);
+            }
+            finally {
+                cleaning = false;
+            }
+        });
+    }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1461,18 +1562,18 @@ No<\/textarea><\/label>
         if (!S.isOwner)
             return `<div class="card pad"><h2>Employees only<\/h2><p class="mut">Sign out and use Employee sign in with an employee account.<\/p><\/div>`;
         const now = Date.now(), deps = S.deps.filter(d => d.status === 'scheduled'), sales = S.reqs.filter(r => r.status === 'scheduled').sort((x, y) => x.slot - y.slot);
-        const ipo = Object.values(S.ipos).filter(i => i.status === 'open' || i.status === 'review').sort((x, y) => (x.status === 'review' ? 0 : 1) - (y.status === 'review' ? 0 : 1)), toSettle = Object.values(S.bets).filter(b => b.status === 'open'), openB = Object.values(S.bets).filter(b => b.status === 'open' && now <= b.closes);
+        const ipo = Object.values(S.ipos).filter(i => i.status === 'open' || i.status === 'review').sort((x, y) => (x.status === 'review' ? 0 : 1) - (y.status === 'review' ? 0 : 1)), toSettle = Object.values(S.bets).filter(b => (b.status === 'open' || b.status === 'review') && !b.removed).sort((x, y) => (x.status === 'review' ? 0 : 1) - (y.status === 'review' ? 0 : 1)), openB = Object.values(S.bets).filter(b => b.status === 'open' && now <= b.closes);
         const accts = Object.entries(S.accounts).filter(([id, a]) => !a.seed).map(([id, a]) => { let v = 0; for (const [T, h] of Object.entries(a.holdings || {}))
             if (h.q > 0 && S.companies[T])
                 v += h.q * live(T); return { id, a, v }; }).sort((x, y) => (y.a.cash + y.v) - (x.a.cash + x.v));
         const cashAll = accts.reduce((s, x) => s + x.a.cash, 0), dk = dayKey();
         const saleRow = r => { const p = live(r.ticker) || 0; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(r.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(name(r.uid))} wants to sell ${Number(r.qty).toLocaleString()} sh<\/b><small>Meeting ${esc(when(r.slot))} · about ${$(r.qty * p)}${r.note ? ' · “' + esc(r.note) + '”' : ''}<\/small><\/span><button class="sm-b ok" data-act="rep-approve" data-id="${esc(r.id)}">Approve sale<\/button><button class="sm-b" data-act="rep-decline" data-id="${esc(r.id)}">Decline<\/button><\/div>`; };
         const ipoRow = i => { const R = Object.values(i.subs || {}).reduce((s, v) => s + (v.q || 0), 0), rev = i.status === 'review'; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(i.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(i.name)} · ${$(i.price)}/sh${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(i.owner))} · valued ${big(i.price * i.shares)} · ${rev ? 'selling ' + cnt(i.offered) + ' shares' : cnt(R) + ' of ' + cnt(i.offered) + ' requested · ' + (now > i.closes ? 'window closed' : 'closes ' + esc(when(i.closes)))}<\/small><\/span>${rev ? `<button class="sm-b ok" data-act="ipo-approve" data-t="${esc(i.ticker)}">Approve<\/button><button class="sm-b" data-act="ipo-reject" data-t="${esc(i.ticker)}">Reject<\/button>` : `<button class="sm-b ok" data-act="ipo-launch" data-t="${esc(i.ticker)}">List now<\/button><button class="sm-b" data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw<\/button>`}<\/div>`; };
-        const betRow = b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0); return `<div class="li" style="cursor:default;display:grid;gap:8px"><span class="grow"><b>${esc(b.title)}<\/b><small>Filed by ${esc(name(b.owner))} · pot ${$(pot)} · closed ${esc(when(b.closes))}<\/small><\/span><div class="qq">${b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('')}<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void<\/button><\/div><div class="msg" id="bm_${esc(b.id)}"><\/div><\/div>`; };
+        const betRow = b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0), rev = b.status === 'review'; return `<div class="li" style="cursor:default;display:grid;gap:8px"><span class="grow"><b>${esc(b.title)}${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(b.owner))} · ${b.outcomes.map(o => esc(o)).join(' / ')}${rev ? '' : ' · pot ' + $(pot) + ' · ' + (now > b.closes ? 'closed' : 'closes ' + esc(when(b.closes)))}<\/small><\/span><div class="qq">${rev ? `<button class="sm-b ok" data-act="bet-approve" data-id="${esc(b.id)}">Approve<\/button><button class="sm-b" data-act="bet-remove" data-id="${esc(b.id)}">Reject<\/button>` : b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('') + `<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void<\/button><button class="sm-b sell" data-act="bet-remove" data-id="${esc(b.id)}">Remove<\/button>`}<\/div><div class="msg" id="bm_${esc(b.id)}"><\/div><\/div>`; };
         const sec = (t, n, body) => `<section class="card"><div class="ch-h"><h2>${t}<\/h2><span class="pill ${n ? 'bl' : ''}">${n} waiting<\/span><\/div>${body}<\/section>`;
         return `<div class="stackc"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Employee dashboard<\/h1><span class="pill gr">Signed in as ${esc(name(S.uid))}<\/span><\/div>
   ${inbox()}
-  <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${S.wds.filter(w => w.status === 'pending').length}<\/b><span>Withdrawals<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Open betting boards<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
+  <section class="card"><div class="stats"><div><b>${deps.length}<\/b><span>Deposit requests<\/span><\/div><div><b>${S.wds.filter(w => w.status === 'pending').length}<\/b><span>Withdrawals<\/span><\/div><div><b>${sales.length}<\/b><span>Sale requests<\/span><\/div><div><b>${ipo.length}<\/b><span>Open IPOs<\/span><\/div><div><b>${toSettle.length}<\/b><span>Boards to review or settle<\/span><\/div><div><b>${accts.length}<\/b><span>Investor accounts<\/span><\/div><div><b>${big(cashAll)}<\/b><span>Cash on platform<\/span><\/div><\/div><\/section>
   <div class="cols"><div class="stackc">${depositDesk()}${withdrawDesk()}
    ${sec('Share sale requests', sales.length, sales.length ? `<div class="list">${sales.map(saleRow).join('')}<\/div>` : '<div class="empty">No sale requests right now.<\/div>')}
    ${sec('IPOs', ipo.length, ipo.length ? `<div class="list">${ipo.map(ipoRow).join('')}<\/div>` : '<div class="empty">No open IPOs.<\/div>')}
@@ -1540,7 +1641,7 @@ No<\/textarea><\/label>
             return '<div class="empty">Nothing logged yet.<\/div>';
         return `<table class="stack"><thead><tr><th>Time<\/th><th>Event<\/th><th>Who<\/th><th>Ticker<\/th><th class="r">Shares<\/th><th class="r">Price<\/th><th class="r">Price after<\/th><\/tr><\/thead><tbody>${rows.map(l => {
             const m = l.after && l.price ? l.after / l.price - 1 : 0;
-            return `<tr><td class="mut">${esc(when(l.t))}<\/td><td class="k-${esc(l.kind)}"><b>${esc(l.kind)}<\/b>${l.via ? `<br><small class="mut">${esc(l.via)}<\/small>` : ''}<\/td><td>${esc(name(l.uid))}<\/td><td>${l.ticker ? `<span class="tk">${esc(l.ticker)}<\/span>` : ''}<\/td><td class="r">${l.qty ? Number(l.qty).toLocaleString() : ''}<\/td><td class="r">${l.price ? $(l.price) : ''}<\/td><td class="r ${l.after ? cls(m) : ''}">${l.after ? $(l.after) + ' (' + sg(m * 100) + ')' : ''}<\/td><\/tr>`;
+            return `<tr><td class="mut">${esc(when(l.t))}<\/td><td class="k-${esc(l.kind)}"><b>${esc(l.kind)}<\/b>${l.via ? `<br><small class="mut">${esc(badText(l.via) ? '(removed)' : l.via)}<\/small>` : ''}<\/td><td>${esc(name(l.uid))}<\/td><td>${l.ticker ? `<span class="tk">${esc(l.ticker)}<\/span>` : ''}<\/td><td class="r">${l.qty ? Number(l.qty).toLocaleString() : ''}<\/td><td class="r">${l.price ? $(l.price) : ''}<\/td><td class="r ${l.after ? cls(m) : ''}">${l.after ? $(l.after) + ' (' + sg(m * 100) + ')' : ''}<\/td><\/tr>`;
         }).join('')}<\/tbody><\/table>`;
     }
     function ledger() {
@@ -1720,6 +1821,8 @@ No<\/textarea><\/label>
     }
     function repRequest(f) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (badText(f.rnote.value))
+                return say('tmsg', BADMSG, false);
             const T = route().startsWith('s-') ? route().slice(2).toUpperCase() : S.tt, c = S.companies[T], q = Math.floor(+f.rq.value || 0);
             if (q < 1)
                 return say('tmsg', 'Enter at least 1 share.', false);
@@ -1766,6 +1869,8 @@ No<\/textarea><\/label>
     }
     function fileIPO(f) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (badText(f.ticker.value, f.name.value, f.about.value, f.repName.value))
+                return say('ipomsg', BADMSG, false);
             const T = f.ticker.value.trim().toUpperCase(), nm = f.name.value.trim(), val = +f.val.value, sh = Math.floor(+f.shares.value), of = Math.floor(+f.offered.value), pr = r2(val / sh);
             if (!/^[A-Z]{1,5}$/.test(T))
                 return say('ipomsg', 'Tickers are 1 to 5 letters.', false);
@@ -2011,6 +2116,19 @@ No<\/textarea><\/label>
                 yield resolveBoard(b.dataset.id, +b.dataset.o);
             if (act === 'bet-void')
                 yield voidBoard(b.dataset.id);
+            if (act === 'bet-approve')
+                yield approveBoard(b.dataset.id);
+            if (act === 'bet-remove') {
+                if (b.dataset.sure) {
+                    yield removeBoard(b.dataset.id);
+                }
+                else {
+                    b.dataset.sure = '1';
+                    b.textContent = 'Tap again to remove';
+                    setTimeout(() => { delete b.dataset.sure; }, 4000);
+                    return;
+                }
+            }
             if (act === 'wd-approve')
                 yield decideWithdrawal(b.dataset.id, true);
             if (act === 'wd-decline')
@@ -2139,7 +2257,7 @@ No<\/textarea><\/label>
         });
     }
     let rt = 0;
-    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); }, 80); };
+    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); }, 80); };
     setTimeout(() => { const sp = document.getElementById('splash'); if (sp) {
         sp.classList.add('out');
         setTimeout(() => sp.remove(), 600);
