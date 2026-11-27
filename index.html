@@ -277,6 +277,14 @@ window.__SEED = { "companies/LMBT": { "ticker": "LMBT", "name": "Lumenbyte Syste
         ch = 1;
     } }); if (ch)
         persist(); })();
+    (function () { const N = { "01": 150000, "02": 80000, "03": 55000, "04": 45000, "05": 35000, "06": 25000, "07": 18000, "08": 12500, "09": 10000, "10": 7000 }; let ch = 0; for (const k in N) {
+        const v = store.get('accounts/seed-gns-' + k);
+        if (v && v.holdings && v.holdings.GNS && v.holdings.GNS.q !== N[k]) {
+            v.holdings.GNS = { q: N[k], c: Math.round(N[k] * 9.6 * 100) / 100 };
+            ch = 1;
+        }
+    } if (ch)
+        persist(); })();
     const user = { id: () => __awaiter(void 0, void 0, void 0, function* () { return auth.current(); }), isOwner: () => __awaiter(void 0, void 0, void 0, function* () { return ['u:glennbourbonvp', 'u:glennbourbon'].indexOf(auth.current()) >= 0; }), can: () => __awaiter(void 0, void 0, void 0, function* () { return true; }), profiles: (ids) => __awaiter(void 0, void 0, void 0, function* () { return Object.fromEntries(ids.map(i => [i, { name: (store.get('accounts/' + i) || {}).label || '' }])); }) };
     window.SOLO = { auth, use: (n) => __awaiter(void 0, void 0, void 0, function* () { return n === 'db' ? db : n === 'user' ? user : null; }) };
 })();
@@ -703,12 +711,22 @@ window.__SEED = { "companies/LMBT": { "ticker": "LMBT", "name": "Lumenbyte Syste
             return `<div class="li tr${Date.now() - l.t < 8000 ? ' flash' : ''}" style="cursor:default"><span class="side ${sell ? 'dn' : 'up'}">${sell ? 'SOLD' : 'BOUGHT'}<\/span><span class="grow"><b>${esc(name(l.uid))}<\/b><small>${sell ? 'sold' : 'bought'} ${Number(l.qty).toLocaleString()} ${T ? 'shares' : esc(l.ticker)} at ${$(l.price)}${l.kind === 'REP-SALE' ? ' · rep-approved' : l.kind === 'FILL' ? ' · ' + esc(l.via || 'order') : ''}<\/small><\/span><span class="rt"><b class="mono">${$(l.qty * l.price)}<\/b><small class="${cls(m)}">${l.after ? '→ ' + $(l.after) : ''} · <span data-ago="${l.t}">${ago(l.t)}<\/span><\/small><\/span><\/div>`;
         }).join('')}<\/div>`;
     }
+    function owners(T) { const sh = Object.entries(S.accounts).map(([id, a]) => ({ id, q: (a.holdings && a.holdings[T] && a.holdings[T].q) || 0 })).filter(x => x.q > 0).sort((x, y) => y.q - x.q); const tot = sh.reduce((s, x) => s + x.q, 0); return { top: sh.slice(0, 10), rest: sh.slice(10), tot }; }
     function holderList(T) {
-        const c = S.companies[T];
-        const sh = Object.entries(S.accounts).map(([id, a]) => ({ id, q: (a.holdings && a.holdings[T] && a.holdings[T].q) || 0 })).filter(x => x.q > 0).sort((x, y) => y.q - x.q);
-        if (!sh.length)
+        const o = owners(T), p = live(T);
+        if (!o.tot)
             return '<div class="empty">Nobody owns shares yet.<\/div>';
-        return `<div class="list">${sh.slice(0, 15).map(x => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(x.id))}${x.id === S.uid ? ' (you)' : ''}<\/b><small>${(x.q / c.shares * 100).toFixed(2)}% of the company<\/small><\/span><span class="rt"><b class="mono">${x.q.toLocaleString()} sh<\/b><small class="mut">${$(x.q * live(T))}<\/small><\/span><\/div>`).join('')}<\/div>`;
+        const rqs = o.rest.reduce((s, x) => s + x.q, 0), qs = o.top.map(x => x.q).concat(rqs ? [rqs] : []), raw = qs.map(q => q / o.tot * 10000), fl = raw.map(Math.floor);
+        let left = 10000 - fl.reduce((a, b) => a + b, 0);
+        raw.map((v, i) => [v - fl[i], i]).sort((x, y) => y[0] - x[0]).forEach(([, i]) => { if (left > 0) {
+            fl[i]++;
+            left--;
+        } });
+        let ri = 0;
+        const row = (nm, q, sub) => `<div class="li" style="cursor:default"><span class="grow"><b>${nm}<\/b><small>${sub}<\/small><\/span><span class="rt"><b class="mono">${(fl[ri++] / 100).toFixed(2)}%<\/b><small class="mut">${q.toLocaleString()} sh · ${$(q * p)}<\/small><\/span><\/div>`;
+        const rq = o.rest.reduce((s, x) => s + x.q, 0);
+        return `<div class="list">${o.top.map((x, i) => row(esc(name(x.id)) + (x.id === S.uid ? ' (you)' : ''), x.q, '#' + (i + 1) + ' shareholder')).join('')}${rq ? row('All other shareholders', rq, o.rest.length + ' more ' + (o.rest.length === 1 ? 'person' : 'people')) : ''}
+  <div class="li" style="cursor:default"><span class="grow"><b>Total<\/b><\/span><span class="rt"><b class="mono">100.00%<\/b><small class="mut">${o.tot.toLocaleString()} sh<\/small><\/span><\/div><\/div>`;
     }
     /* ---------- STOCK DETAIL ---------- */
     function stock(T) {
@@ -728,7 +746,7 @@ window.__SEED = { "companies/LMBT": { "ticker": "LMBT", "name": "Lumenbyte Syste
     <div class="stats" style="margin-top:8px"><div><b>${big(p * c.shares)}<\/b><span>Market cap<\/span><\/div><div><b>${cnt(c.shares)}<\/b><span>Shares outstanding<\/span><\/div><div><b>${(c.vol || 0).toLocaleString()}<\/b><span>Shares traded<\/span><\/div><div><b>${holders(T)}<\/b><span>Investors<\/span><\/div><div><b>${y.length ? $(Math.max(...y)) : '—'}<\/b><span>1-year high<\/span><\/div><div><b>${y.length ? $(Math.min(...y)) : '—'}<\/b><span>1-year low<\/span><\/div>${c.ipo ? `<div><b>${$(c.ipo)}<\/b><span>IPO price<\/span><\/div>` : ''}<\/div>
     ${c.about ? `<p class="mut pad" style="margin:0">${esc(c.about)}<\/p>` : ''}<\/section>
    <section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>Live ${esc(T)} trades<\/h2><span class="note">who bought and sold<\/span><\/div>${tracker(T, 20)}<\/section>
-   <section class="card"><div class="ch-h"><h2>Who owns ${esc(T)}<\/h2><span class="note">${holders(T)} shareholders<\/span><\/div>${holderList(T)}<\/section><\/div>
+   <section class="card"><div class="ch-h"><h2>Top 10 shareholders<\/h2><span class="note">${holders(T)} in total<\/span><\/div>${holderList(T)}<\/section><\/div>
    <div class="stackc">${a && (h === null || h === void 0 ? void 0 : h.q) ? `<section class="card"><div class="ch-h"><h2>Your position<\/h2><\/div><div class="stats"><div><b>${h.q.toLocaleString()}<\/b><span>Shares<\/span><\/div><div><b>${$(h.q * p)}<\/b><span>Value<\/span><\/div><div><b>${$(h.c / h.q)}<\/b><span>Avg cost<\/span><\/div><div><b class="${cls(h.q * p - h.c)}">${sg((h.q * p / h.c - 1) * 100)}<\/b><span>Return<\/span><\/div><\/div><\/section>` : ''}
    ${ticket(T)}<\/div><\/div>`;
     }
@@ -1070,7 +1088,7 @@ No<\/textarea><\/label>
             return `<section class="card"><div class="ch-h"><div style="display:flex;gap:8px;align-items:center"><span class="tk">${esc(T)}<\/span><h2>${esc(c.name)}<\/h2><\/div><a href="#s-${esc(T.toLowerCase())}" class="note">Stock page<\/a><\/div>
      <div class="stats"><div><b>${big(p * c.shares)}<\/b><span>Market cap<\/span><\/div><div><b data-px="${esc(T)}">${$(p)}<\/b><span>Share price<\/span><\/div><div><b class="${cls(dayChg(T))}">${sg(dayChg(T) * 100)}<\/b><span>Today<\/span><\/div><div><b>${sh.length}<\/b><span>Shareholders<\/span><\/div><div><b>${(held / c.shares * 100).toFixed(2)}%<\/b><span>Held by investors<\/span><\/div><div><b>${(c.vol || 0).toLocaleString()}<\/b><span>Shares traded<\/span><\/div><\/div>
      <div class="g2" style="gap:0"><div>${figHtml('cf_' + T, 'sm').replace('class="fig sm"', `class="fig sm" data-cfig="${esc(T)}"`)}<p class="note" style="margin:4px 18px 12px">Last month<\/p><\/div>
-     <div><div class="ch-h"><h3>Shareholders<\/h3><\/div>${sh.length ? `<table><tbody>${sh.slice(0, 10).map(x => `<tr><td>${esc(name(x.id))}<\/td><td class="r">${x.q.toLocaleString()} sh<\/td><td class="r mut">${(x.q / c.shares * 100).toFixed(2)}%<\/td><\/tr>`).join('')}<\/tbody><\/table>` : '<div class="empty">No shareholders yet.<\/div>'}<\/div><\/div>
+     <div><div class="ch-h"><h3>Top 10 shareholders<\/h3><\/div>${holderList(T)}<\/div><\/div>
      ${c.rep ? `<div class="ch-h" style="border-top:1px solid var(--ln)"><h3>Representative meeting requests<\/h3><span class="note">${esc(c.repName || '')}<\/span><\/div>${rq.length ? `<div class="list">${rq.map(r => `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="grow"><b>${esc(name(r.uid))} wants to sell ${Number(r.qty).toLocaleString()} sh<\/b><small>Meeting ${esc(when(r.slot))} · about ${$(r.qty * p)} at today's price${r.note ? ' · “' + esc(r.note) + '”' : ''}<\/small><\/span><button class="sm-b ok" data-act="rep-approve" data-id="${esc(r.id)}">Approve sale<\/button><button class="sm-b" data-act="rep-decline" data-id="${esc(r.id)}">Decline<\/button><\/div>`).join('')}<\/div>` : '<div class="empty">No pending requests.<\/div>'}` : ''}
      <div class="msg" id="cm_${esc(T)}" style="margin:0 18px 18px"><\/div><\/section>`;
         };
