@@ -510,6 +510,32 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         if (v != null && isFinite(v) && v > 0)
             out.push([t, v]);
     } return out; }
+    /* a stock's line: starts at its listing if that's inside the range, and includes every trade as its own point */
+    function stockSeries(T, tf, n) {
+        const c = S.companies[T];
+        if (!c)
+            return [];
+        const [span, N] = TF[tf];
+        n = n || N;
+        const now = Date.now(), start = Math.max(now - span, c.since || 0), len = Math.max(now - start, 1);
+        const ts = [];
+        for (let i = 0; i < n; i++)
+            ts.push(start + i * len / (n - 1));
+        (Array.isArray(c.hist) ? c.hist : []).forEach(h => { if (Array.isArray(h) && h[0] > start && h[0] < now) {
+            ts.push(h[0] - 1);
+            ts.push(h[0]);
+        } });
+        ts.sort((x, y) => x - y);
+        const out = [];
+        for (const t of ts) {
+            const v = liveC(c, t);
+            if (v != null && isFinite(v) && v > 0)
+                out.push([t, v]);
+        }
+        if (out.length === 1)
+            out.unshift([out[0][0] - 1000, out[0][1]]);
+        return out;
+    }
     function capSum(t, fn) { let s = 0; for (const c of L())
         if (fn(c)) {
             const v = liveC(c, t);
@@ -538,8 +564,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
                 } return k ? 1000 * s / k : null; } }
     ];
     /* ================= CHARTS ================= */
-    function tlab(t, tf, full) { const d = new Date(t); if (tf === '1D')
-        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: full ? '2-digit' : undefined }); if (tf === '5D')
+    function tlab(t, tf, full) { const d = new Date(t); if (tf === '1D' || tf === 'short')
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: (full || tf === 'short') ? '2-digit' : undefined }); if (tf === '5D')
         return d.toLocaleString('en-US', full ? { weekday: 'short', hour: 'numeric', minute: '2-digit' } : { weekday: 'short' }); if (tf === '1M')
         return d.toLocaleDateString('en-US', Object.assign({ month: 'short', day: 'numeric' }, (full ? { hour: 'numeric' } : {}))); return d.toLocaleDateString('en-US', full ? { month: 'short', day: 'numeric', year: 'numeric' } : { month: 'short', year: '2-digit' }); }
     function chart(fig, ser, o = {}) {
@@ -566,6 +592,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             mn -= pd;
             mx += pd;
             const t0 = Math.min(...tr.map(s => s.pts[0][0])), t1 = Math.max(...tr.map(s => s.pts[s.pts.length - 1][0]));
+            const tfx = (t1 - t0) < 6 * 36e5 ? 'short' : o.tf;
             const nar = W < 430, pl = 4, pr = nar ? 52 : 60, pt = 10, pb = 22;
             const X = t => pl + (t - t0) / ((t1 - t0) || 1) * (W - pl - pr), Yv = v => pt + (1 - (v - mn) / (mx - mn)) * (H - pt - pb);
             let g = '';
@@ -576,7 +603,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             const xt = nar ? 3 : 5;
             for (let k = 0; k < xt; k++) {
                 const t = t0 + (t1 - t0) * k / (xt - 1);
-                g += `<text x="${X(t)}" y="${H - 5}" class="ax" text-anchor="${k === 0 ? 'start' : k === xt - 1 ? 'end' : 'middle'}">${esc(tlab(t, o.tf))}<\/text>`;
+                g += `<text x="${X(t)}" y="${H - 5}" class="ax" text-anchor="${k === 0 ? 'start' : k === xt - 1 ? 'end' : 'middle'}">${esc(tlab(t, tfx))}<\/text>`;
             }
             let p = '';
             tr.forEach((s, si) => {
@@ -588,7 +615,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
                 p += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${tr.length > 1 ? 1.7 : 2.3}" stroke-linejoin="round"/>`;
             });
             svg.innerHTML = g + p + '<g class="hv"><\/g>';
-            svg._m = { tr, X, Yv, t0, t1, W, H, pt, pb, pl, pr };
+            svg._m = { tr, X, Yv, t0, t1, W, H, pt, pb, pl, pr, tfx };
         };
         const hover = e => {
             const m = svg._m;
@@ -611,7 +638,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
                 rows += `<div><i style="background:${s.color}"><\/i>${esc(s.name || '')} <b>${esc(o.pct ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : o.fmt ? o.fmt(v) : $(v))}<\/b><\/div>`;
             });
             svg.querySelector('.hv').innerHTML = `<line x1="${xx}" x2="${xx}" y1="${m.pt}" y2="${m.H - m.pb}" stroke="#8e8e93" stroke-dasharray="3 3"/>` + dots;
-            tip.innerHTML = `<div class="tt">${esc(tlab(tt, o.tf, true))}<\/div>` + rows;
+            tip.innerHTML = `<div class="tt">${esc(tlab(tt, m.tfx, true))}<\/div>` + rows;
             tip.style.display = 'block';
             const tw = tip.offsetWidth;
             tip.style.left = Math.min(Math.max(0, xx - tw / 2), m.W - tw) + 'px';
@@ -639,7 +666,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         requestAnimationFrame(draw);
     }
     function spark(T) {
-        const pts = series(t => live(T, t), '1D', 28);
+        const pts = stockSeries(T, '1D', 28);
         if (pts.length < 2)
             return '<svg class="spark"><\/svg>';
         const v = pts.map(p => p[1]), mn = Math.min(...v), mx = Math.max(...v), sp = mx - mn || 1;
@@ -731,10 +758,15 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         if (r.startsWith('s-')) {
             const T = r.slice(2).toUpperCase();
             const sf = document.getElementById('sfig');
-            if (sf && S.companies[T])
-                chart(sf, [{ name: T, color: chgOver(T, TF[S.stf][0]) >= 0 ? '#30d158' : '#ff453a', pts: series(t => live(T, t), S.stf) }], { tf: S.stf });
+            if (sf && S.companies[T]) {
+                const sp = stockSeries(T, S.stf);
+                chart(sf, [{ name: T, color: sp.length > 1 && sp[sp.length - 1][1] < sp[0][1] ? '#ff453a' : '#30d158', pts: sp }], { tf: S.stf });
+            }
         }
-        document.querySelectorAll('[data-cfig]').forEach(f => { const T = f.dataset.cfig; chart(f, [{ name: T, color: chgOver(T, TF['1M'][0]) >= 0 ? '#30d158' : '#ff453a', pts: series(t => live(T, t), '1M') }], { tf: '1M' }); });
+        document.querySelectorAll('[data-cfig]').forEach(f => { const T = f.dataset.cfig; {
+            const sp = stockSeries(T, '1M');
+            chart(f, [{ name: T, color: sp.length > 1 && sp[sp.length - 1][1] < sp[0][1] ? '#ff453a' : '#30d158', pts: sp }], { tf: '1M' });
+        } });
         est();
         calc();
         logo();
@@ -884,14 +916,14 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const c = S.companies[T];
         if (!c)
             return `<div class="card pad"><h2>No stock called ${esc(T)}<\/h2><p><a href="#markets">Back to markets<\/a><\/p><\/div>`;
-        const a = me(), p = live(T), ch = chgOver(T, TF[S.stf][0]), y = series(t => live(T, t), '1Y', 80).map(x => x[1]);
+        const a = me(), p = live(T), ch = chgOver(T, TF[S.stf][0]), newL = (c.since || 0) > Date.now() - TF[S.stf][0], y = stockSeries(T, '1Y', 80).map(x => x[1]);
         const h = (_a = a === null || a === void 0 ? void 0 : a.holdings) === null || _a === void 0 ? void 0 : _a[T];
         return `<p style="margin:0 0 10px"><a href="#markets" style="text-decoration:none">‹ Markets<\/a><\/p>
   <div class="cols"><div class="stackc"><section class="card"><div class="pad" style="padding-bottom:4px">
     <div style="display:flex;gap:10px;align-items:center;justify-content:space-between"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tk">${esc(T)}<\/span><span class="note">${esc(c.sector)}${c.b40 ? ' · B40 member' : ' · New listing'}<\/span>${c.rep ? '<span class="pill bl">Sales need a representative<\/span>' : ''}<\/div>
     ${a ? `<button class="star" data-act="watch" aria-label="Watch">${(a.watch || []).includes(T) ? '★' : '☆'}<\/button>` : ''}<\/div>
     <h1 style="margin-top:8px">${esc(c.name)}<\/h1>
-    <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px"><span class="big" data-px="${esc(T)}">${$(p)}<\/span><span class="${cls(ch)}" style="font-weight:700">${sg(ch * 100)} · ${TFL[S.stf]}<\/span><\/div><\/div>
+    <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px"><span class="big" data-px="${esc(T)}">${$(p)}<\/span><span class="${cls(ch)}" style="font-weight:700">${sg(ch * 100)} · ${newL ? 'since listing' : TFL[S.stf]}<\/span><\/div><\/div>
     ${figHtml('sfig', 'tall')}${segHtml('s', S.stf)}
     <div class="stats" style="margin-top:8px"><div><b>${big(p * c.shares)}<\/b><span>Market cap<\/span><\/div><div><b>${cnt(c.shares)}<\/b><span>Shares outstanding<\/span><\/div><div><b>${(c.vol || 0).toLocaleString()}<\/b><span>Shares traded<\/span><\/div><div><b>${holders(T)}<\/b><span>Investors<\/span><\/div><div><b>${y.length ? $(Math.max(...y)) : '—'}<\/b><span>1-year high<\/span><\/div><div><b>${y.length ? $(Math.min(...y)) : '—'}<\/b><span>1-year low<\/span><\/div>${c.ipo ? `<div><b>${$(c.ipo)}<\/b><span>IPO price<\/span><\/div>` : ''}<\/div>
     ${c.about ? `<p class="mut pad" style="margin:0">${esc(c.about)}<\/p>` : ''}<\/section>
