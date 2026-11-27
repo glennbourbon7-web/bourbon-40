@@ -177,6 +177,13 @@ header .logo{flex:none}
 #cashChip .stf{flex:none;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:#fff;color:#000;border-radius:6px;padding:2px 6px}
 @media(max-width:700px){header{gap:10px}.wm b{font-size:14px;letter-spacing:.11em}.wm small{font-size:10.5px}#cashChip{font-size:12.5px;padding:6px 10px}}
 @media(max-width:360px){.wm b{font-size:12.5px;letter-spacing:.08em}}
+#modal{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;z-index:40;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center}
+.mbox{position:relative;width:min(680px,100%);max-height:88vh;background:#1c1c1e;border:1px solid #38383a;border-radius:20px 20px 0 0;display:flex;flex-direction:column}
+@media(min-width:701px){#modal{align-items:center}.mbox{border-radius:20px}}
+.mbody{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px 18px calc(22px + env(safe-area-inset-bottom))}
+.mclose{position:absolute;top:10px;right:10px;width:40px;height:40px;min-height:40px;padding:0;border-radius:20px;z-index:1}
+.kv2{border:1px solid #38383a;border-radius:12px;overflow:hidden}.kv2>div{display:flex;justify-content:space-between;gap:14px;padding:10px 12px;border-bottom:1px solid #2c2c2e;font-size:14px}.kv2>div:last-child{border-bottom:0}
+.kv2 span{color:var(--mut);flex:none;max-width:45%}.kv2 b{text-align:right;font-weight:600;overflow-wrap:anywhere;white-space:pre-wrap}
 </style>
 </head><body>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -753,6 +760,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const v = r.startsWith('s-') ? stock(r.slice(2).toUpperCase()) : (views[r] || home)();
         app.innerHTML = (S.stale ? '<p class="msg err">Showing saved data. It may be out of date until the connection answers.<\/p>' : '') + v;
         restoreForm(keep, fk);
+        if (S.modal)
+            paintModal();
         after(r);
     }
     function restoreForm(keep, fk) {
@@ -1251,7 +1260,7 @@ No<\/textarea><\/label>
         });
     }
     /* ---------- ADD MONEY (through a representative) ---------- */
-    function depositDesk() { const pend = S.deps.filter(d => d.status === 'scheduled'); return `<section class="card"><div class="ch-h"><h2>Representative desk<\/h2><span class="note">${pend.length} waiting<\/span><\/div>${pend.length ? `<div class="list">${pend.map(d => `<form class="li depf" data-id="${esc(d.id)}" style="cursor:default;flex-wrap:wrap;gap:10px"><span class="grow" style="min-width:180px"><b>${esc(name(d.uid))} wants to add ${$(d.amt)}<\/b><small>Meeting ${esc(when(d.slot))}${d.note ? ' · “' + esc(d.note) + '”' : ''}<\/small><\/span><input name="amt_${esc(d.id)}" type="number" min="1" step="1" value="${d.amt}" style="width:130px" aria-label="Amount to approve"><button class="sm-b ok">Approve<\/button><button type="button" class="sm-b" data-act="dep-decline" data-id="${esc(d.id)}">Decline<\/button><\/form>`).join('')}<\/div>` : '<div class="empty">No deposit requests right now.<\/div>'}<div class="msg" id="depdesk" style="margin:0 18px 14px"><\/div><\/section>`; }
+    function depositDesk() { const pend = S.deps.filter(d => d.status === 'scheduled'); return `<section class="card"><div class="ch-h"><h2>Representative desk<\/h2><span class="note">${pend.length} waiting<\/span><\/div>${pend.length ? `<div class="list">${pend.map(d => `<form class="li depf" data-id="${esc(d.id)}" style="cursor:default;flex-wrap:wrap;gap:10px"><span class="grow" style="min-width:180px"><b>${esc(name(d.uid))} wants to add ${$(d.amt)}<\/b><small>Meeting ${esc(when(d.slot))}${d.note ? ' · “' + esc(d.note) + '”' : ''}<\/small><\/span><input name="amt_${esc(d.id)}" type="number" min="1" step="1" value="${d.amt}" style="width:130px" aria-label="Amount to approve"><button type="button" class="sm-b" data-act="details" data-k="dep" data-id="${esc(d.id)}">Details<\/button><button class="sm-b ok">Approve<\/button><button type="button" class="sm-b" data-act="dep-decline" data-id="${esc(d.id)}">Decline<\/button><\/form>`).join('')}<\/div>` : '<div class="empty">No deposit requests right now.<\/div>'}<div class="msg" id="depdesk" style="margin:0 18px 14px"><\/div><\/section>`; }
     const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
     const wdToday = uid => S.wds.filter(w => w.uid === uid && w.day === dayKey() && (w.status === 'pending' || w.status === 'paid')).reduce((x, w) => x + w.amt, 0);
     function funding() {
@@ -1322,19 +1331,19 @@ No<\/textarea><\/label>
     catch (e) { } };
     function filings() {
         const out = [];
-        Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, kind: i.status === 'review' ? 'IPO needs approval' : 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' || i.status === 'review' }));
-        Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, kind: b.status === 'review' ? 'Board needs approval' : 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#staff', open: b.status === 'open' || b.status === 'review' }));
-        S.deps.forEach(d => out.push({ id: 'dep' + d.id, t: d.t || 0, kind: 'Deposit request', text: `${name(d.uid)} wants to add ${$(d.amt)}`, href: '#staff', open: d.status === 'scheduled' }));
-        S.wds.forEach(w => out.push({ id: 'wd' + w.id, t: w.t || 0, kind: 'Withdrawal', text: `${name(w.uid)} is withdrawing ${$(w.amt)}`, href: '#staff', open: w.status === 'pending' }));
-        S.reqs.forEach(r => out.push({ id: 'req' + r.id, t: r.t || 0, kind: 'Sale request', text: `${name(r.uid)} wants to sell ${Number(r.qty).toLocaleString()} ${r.ticker}`, href: '#staff', open: r.status === 'scheduled' }));
+        Object.values(S.ipos).forEach(i => out.push({ id: 'ipo' + i.ticker, t: i.t || 0, dk: 'ipo', did: i.ticker, kind: i.status === 'review' ? 'IPO needs approval' : 'IPO filing', text: `${name(i.owner)} filed an IPO for ${i.name} (${i.ticker}) at ${$(i.price)}/share`, href: '#staff', open: i.status === 'open' || i.status === 'review' }));
+        Object.values(S.bets).forEach(b => out.push({ id: 'bet' + b.id, t: b.t || 0, dk: 'bet', did: b.id, kind: b.status === 'review' ? 'Board needs approval' : 'Betting board', text: `${name(b.owner)} filed “${b.title}”`, href: '#staff', open: b.status === 'open' || b.status === 'review' }));
+        S.deps.forEach(d => out.push({ dk: 'dep', did: d.id, id: 'dep' + d.id, t: d.t || 0, kind: 'Deposit request', text: `${name(d.uid)} wants to add ${$(d.amt)}`, href: '#staff', open: d.status === 'scheduled' }));
+        S.wds.forEach(w => out.push({ dk: 'wd', did: w.id, id: 'wd' + w.id, t: w.t || 0, kind: 'Withdrawal', text: `${name(w.uid)} is withdrawing ${$(w.amt)}`, href: '#staff', open: w.status === 'pending' }));
+        S.reqs.forEach(r => out.push({ dk: 'req', did: r.id, id: 'req' + r.id, t: r.t || 0, kind: 'Sale request', text: `${name(r.uid)} wants to sell ${Number(r.qty).toLocaleString()} ${r.ticker}`, href: '#staff', open: r.status === 'scheduled' }));
         Object.entries(S.accounts).forEach(([id, a]) => { if (!a.seed && a.created)
-            out.push({ id: 'acct' + id, t: a.created, kind: 'New account', text: `${a.label || id} opened an account (@${String(id).replace(/^u:/, '')})`, href: '#staff', open: false }); });
+            out.push({ dk: 'acct', did: id, id: 'acct' + id, t: a.created, kind: 'New account', text: `${a.label || id} opened an account (@${String(id).replace(/^u:/, '')})`, href: '#staff', open: false }); });
         return out.sort((x, y) => y.t - x.t);
     }
     const newCount = () => { const sn = getSeen(); return filings().filter(f => f.t > sn).length; };
     function inbox() {
         const sn = getSeen(), f = filings().slice(0, 25);
-        return `<section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>New filings<\/h2><span class="pill ${newCount() ? 'rd' : ''}">${newCount()} new<\/span><\/div>${f.length ? `<div class="list">${f.map(x => `<a class="li" href="${x.href}"><span class="grow"><b>${esc(x.text)}<\/b><small>${esc(x.kind)} · ${esc(when(x.t))}${x.open ? ' · needs action' : ''}<\/small><\/span>${x.t > sn ? '<span class="pill rd">NEW<\/span>' : ''}<span class="chev"><\/span><\/a>`).join('')}<\/div>` : '<div class="empty">Nothing filed yet.<\/div>'}<\/section>`;
+        return `<section class="card"><div class="ch-h"><h2><span class="livedot"><\/span>New filings<\/h2><span class="pill ${newCount() ? 'rd' : ''}">${newCount()} new<\/span><\/div>${f.length ? `<div class="list">${f.map(x => `<a class="li" href="${x.href}" ${x.dk ? `data-act="details" data-k="${x.dk}" data-id="${esc(x.did)}"` : ''}><span class="grow"><b>${esc(x.text)}<\/b><small>${esc(x.kind)} · ${esc(when(x.t))}${x.open ? ' · needs action' : ''}<\/small><\/span>${x.t > sn ? '<span class="pill rd">NEW<\/span>' : ''}<span class="chev"><\/span><\/a>`).join('')}<\/div>` : '<div class="empty">Nothing filed yet.<\/div>'}<\/section>`;
     }
     let known = null;
     function staffAlerts() {
@@ -1415,7 +1424,7 @@ No<\/textarea><\/label>
             }
         });
     }
-    function withdrawDesk() { const p = S.wds.filter(w => w.status === 'pending'); return `<section class="card"><div class="ch-h"><h2>Withdrawal requests<\/h2><span class="pill ${p.length ? 'bl' : ''}">${p.length} waiting<\/span><\/div>${p.length ? `<div class="list">${p.map(w => `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="grow" style="min-width:170px"><b>${esc(name(w.uid))} is withdrawing ${$(w.amt)}<\/b><small>${esc(when(w.t))} · ${$(wdToday(w.uid))} withdrawn today<\/small><\/span><button class="sm-b ok" data-act="wd-approve" data-id="${esc(w.id)}">Complete<\/button><button class="sm-b" data-act="wd-decline" data-id="${esc(w.id)}">Decline<\/button><\/div>`).join('')}<\/div>` : '<div class="empty">No withdrawals waiting.<\/div>'}<\/section>`; }
+    function withdrawDesk() { const p = S.wds.filter(w => w.status === 'pending'); return `<section class="card"><div class="ch-h"><h2>Withdrawal requests<\/h2><span class="pill ${p.length ? 'bl' : ''}">${p.length} waiting<\/span><\/div>${p.length ? `<div class="list">${p.map(w => `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="grow" style="min-width:170px"><b>${esc(name(w.uid))} is withdrawing ${$(w.amt)}<\/b><small>${esc(when(w.t))} · ${$(wdToday(w.uid))} withdrawn today<\/small><\/span><button type="button" class="sm-b" data-act="details" data-k="wd" data-id="${esc(w.id)}">Details<\/button><button class="sm-b ok" data-act="wd-approve" data-id="${esc(w.id)}">Complete<\/button><button class="sm-b" data-act="wd-decline" data-id="${esc(w.id)}">Decline<\/button><\/div>`).join('')}<\/div>` : '<div class="empty">No withdrawals waiting.<\/div>'}<\/section>`; }
     function approveIPO(T) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!S.isOwner)
@@ -1590,6 +1599,81 @@ No<\/textarea><\/label>
             }
         });
     }
+    /* ---------- DETAILS PANEL (employees): everything about a filing and the person behind it ---------- */
+    function acctCard(uid) {
+        const a = S.accounts[uid] || {}, u = S.users[String(uid).replace(/^u:/, '')] || {};
+        let inv = 0;
+        const hs = Object.entries(a.holdings || {}).filter(([T, h]) => h && h.q > 0);
+        hs.forEach(([T, h]) => { inv += h.q * (live(T) || 0); });
+        const dep = S.deps.filter(d => d.uid === uid && d.status === 'approved').reduce((x, d) => x + (d.approved || 0), 0), wd = S.wds.filter(w => w.uid === uid && w.status === 'paid').reduce((x, w) => x + w.amt, 0);
+        return `<h3 style="margin:18px 0 8px">Who filed it<\/h3>${kv([['Name', name(uid)], ['Username', '@' + String(uid).replace(/^u:/, '')], ['Employee', u.emp ? 'Yes' : 'No'], ['Account opened', a.created ? when(a.created) : '—'], ['Last sign-in', u.last ? when(u.last) : '—'], ['Cash', $(a.cash)], ['Stocks worth', $(inv)], ['Total value', $((a.cash || 0) + inv)], ['Deposits approved', $(dep)], ['Withdrawals paid', $(wd)], ['Holdings', hs.length ? hs.map(([T, h]) => T + ' ' + h.q.toLocaleString()).join(', ') : 'None']])}`;
+    }
+    function kv(rows) { return `<div class="kv2">${rows.map(([k, v]) => `<div><span>${esc(k)}<\/span><b>${esc(v == null || v === '' ? '—' : v)}<\/b><\/div>`).join('')}<\/div>`; }
+    function detailsHtml(k, id) {
+        if (k === 'ipo') {
+            const i = S.ipos[id];
+            if (!i)
+                return '<p class="mut">This IPO no longer exists.<\/p>';
+            const subs = Object.entries(i.subs || {}).filter(([, v]) => v && v.q > 0), R = subs.reduce((x, [, v]) => x + v.q, 0);
+            return `<p class="pill ${i.status === 'review' ? 'rd' : 'bl'}" style="display:inline-block">${esc(i.status)}<\/p><h2 style="margin:8px 0 12px">${esc(i.name)} (${esc(i.ticker)}) IPO<\/h2>
+    ${kv([['Ticker', i.ticker], ['Company name', i.name], ['Sector', i.sector], ['About the company', i.about], ['Company valuation', $(i.price * i.shares)], ['Number of shares', Number(i.shares).toLocaleString()], ['Shares sold in the IPO', Number(i.offered).toLocaleString() + ' (' + (i.offered / i.shares * 100).toFixed(1) + '% of the company)'], ['IPO price per share', $(i.price)], ['Money it would raise', $(i.price * i.offered)], ['Subscription window', i.win ? (i.win >= DAY ? Math.round(i.win / DAY) + ' day(s)' : Math.round(i.win / 36e5) + ' hour(s)') : '—'], ['Closes', i.status === 'review' ? 'Starts when approved' : when(i.closes)], ['Representative required to sell', i.rep ? 'Yes' : 'No'], ['Representative name', i.repName], ['Filed', when(i.t)], ['Shares requested so far', R.toLocaleString() + ' by ' + subs.length + ' investor(s)']])}
+    ${subs.length ? `<h3 style="margin:18px 0 8px">Subscribers<\/h3>${kv(subs.map(([u, v]) => [name(u), v.q.toLocaleString() + ' sh · ' + $(v.paid)]))}` : ''}${acctCard(i.owner)}`;
+        }
+        if (k === 'bet') {
+            const b = S.bets[id];
+            if (!b)
+                return '<p class="mut">This board no longer exists.<\/p>';
+            const p = pools(b), pot = p.reduce((x, y) => x + y, 0);
+            return `<p class="pill ${b.status === 'review' ? 'rd' : 'bl'}" style="display:inline-block">${esc(b.status)}<\/p><h2 style="margin:8px 0 12px">${esc(b.title)}<\/h2>
+    ${kv([['Question', b.title], ['Details and rules', b.desc], ['Category', b.cat], ['Outcomes', (b.outcomes || []).join(' / ')], ['Betting window', b.win ? (b.win >= DAY ? Math.round(b.win / DAY) + ' day(s)' : Math.round(b.win / 36e5) + ' hour(s)') : '—'], ['Closes', b.status === 'review' ? 'Starts when approved' : when(b.closes)], ['Creator fee', '25%'], ['Filed', when(b.t)], ['Total pot', $(pot)], ['Bettors', Object.keys(b.wagers || {}).length]])}
+    <h3 style="margin:18px 0 8px">Money on each outcome<\/h3>${kv((b.outcomes || []).map((o, i) => [o, $(p[i])]))}
+    ${Object.keys(b.wagers || {}).length ? `<h3 style="margin:18px 0 8px">Bets<\/h3>${kv(Object.entries(b.wagers || {}).flatMap(([u, w]) => Object.entries(w || {}).filter(([, v]) => +v > 0).map(([i, v]) => [name(u), $(+v) + ' on ' + (b.outcomes[i] || '?')])))}` : ''}${acctCard(b.owner)}`;
+        }
+        if (k === 'dep') {
+            const d = S.deps.find(x => x.id === id);
+            if (!d)
+                return '<p class="mut">Not found.<\/p>';
+            return `<p class="pill bl" style="display:inline-block">${esc(d.status)}<\/p><h2 style="margin:8px 0 12px">Deposit request: ${$(d.amt)}<\/h2>${kv([['Amount asked for', $(d.amt)], ['Amount approved', d.approved ? $(d.approved) : '—'], ['Meeting time', when(d.slot)], ['Note', d.note], ['Requested', when(d.t)]])}${acctCard(d.uid)}`;
+        }
+        if (k === 'wd') {
+            const w = S.wds.find(x => x.id === id);
+            if (!w)
+                return '<p class="mut">Not found.<\/p>';
+            return `<p class="pill bl" style="display:inline-block">${esc(w.status)}<\/p><h2 style="margin:8px 0 12px">Withdrawal: ${$(w.amt)}<\/h2>${kv([['Amount', $(w.amt)], ['Requested', when(w.t)], ['Withdrawn that day', $(wdToday(w.uid)) + ' of ' + $(WDLIM)]])}${acctCard(w.uid)}`;
+        }
+        if (k === 'req') {
+            const r = S.reqs.find(x => x.id === id);
+            if (!r)
+                return '<p class="mut">Not found.<\/p>';
+            const p = live(r.ticker) || 0, h = ((S.accounts[r.uid] || {}).holdings || {})[r.ticker] || {};
+            return `<p class="pill bl" style="display:inline-block">${esc(r.status)}<\/p><h2 style="margin:8px 0 12px">Sale request: ${Number(r.qty).toLocaleString()} ${esc(r.ticker)}<\/h2>${kv([['Stock', r.ticker + ' · ' + ((S.companies[r.ticker] || {}).name || '')], ['Shares to sell', Number(r.qty).toLocaleString()], ['Shares they own', (h.q || 0).toLocaleString()], ['Price now', $(p)], ['Worth about', $(r.qty * p)], ['Their average cost', h.q ? $(h.c / h.q) : '—'], ['Meeting time', when(r.slot)], ['Representative', r.rep], ['Note', r.note], ['Requested', when(r.t)]])}${acctCard(r.uid)}`;
+        }
+        if (k === 'acct')
+            return `<h2 style="margin:0 0 4px">${esc(name(id))}<\/h2>${acctCard(id)}`;
+        return '';
+    }
+    function openDetails(k, id) { S.modal = { k, id }; paintModal(); }
+    function paintModal() {
+        let m = document.getElementById('modal');
+        if (!S.modal) {
+            if (m)
+                m.remove();
+            return;
+        }
+        if (!m) {
+            m = document.createElement('div');
+            m.id = 'modal';
+            m.innerHTML = '<div class="mbox"><button class="mclose" aria-label="Close">✕<\/button><div class="mbody"><\/div><\/div>';
+            document.body.appendChild(m);
+            m.addEventListener('click', e => { if (e.target === m || e.target.closest('.mclose')) {
+                S.modal = null;
+                paintModal();
+            } });
+        }
+        const body = m.querySelector('.mbody'), y = body.scrollTop;
+        body.innerHTML = detailsHtml(S.modal.k, S.modal.id);
+        body.scrollTop = y;
+    }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1617,9 +1701,9 @@ No<\/textarea><\/label>
             if (h.q > 0 && S.companies[T])
                 v += h.q * live(T); return { id, a, v }; }).sort((x, y) => (y.a.cash + y.v) - (x.a.cash + x.v));
         const cashAll = accts.reduce((s, x) => s + x.a.cash, 0), dk = dayKey();
-        const saleRow = r => { const p = live(r.ticker) || 0; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(r.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(name(r.uid))} wants to sell ${Number(r.qty).toLocaleString()} sh<\/b><small>Meeting ${esc(when(r.slot))} · about ${$(r.qty * p)}${r.note ? ' · “' + esc(r.note) + '”' : ''}<\/small><\/span><button class="sm-b ok" data-act="rep-approve" data-id="${esc(r.id)}">Approve sale<\/button><button class="sm-b" data-act="rep-decline" data-id="${esc(r.id)}">Decline<\/button><\/div>`; };
-        const ipoRow = i => { const R = Object.values(i.subs || {}).reduce((s, v) => s + (v.q || 0), 0), rev = i.status === 'review'; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(i.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(i.name)} · ${$(i.price)}/sh${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(i.owner))} · valued ${big(i.price * i.shares)} · ${rev ? 'selling ' + cnt(i.offered) + ' shares' : cnt(R) + ' of ' + cnt(i.offered) + ' requested · ' + (now > i.closes ? 'window closed' : 'closes ' + esc(when(i.closes)))}<\/small><\/span>${rev ? `<button class="sm-b ok" data-act="ipo-approve" data-t="${esc(i.ticker)}">Approve<\/button><button class="sm-b" data-act="ipo-reject" data-t="${esc(i.ticker)}">Reject<\/button>` : `<button class="sm-b ok" data-act="ipo-launch" data-t="${esc(i.ticker)}">List now<\/button><button class="sm-b" data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw<\/button>`}<\/div>`; };
-        const betRow = b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0), rev = b.status === 'review'; return `<div class="li" style="cursor:default;display:grid;gap:8px"><span class="grow"><b>${esc(b.title)}${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(b.owner))} · ${b.outcomes.map(o => esc(o)).join(' / ')}${rev ? '' : ' · pot ' + $(pot) + ' · ' + (now > b.closes ? 'closed' : 'closes ' + esc(when(b.closes)))}<\/small><\/span><div class="qq">${rev ? `<button class="sm-b ok" data-act="bet-approve" data-id="${esc(b.id)}">Approve<\/button><button class="sm-b" data-act="bet-remove" data-id="${esc(b.id)}">Reject<\/button>` : b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('') + `<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void<\/button><button class="sm-b sell" data-act="bet-remove" data-id="${esc(b.id)}">Remove<\/button>`}<\/div><div class="msg" id="bm_${esc(b.id)}"><\/div><\/div>`; };
+        const saleRow = r => { const p = live(r.ticker) || 0; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(r.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(name(r.uid))} wants to sell ${Number(r.qty).toLocaleString()} sh<\/b><small>Meeting ${esc(when(r.slot))} · about ${$(r.qty * p)}${r.note ? ' · “' + esc(r.note) + '”' : ''}<\/small><\/span><button type="button" class="sm-b" data-act="details" data-k="req" data-id="${esc(r.id)}">Details<\/button><button class="sm-b ok" data-act="rep-approve" data-id="${esc(r.id)}">Approve sale<\/button><button class="sm-b" data-act="rep-decline" data-id="${esc(r.id)}">Decline<\/button><\/div>`; };
+        const ipoRow = i => { const R = Object.values(i.subs || {}).reduce((s, v) => s + (v.q || 0), 0), rev = i.status === 'review'; return `<div class="li" style="cursor:default;flex-wrap:wrap"><span class="tk">${esc(i.ticker)}<\/span><span class="grow" style="min-width:170px"><b>${esc(i.name)} · ${$(i.price)}/sh${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(i.owner))} · valued ${big(i.price * i.shares)} · ${rev ? 'selling ' + cnt(i.offered) + ' shares' : cnt(R) + ' of ' + cnt(i.offered) + ' requested · ' + (now > i.closes ? 'window closed' : 'closes ' + esc(when(i.closes)))}<\/small><\/span><button type="button" class="sm-b" data-act="details" data-k="ipo" data-id="${esc(i.ticker)}">Details<\/button>${rev ? `<button class="sm-b ok" data-act="ipo-approve" data-t="${esc(i.ticker)}">Approve<\/button><button class="sm-b" data-act="ipo-reject" data-t="${esc(i.ticker)}">Reject<\/button>` : `<button class="sm-b ok" data-act="ipo-launch" data-t="${esc(i.ticker)}">List now<\/button><button class="sm-b" data-act="ipo-cancel" data-t="${esc(i.ticker)}">Withdraw<\/button>`}<\/div>`; };
+        const betRow = b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0), rev = b.status === 'review'; return `<div class="li" style="cursor:default;display:grid;gap:8px"><span class="grow"><b>${esc(b.title)}${rev ? ' <span class="pill rd">needs approval<\/span>' : ''}<\/b><small>Filed by ${esc(name(b.owner))} · ${b.outcomes.map(o => esc(o)).join(' / ')}${rev ? '' : ' · pot ' + $(pot) + ' · ' + (now > b.closes ? 'closed' : 'closes ' + esc(when(b.closes)))}<\/small><\/span><div class="qq"><button type="button" class="sm-b" data-act="details" data-k="bet" data-id="${esc(b.id)}">Details<\/button>${rev ? `<button class="sm-b ok" data-act="bet-approve" data-id="${esc(b.id)}">Approve<\/button><button class="sm-b" data-act="bet-remove" data-id="${esc(b.id)}">Reject<\/button>` : b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('') + `<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void<\/button><button class="sm-b sell" data-act="bet-remove" data-id="${esc(b.id)}">Remove<\/button>`}<\/div><div class="msg" id="bm_${esc(b.id)}"><\/div><\/div>`; };
         const sec = (t, n, body) => `<section class="card"><div class="ch-h"><h2>${t}<\/h2><span class="pill ${n ? 'bl' : ''}">${n} waiting<\/span><\/div>${body}<\/section>`;
         return `<div class="stackc"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Employee dashboard<\/h1><span class="pill gr">Signed in as ${esc(name(S.uid))}<\/span><\/div>
   ${inbox()}
@@ -2118,6 +2202,11 @@ No<\/textarea><\/label>
         if (!b)
             return;
         const act = b.dataset.act;
+        if (act === 'details') {
+            e.preventDefault();
+            openDetails(b.dataset.k, b.dataset.id);
+            return;
+        }
         b.disabled = true;
         try {
             if (act === 'open') {
