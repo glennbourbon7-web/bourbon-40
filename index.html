@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bourbon 40 Exchange</title>
+<title>Ānanda Capital</title>
 <script>window.__errs=[];window.onerror=function(m,src,l,c,e){var t=(e&&e.message)||m;window.__errs.push(t+' @'+l+':'+c);var a=document.getElementById('app');if(a){a.innerHTML='<div style="background:#3a0f16;color:#ffc6cc;border-radius:12px;padding:14px;font:14px/1.5 -apple-system,sans-serif">Something broke while loading. Screenshot this and send it:<br><b>'+String(window.__errs.join(' | ')).replace(/[<>&]/g,'')+'</b><br>'+navigator.userAgent.replace(/[<>&]/g,'')+'</div>'}};window.addEventListener('unhandledrejection',function(ev){window.onerror('Promise: '+(ev.reason&&ev.reason.message||ev.reason),'',0,0)});</script>
 <script>if(!Object.fromEntries)Object.fromEntries=function(it){var o={};Array.from(it).forEach(function(p){o[p[0]]=p[1]});return o};if(!Array.prototype.flat)Array.prototype.flat=function(){return [].concat.apply([],this)};if(!Array.prototype.flatMap)Array.prototype.flatMap=function(f,t){return [].concat.apply([],this.map(f,t))};if(!window.requestAnimationFrame)window.requestAnimationFrame=function(f){return setTimeout(f,16)};</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>/* VOICE: a pro brokerage app at night — dense, exact, calm.
    IDEA: the broker's "Markets" screen: index lines racing on black, grouped lists with chevrons.
    PICTURE: the multi-line Indices chart with timeframe switch, and touchable price charts.
@@ -34,8 +34,8 @@ main{max-width:1200px;margin:0 auto;padding:22px max(3vw,16px) 70px}
 .ch-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 18px 6px;flex-wrap:wrap}
 .lbl{font-size:13px;color:var(--mut);font-weight:500}
 .big{font-size:clamp(32px,5vw,46px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.05}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--ln);border-top:1px solid var(--ln)}
-.stats>div{background:var(--p);padding:12px 18px}.stats b{display:block;font-size:16.5px;font-variant-numeric:tabular-nums}.stats span{font-size:12.5px;color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:0;background:var(--p);border-top:1px solid var(--ln)}
+.stats>div{background:var(--p);padding:12px 18px;box-shadow:inset -1px -1px 0 var(--ln)}.stats b{display:block;font-size:16.5px;font-variant-numeric:tabular-nums}.stats span{font-size:12.5px;color:var(--mut)}
 .fig{position:relative;min-height:230px;margin:6px 8px 0;touch-action:pan-y}.fig>svg{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;cursor:crosshair}
 .fig.tall{min-height:300px}.fig.sm{min-height:170px}
 .ax{fill:#7d869a;font-size:11px;font-family:Inter}
@@ -104,30 +104,22 @@ td{padding:10px 12px;border-bottom:1px solid #1a1f2a}
 @media(prefers-reduced-motion:no-preference){.flash{animation:fl 1s ease-out}@keyframes fl{from{background:#173a6a}to{background:transparent}}}
 
 .logo{display:flex;gap:11px;align-items:center;color:var(--ink);text-decoration:none}
-.mark{width:40px;height:40px;flex:none;filter:drop-shadow(0 0 10px rgba(30,139,255,.45))}
 .wm{display:grid;line-height:1}
-.wm b{font:700 23px/1 'Cormorant Garamond',Georgia,'Times New Roman',serif;letter-spacing:.01em}
-.wm em{font-style:normal;margin-left:5px;background:linear-gradient(135deg,#8fd3ff,#1e8bff);-webkit-background-clip:text;background-clip:text;color:transparent}
 .wm small{font:600 11.5px/1.2 Inter,sans-serif;margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(max-width:700px){.mark{width:36px;height:36px}.wm b{font-size:21px}}
-@media(prefers-reduced-motion:reduce){.shine{display:none}}
+@media(max-width:700px){@media(prefers-reduced-motion:reduce){.shine{display:none}}
+.wm b{font:600 21px/1 Inter,system-ui,sans-serif;letter-spacing:-.02em;color:#fff}.wm b span{font-weight:400;color:#c9d3e6}
+.k-BET,.k-BOARD{color:var(--b2)}.k-BET-WIN{color:var(--up)}.k-BET-VOID{color:var(--mut)}
+@media(max-width:700px){nav{grid-template-columns:repeat(6,1fr)}nav a{font-size:10px}nav svg{width:22px;height:22px}.wm b{font-size:19px}}
 </style>
 </head><body>
-<div class="banner">Bourbon 40 is a parody exchange with play money. Prices aren't real quotes, and your market is saved on this device.</div>
+<div class="banner">Ānanda Capital is a parody brokerage with play money. Prices aren't real quotes, and your account is saved on this device.</div>
 <header>
-  <a class="logo" href="#home" aria-label="Bourbon 40 home"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
-<defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fd3ff"/><stop offset=".55" stop-color="#1e8bff"/><stop offset="1" stop-color="#0b3c9c"/></linearGradient></defs>
-<polygon points="20,2.5 35.2,11.25 35.2,28.75 20,37.5 4.8,28.75 4.8,11.25" fill="#07101f" stroke="url(#lgG)" stroke-width="2.2" stroke-linejoin="round"/>
-<polygon points="20,7.5 30.9,13.75 30.9,26.25 20,32.5 9.1,26.25 9.1,13.75" fill="none" stroke="#1e8bff" stroke-opacity=".28" stroke-width="1"/>
-<polygon class="shine" points="20,2.5 35.2,11.25 35.2,28.75 20,37.5 4.8,28.75 4.8,11.25" fill="none" stroke="#e6f4ff" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="9 96"><animate attributeName="stroke-dashoffset" from="0" to="-105" dur="5s" repeatCount="indefinite"/></polygon>
-<path id="lgLine" d="M11 25 L16.5 21 L21.5 23.5 L29 14" fill="none" stroke="#8fd3ff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-<circle id="lgDot" cx="29" cy="14" r="2.4" fill="#2fd27a"><animate attributeName="r" values="2.2;3.1;2.2" dur="2.4s" repeatCount="indefinite"/></circle>
-</svg><span class="wm"><b>Bourbon<em>40</em></b><small id="lgx">B40 · loading</small></span></a>
+  <a class="logo" href="#home" aria-label="Ānanda Capital home"><span class="wm"><b>Ānanda <span>Capital</span></b><small id="lgx">B40 · loading</small></span></a>
   <nav id="nav">
    <a href="#home" data-n="home"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Accounts</span></a>
    <a href="#markets" data-n="markets"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span>Markets</span></a>
    <a href="#trade" data-n="trade"><svg viewBox="0 0 24 24"><path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4"/></svg><span>Trade</span></a>
-   <a href="#ipos" data-n="ipos"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.5-.8z"/></svg><span>IPOs</span></a>
+   <a href="#bets" data-n="bets"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.3"/><circle cx="15" cy="15" r="1.3"/><circle cx="15" cy="9" r="1.3"/><circle cx="9" cy="15" r="1.3"/></svg><span>Bets</span></a><a href="#ipos" data-n="ipos"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.5-.8z"/></svg><span>IPOs</span></a>
    <a href="#more" data-n="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg><span>More</span></a>
   </nav>
   <span class="chip num" id="cashChip">Connecting…</span>
@@ -215,7 +207,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
     const SECTORS = ['Technology', 'Financials', 'Health care', 'Industrials', 'Consumer', 'Energy', 'Media', 'Materials'];
     const S = { db: null, user: null, uid: null, canWrite: true, isOwner: false, companies: {}, accounts: {}, ledger: [], orders: [], ipos: {}, reqs: [], names: {},
-        loaded: false, stale: false, tf: '1D', ptf: '1M', stf: '1D', side: 'BUY', ot: 'market', q: '', sector: 'all', lk: 'all', tt: null };
+        bets: {}, loaded: false, stale: false, tf: '1D', ptf: '1M', stf: '1D', side: 'BUY', ot: 'market', q: '', sector: 'all', lk: 'all', tt: null };
     const app = document.getElementById('app');
     /* ================= HELPERS ================= */
     const esc = v => String(v !== null && v !== void 0 ? v : '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -428,7 +420,8 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
             dayAbs += h.q * p * (d / (1 + d));
         }
         const esc_ = Object.values(S.ipos).filter(i => i.status === 'open').reduce((s, i) => { var _a, _b; return s + (((_b = (_a = i.subs) === null || _a === void 0 ? void 0 : _a[S.uid]) === null || _b === void 0 ? void 0 : _b.paid) || 0); }, 0);
-        return { inv, cost, cash: a.cash, escrow: esc_, tot: inv + a.cash + esc_, dayAbs };
+        const inBets = Object.values(S.bets).filter(b => b.status === 'open').reduce((s, b) => s + myStake(b), 0);
+        return { inv, cost, cash: a.cash, escrow: esc_, inBets, tot: inv + a.cash + esc_ + inBets, dayAbs };
     }
     const pendingRep = (uid, T) => S.reqs.filter(r => r.uid === uid && r.ticker === T && r.status === 'scheduled').reduce((s, r) => s + r.qty, 0);
     const openSells = (uid, T) => S.orders.filter(o => o.uid === uid && o.ticker === T && o.side === 'SELL' && o.status === 'open').reduce((s, o) => s + o.qty, 0);
@@ -447,7 +440,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         const keep = {}, fe = document.activeElement, fk = fe && app.contains(fe) && !fe.dataset.st ? (fe.id || fe.name) : null;
         app.querySelectorAll('input,select,textarea').forEach(el => { const k = el.id || el.name; if (k && !el.dataset.st && el.type !== 'checkbox')
             keep[k] = el.value; });
-        const views = { home, markets, trade, ipos, more, corporate, ledger, how, meetings };
+        const views = { home, markets, trade, ipos, bets, more, corporate, ledger, how, meetings };
         const v = r.startsWith('s-') ? stock(r.slice(2).toUpperCase()) : (views[r] || home)();
         app.innerHTML = (S.stale ? '<p class="msg err">Showing saved data. It may be out of date until the connection answers.<\/p>' : '') + v;
         app.querySelectorAll('input,select,textarea').forEach(el => { const k = el.id || el.name; if (k in keep && !el.dataset.st)
@@ -523,7 +516,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         const hero = `<section class="card"><div class="pad" style="padding-bottom:6px"><div class="lbl">Total account value<\/div><div class="big">${$(st.tot)}<\/div>
     <div class="row" style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;font-size:14px"><span class="${cls(st.dayAbs)}">${st.dayAbs >= 0 ? '+' : '−'}${$(Math.abs(st.dayAbs))} today<\/span><span class="${cls(all)}">${all >= 0 ? '+' : '−'}${$(Math.abs(all))} all time<\/span><\/div><\/div>
     ${figHtml('pfig', 'sm')}${segHtml('p', S.ptf)}<p class="note" style="margin:0 18px 10px">Chart shows what your current holdings would have been worth.<\/p>
-    <div class="stats"><div><b>${$(st.cash)}<\/b><span>Cash<\/span><\/div><div><b>${$(st.inv)}<\/b><span>Invested<\/span><\/div><div><b class="${cls(unreal)}">${unreal >= 0 ? '+' : '−'}${$(Math.abs(unreal))}<\/b><span>Unrealized gain<\/span><\/div>${st.escrow ? `<div><b>${$(st.escrow)}<\/b><span>Held for IPOs<\/span><\/div>` : ''}<\/div><\/section>`;
+    <div class="stats"><div><b>${$(st.cash)}<\/b><span>Cash<\/span><\/div><div><b>${$(st.inv)}<\/b><span>Invested<\/span><\/div><div><b class="${cls(unreal)}">${unreal >= 0 ? '+' : '−'}${$(Math.abs(unreal))}<\/b><span>Unrealized gain<\/span><\/div>${st.escrow ? `<div><b>${$(st.escrow)}<\/b><span>Held for IPOs<\/span><\/div>` : ''}${st.inBets ? `<div><b>${$(st.inBets)}<\/b><span>In open bets<\/span><\/div>` : ''}<\/div><\/section>`;
         const inv = `<section class="card"><div class="ch-h"><h2>Your investments<\/h2><a href="#trade" class="note">Trade<\/a><\/div><div class="list">${hs.length ? hs.map(([T, h]) => {
             const c = S.companies[T], v = h.q * live(T), gl = v - h.c, p = pendingRep(S.uid, T);
             return `<a class="li" href="#s-${esc(T.toLowerCase())}"><span class="tk">${esc(T)}<\/span><span class="grow"><b>${esc(c.name)}<\/b><small>${h.q.toLocaleString()} sh · avg ${$(h.c / h.q)}${p ? ` · ${p} awaiting rep` : ''}<\/small><\/span><span class="rt"><b>${$(v)}<\/b><small class="${cls(gl)}">${gl >= 0 ? '+' : '−'}${$(Math.abs(gl))} (${sg(gl / h.c * 100)})<\/small><\/span><span class="chev"><\/span><\/a>`;
@@ -532,7 +525,8 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         const pend = `<section class="card"><div class="ch-h"><h2>Pending<\/h2><\/div><div class="list">
     <a class="li" href="#trade"><span class="grow"><b>Open orders<\/b><small>Limit and stop orders waiting to fill<\/small><\/span><span class="rt"><b>${myO.length}<\/b><\/span><span class="chev"><\/span><\/a>
     <a class="li" href="#meetings"><span class="grow"><b>Representative meetings<\/b><small>Share sales waiting for approval<\/small><\/span><span class="rt"><b>${myR.length}<\/b><\/span><span class="chev"><\/span><\/a>
-    <a class="li" href="#ipos"><span class="grow"><b>IPO subscriptions<\/b><small>Offerings you've requested shares in<\/small><\/span><span class="rt"><b>${myI.length}<\/b><\/span><span class="chev"><\/span><\/a><\/div><\/section>`;
+    <a class="li" href="#ipos"><span class="grow"><b>IPO subscriptions<\/b><small>Offerings you've requested shares in<\/small><\/span><span class="rt"><b>${myI.length}<\/b><\/span><span class="chev"><\/span><\/a>
+    <a class="li" href="#bets"><span class="grow"><b>Open bets<\/b><small>Betting boards you have money on<\/small><\/span><span class="rt"><b>${Object.values(S.bets).filter(b => b.status === 'open' && myStake(b) > 0).length}<\/b><\/span><span class="chev"><\/span><\/a><\/div><\/section>`;
         const wl = (a.watch || []).filter(T => S.companies[T]);
         const watch = `<section class="card"><div class="ch-h"><h2>Watchlist<\/h2><\/div><div class="list">${wl.length ? wl.map(T => stockRow(S.companies[T])).join('') : '<div class="empty">Tap the star on any stock to watch it here.<\/div>'}<\/div><\/section>`;
         return `<div class="cols"><div class="stackc">${hero}${inv}${pend}${watch}<\/div><div class="stackc">${indices}${wire}<\/div><\/div>`;
@@ -682,6 +676,149 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
    <div class="stackc"><section class="card pad"><h2>Take your company public<\/h2><p class="mut" style="margin:6px 0 14px">Investors request shares during the subscription window, and their cash is held until listing. When you list, shares are handed out (cut back evenly if demand is higher than supply), anyone who got fewer shares is refunded the difference, and trading starts.<\/p>${form}<\/section>
    <section class="card pad"><h3>How the opening price is set<\/h3><p class="mut" style="margin:6px 0 0">Opening price = IPO price × (1 + 12% × ln(shares requested ÷ shares offered)), capped between −30% and +60%. Exactly matched demand opens flat; 3× demand opens about 13% higher; half demand opens about 8% lower.<\/p><\/section><\/div><\/div>`;
     }
+    /* ---------- BETTING BOARDS (pool betting) ----------
+       Everyone's stakes go into one pot. When the board closes, its creator picks the winning outcome,
+       and the pot (minus the creator's fee) is split among winners in proportion to what they staked.
+       Payout multiple for an outcome = pot × (1 − fee) ÷ money on that outcome. */
+    const stakeOf = (b, uid, i) => { const w = b.wagers && b.wagers[uid]; return w && w[i] ? w[i] : 0; };
+    const myStake = b => { const w = b.wagers && b.wagers[S.uid]; return w ? Object.values(w).reduce((s, v) => s + (+v || 0), 0) : 0; };
+    function pools(b) { const p = b.outcomes.map(() => 0); for (const w of Object.values(b.wagers || {}))
+        for (const [i, v] of Object.entries(w))
+            if (p[i] != null)
+                p[i] += +v || 0; return p; }
+    function bets() {
+        const a = me(), now = Date.now(), all = Object.values(S.bets).sort((x, y) => (y.t || 0) - (x.t || 0));
+        const open = all.filter(b => b.status === 'open'), done = all.filter(b => b.status !== 'open');
+        const card = b => {
+            const p = pools(b), pot = p.reduce((x, y) => x + y, 0), closed = now > b.closes, left = b.closes - now, fee = b.fee || 0, mine = myStake(b);
+            const cd = closed ? 'Betting closed · waiting for the result' : left > DAY ? `Closes in ${Math.ceil(left / DAY)} days` : left > 36e5 ? `Closes in ${Math.round(left / 36e5)} h` : `Closes in ${Math.max(1, Math.round(left / 6e4))} min`;
+            return `<section class="card"><div class="pad" style="padding-bottom:8px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="pill bl">${esc(b.cat || 'General')}<\/span><span class="note">${esc(cd)}<\/span><\/div>
+     <h2 style="margin-top:8px">${esc(b.title)}<\/h2>${b.desc ? `<p class="mut" style="margin:6px 0 0">${esc(b.desc)}<\/p>` : ''}<\/div>
+     <div class="list">${b.outcomes.map((o, i) => {
+                const sh = pot ? p[i] / pot : 1 / b.outcomes.length, mult = p[i] ? pot * (1 - fee) / p[i] : 0, ms = stakeOf(b, S.uid, i);
+                return `<div class="li" style="cursor:default;display:grid;gap:6px"><div style="display:flex;justify-content:space-between;gap:10px"><b>${esc(o)}<\/b><span class="mono"><b>${Math.round(sh * 100)}%<\/b> <span class="mut">· ${mult ? mult.toFixed(2) + '× payout' : 'no bets yet'}<\/span><\/span><\/div>
+       <div class="bar"><i style="width:${(sh * 100).toFixed(1)}%"><\/i><\/div><small class="mut">${$(p[i])} staked${ms ? ` · <span class="up">you: ${$(ms)}, pays about ${$(ms * mult)} if this wins<\/span>` : ''}<\/small><\/div>`;
+            }).join('')}<\/div>
+     <div class="stats"><div><b>${$(pot)}<\/b><span>Total pot<\/span><\/div><div><b>${Object.keys(b.wagers || {}).length}<\/b><span>Bettors<\/span><\/div><div><b>${(fee * 100).toFixed(0)}%<\/b><span>Creator fee<\/span><\/div>${mine ? `<div><b>${$(mine)}<\/b><span>Your stake<\/span><\/div>` : ''}<\/div>
+     ${a && !closed ? `<form class="form wagerf pad" data-id="${esc(b.id)}" style="border-top:1px solid var(--ln)"><div class="frow"><label>Outcome<select name="wo_${esc(b.id)}">${b.outcomes.map((o, i) => `<option value="${i}">${esc(o)}<\/option>`).join('')}<\/select><\/label><label>Amount<input name="wa_${esc(b.id)}" type="number" min="1" step="1" value="100" inputmode="decimal"><\/label><\/div><button class="pri">Place bet<\/button><\/form>` : ''}
+     <div class="msg" id="bm_${esc(b.id)}" style="margin:0 18px 14px"><\/div>
+     ${owns(b) ? `<div class="pad" style="border-top:1px solid var(--ln)"><h3>Settle this board<\/h3><p class="note" style="margin:4px 0 10px">${closed ? 'Pick the outcome that happened. Winners are paid right away.' : 'You can settle early once the result is known, which also closes betting.'}<\/p><div class="qq">${b.outcomes.map((o, i) => `<button class="sm-b ok" data-act="bet-resolve" data-id="${esc(b.id)}" data-o="${i}">${esc(o)} won<\/button>`).join('')}<button class="sm-b" data-act="bet-void" data-id="${esc(b.id)}">Void and refund everyone<\/button><\/div><\/div>` : ''}<\/section>`;
+        };
+        const form = S.db && S.canWrite && a ? `<form id="betf" class="form">
+    <label>What are people betting on?<input name="title" required maxlength="120" placeholder="Will GNS close above $12 by Friday?"><\/label>
+    <label>Details and rules (optional)<textarea name="desc" rows="2" maxlength="400" placeholder="How the result will be decided"><\/textarea><\/label>
+    <label>Outcomes, one per line (2 to 6)<textarea name="outs" rows="3" required>Yes
+No<\/textarea><\/label>
+    <div class="frow"><label>Category<select name="cat"><option>Markets<\/option><option>Politics<\/option><option>Sports<\/option><option>GNS<\/option><option>Entertainment<\/option><option>General<\/option><\/select><\/label><label>Betting closes in<select name="win"><option value="${36e5}">1 hour<\/option><option value="${6 * 36e5}">6 hours<\/option><option value="${DAY}" selected>1 day<\/option><option value="${3 * DAY}">3 days<\/option><option value="${7 * DAY}">7 days<\/option><option value="${30 * DAY}">30 days<\/option><\/select><\/label><label>Your fee from the pot<select name="fee"><option value="0">0%<\/option><option value="0.01">1%<\/option><option value="0.02" selected>2%<\/option><option value="0.05">5%<\/option><\/select><\/label><\/div>
+    <button class="pri">File betting board<\/button><div class="msg" id="betmsg"><\/div><\/form>` : a ? '<p class="mut">Your access is view-only.<\/p>' : openAcct();
+        return `<div class="cols"><div class="stackc"><h2>Open betting boards<\/h2>${open.length ? open.map(card).join('') : '<div class="card empty">No boards are open. File one and let people bet on it.<\/div>'}
+    ${done.length ? `<section class="card"><div class="ch-h"><h2>Settled boards<\/h2><\/div><div class="list">${done.slice(0, 10).map(b => { const p = pools(b), pot = p.reduce((x, y) => x + y, 0); return `<div class="li" style="cursor:default"><span class="grow"><b>${esc(b.title)}<\/b><small>${b.status === 'void' ? 'Voided, everyone refunded' : 'Winner: ' + esc(b.outcomes[b.winner]) + ' · pot ' + $(pot)}${b.payout && b.payout[S.uid] ? ' · you won ' + $(b.payout[S.uid]) : ''}<\/small><\/span><span class="pill ${b.status === 'void' ? '' : 'gr'}">${b.status === 'void' ? 'void' : 'settled'}<\/span><\/div>`; }).join('')}<\/div><\/section>` : ''}<\/div>
+   <div class="stackc"><section class="card pad"><h2>File a betting board<\/h2><p class="mut" style="margin:6px 0 14px">Ask a question, list the possible outcomes and set when betting closes. When it's over, you pick the result and the pot is paid out automatically.<\/p>${form}<\/section>
+   <section class="card pad"><h3>How payouts work<\/h3><p class="mut" style="margin:6px 0 0">All stakes go into one pot. Winners split the pot, minus the creator's fee, in proportion to what they bet. Payout multiple = pot × (1 − fee) ÷ money on that outcome, so long shots pay more. The % beside each outcome is the crowd's odds: its share of the pot.<\/p><\/section><\/div><\/div>`;
+    }
+    function fileBoard(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const outs = f.outs.value.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 6), title = f.title.value.trim();
+            if (!title)
+                return say('betmsg', 'Add a question.', false);
+            if (outs.length < 2)
+                return say('betmsg', 'List at least 2 outcomes, one per line.', false);
+            try {
+                const ref = yield S.db.collection('bets').add({ title, desc: f.desc.value.trim(), outcomes: outs, cat: f.cat.value, closes: Date.now() + (+f.win.value), fee: +f.fee.value, owner: S.uid, status: 'open', wagers: {}, t: Date.now() });
+                yield log({ kind: 'BOARD', via: title.slice(0, 60) });
+                f.reset();
+                say('betmsg', 'Board filed. People can bet on it now.', true);
+            }
+            catch (e) {
+                say('betmsg', 'Could not file the board. Try again.', false);
+            }
+        });
+    }
+    function placeBet(id, f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const b = S.bets[id];
+            if (!b)
+                return;
+            const i = +f.querySelector('select').value, amt = r2(+f.querySelector('input').value || 0), a = me();
+            if (Date.now() > b.closes)
+                return say('bm_' + id, 'Betting on this board has closed.', false);
+            if (!(amt >= 1))
+                return say('bm_' + id, 'Bet at least $1.', false);
+            if (a.cash < amt)
+                return say('bm_' + id, `You only have ${$(a.cash)} in cash.`, false);
+            try {
+                const as = yield S.db.doc('accounts/' + S.uid).get(), ac = clone(as.data());
+                if (ac.cash < amt)
+                    throw Error('Not enough cash.');
+                ac.cash = r2(ac.cash - amt);
+                yield S.db.doc('accounts/' + S.uid).set(ac);
+                const cur = stakeOf(b, S.uid, i);
+                yield S.db.doc('bets/' + id).update({ wagers: { [S.uid]: { [i]: r2(cur + amt) } } });
+                yield log({ kind: 'BET', price: amt, via: b.outcomes[i] + ' · ' + b.title.slice(0, 40) });
+                say('bm_' + id, `Bet ${$(amt)} on “${b.outcomes[i]}”.`, true);
+            }
+            catch (e) {
+                say('bm_' + id, e.message || 'Could not place the bet.', false);
+            }
+        });
+    }
+    function resolveBoard(id, win) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ref = S.db.doc('bets/' + id);
+            try {
+                const l = yield ref.acquire({ holder: S.uid, ttlMs: 30000 });
+                if (!l.acquired)
+                    return;
+                const s = yield ref.get();
+                const b = s.data();
+                if (!b || b.status !== 'open')
+                    return;
+                const p = pools(b), pot = p.reduce((x, y) => x + y, 0), fee = b.fee || 0, payout = {};
+                if (!p[win]) {
+                    yield voidBoard(id, true);
+                    return say('bm_' + id, 'Nobody bet on that outcome, so everyone was refunded.', true);
+                }
+                for (const [uid, w] of Object.entries(b.wagers || {})) {
+                    const st = +w[win] || 0;
+                    if (st > 0) {
+                        const amt = r2(st / p[win] * pot * (1 - fee));
+                        payout[uid] = amt;
+                        yield refund(uid, amt);
+                        yield S.db.collection('ledger').add({ t: Date.now(), uid, kind: 'BET-WIN', price: amt, via: b.outcomes[win] + ' · ' + b.title.slice(0, 40) });
+                    }
+                }
+                if (fee && pot)
+                    yield refund(b.owner === 'artifact-owner' ? S.uid : b.owner, r2(pot * fee));
+                yield ref.update({ status: 'resolved', winner: win, payout, rt: Date.now() });
+                yield log({ kind: 'BOARD', via: 'Settled: ' + b.outcomes[win] + ' · ' + b.title.slice(0, 40), price: pot });
+            }
+            catch (e) {
+                say('bm_' + id, 'Could not settle the board.', false);
+            }
+        });
+    }
+    function voidBoard(id, quiet) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ref = S.db.doc('bets/' + id);
+            try {
+                const s = yield ref.get(), b = s.data();
+                if (!b || b.status !== 'open')
+                    return;
+                for (const [uid, w] of Object.entries(b.wagers || {})) {
+                    const t = Object.values(w).reduce((x, v) => x + (+v || 0), 0);
+                    if (t > 0)
+                        yield refund(uid, r2(t));
+                }
+                yield ref.update({ status: 'void', rt: Date.now() });
+                yield log({ kind: 'BET-VOID', via: b.title.slice(0, 60) });
+                if (!quiet)
+                    say('bm_' + id, 'Board voided and everyone refunded.', true);
+            }
+            catch (e) {
+                say('bm_' + id, 'Could not void the board.', false);
+            }
+        });
+    }
     /* ---------- MORE ---------- */
     function more() {
         const it = (h, t, s) => `<a class="li" href="#${h}"><span class="grow"><b>${t}<\/b><small>${s}<\/small><\/span><span class="chev"><\/span><\/a>`;
@@ -689,8 +826,9 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
    ${it('corporate', 'Corporate dashboard', 'Market cap, shareholders, representative requests and IPO books for your companies')}
    ${it('meetings', 'Representative meetings', 'Your requests to sell shares that need approval')}
    ${it('ledger', 'System ledger', 'Every account, order, trade, IPO and listing on the exchange')}
+   ${it('bets', 'Betting boards', 'Bet play money on outcomes, or file your own board')}
    ${it('how', 'How prices move', 'The formula behind every rise and fall, with a calculator')}<\/div><\/section>
-   <section class="card pad"><h2>About Bourbon 40<\/h2><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings are stored in a single system and visible to all participants. Prices aren't real quotes.<\/p><\/section><\/div>`;
+   <section class="card pad"><h2>About Ānanda Capital<\/h2><p class="mut">A parody stock exchange for practice and roleplay. Everyone trades play money in one shared market: accounts, orders, trades and listings are stored in a single system and visible to all participants. Prices aren't real quotes.<\/p><\/section><\/div>`;
     }
     /* ---------- CORPORATE ---------- */
     function corporate() {
@@ -731,7 +869,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         }).join('')}<\/tbody><\/table>`;
     }
     function ledger() {
-        const kinds = ['all', 'OPEN', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO'];
+        const kinds = ['all', 'OPEN', 'BUY', 'SELL', 'ORDER', 'FILL', 'CANCEL', 'REP-REQ', 'REP-SALE', 'IPO-SUB', 'IPO', 'BOARD', 'BET', 'BET-WIN', 'BET-VOID'];
         const rows = S.ledger.filter(l => S.lk === 'all' || l.kind === S.lk);
         return `<section class="card"><div class="ch-h"><div><h2>System ledger<\/h2><p class="note" style="margin:2px 0 0">Every event on the exchange, newest first (latest 300).<\/p><\/div><select id="lk" data-st="1" style="width:auto">${kinds.map(k => `<option value="${k}"${S.lk === k ? ' selected' : ''}>${k === 'all' ? 'All events' : k}<\/option>`).join('')}<\/select><\/div>${ledgerTable(rows)}<\/section>`;
     }
@@ -740,7 +878,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         var _a;
         const def = S.companies.GNS ? 'GNS' : (_a = L()[0]) === null || _a === void 0 ? void 0 : _a.ticker;
         return `<div class="cols"><div class="stackc"><section class="card pad"><h1>How prices move<\/h1>
-   <p class="mut">Every price on Bourbon 40 is built from two pieces: a <b>base price<\/b> that only changes when someone trades, and a shared <b>market mood<\/b> that makes prices drift through the day the way real markets do.<\/p>
+   <p class="mut">Every price on Ānanda Capital is built from two pieces: a <b>base price<\/b> that only changes when someone trades, and a shared <b>market mood<\/b> that makes prices drift through the day the way real markets do.<\/p>
    <div class="formula">Price = Base price × Market mood<\/div>
    <h2 style="margin-top:22px">1. Trades push the base price<\/h2>
    <p class="mut">Buying pushes the price up and selling pushes it down. The size of the move uses a version of the <b>square-root impact rule<\/b> that real trading desks use to estimate how much a big order moves a stock:<\/p>
@@ -1167,6 +1305,10 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
                 yield launchIPO(b.dataset.t);
             if (act === 'ipo-cancel')
                 yield cancelIPO(b.dataset.t);
+            if (act === 'bet-resolve')
+                yield resolveBoard(b.dataset.id, +b.dataset.o);
+            if (act === 'bet-void')
+                yield voidBoard(b.dataset.id);
         }
         catch (err) {
             if (err.code === 'invalid_argument' && act === 'open') {
@@ -1201,7 +1343,9 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
     app.addEventListener('submit', e => { e.preventDefault(); const f = e.target; if (f.id === 'ticket')
         submitTicket(); if (f.id === 'repf')
         repRequest(f); if (f.id === 'ipof')
-        fileIPO(f); if (f.classList.contains('subf')) {
+        fileIPO(f); if (f.id === 'betf')
+        fileBoard(f); if (f.classList.contains('wagerf'))
+        placeBet(f.dataset.id, f); if (f.classList.contains('subf')) {
         const T = f.dataset.t;
         subscribe(T, Math.floor(+f.querySelector('input').value || 0));
     } });
@@ -1283,6 +1427,7 @@ window.__SEED = { "companies/AAPL": { "ticker": "AAPL", "name": "Apple", "sector
         db.collection('accounts').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); S.accounts = o; soon(); }, fail);
         db.collection('ledger').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.ledger = s.docs.map(d => d.data()); soon(); }, fail);
         db.collection('orders').orderBy('t', 'desc').limit(400).onSnapshot(s => { S.orders = s.docs.map(d => (Object.assign(Object.assign({}, d.data()), { id: d.id }))); soon(); }, fail);
+        db.collection('bets').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = Object.assign({}, d.data(), { id: d.id })); S.bets = o; soon(); }, fail);
         db.collection('ipos').onSnapshot(s => { const o = {}; s.docs.forEach(d => o[d.id] = d.data()); S.ipos = o; soon(); }, fail);
         db.collection('requests').orderBy('t', 'desc').limit(300).onSnapshot(s => { S.reqs = s.docs.map(d => (Object.assign(Object.assign({}, d.data()), { id: d.id }))); soon(); }, fail);
     }))();
