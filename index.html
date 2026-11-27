@@ -171,6 +171,12 @@ nav a{position:relative}.nbadge{position:absolute;top:2px;right:calc(50% - 22px)
 header{padding-top:max(10px,env(safe-area-inset-top))}
 .k-WITHDRAW{color:#ff453a}.k-WD-REQ{color:#d1d1d6}
 .k-DELIST{color:#ff453a}
+header .logo{flex:none}
+#cashChip{flex:0 1 auto;min-width:0;max-width:46vw;overflow:hidden;text-overflow:ellipsis;display:inline-flex;align-items:center;gap:6px;margin-left:auto}
+#cashChip span{overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+#cashChip .stf{flex:none;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:#fff;color:#000;border-radius:6px;padding:2px 6px}
+@media(max-width:700px){header{gap:10px}.wm b{font-size:14px;letter-spacing:.11em}.wm small{font-size:10.5px}#cashChip{font-size:12.5px;padding:6px 10px}}
+@media(max-width:360px){.wm b{font-size:12.5px;letter-spacing:.08em}}
 </style>
 </head><body>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-line" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M2 70 L60 52 L95 60 L150 30 L190 40 L298 6" fill="none" stroke="#30d158" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -723,7 +729,11 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
         const r = route(), tab = r.startsWith('s-') ? 'markets' : ['corporate', 'ledger', 'how', 'meetings', 'funding', 'staff'].includes(r) ? 'more' : r;
         document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.n === tab));
         const a = me();
-        document.getElementById('cashChip').textContent = !S.uid ? '' : (S.isOwner ? 'Staff · ' : '') + (a ? 'Cash ' + $(a.cash) : 'No account');
+        {
+            const ch = document.getElementById('cashChip');
+            ch.innerHTML = !S.uid ? '' : (S.isOwner ? '<b class="stf">Staff<\/b>' : '') + '<span>' + (a ? $(a.cash) : 'No account') + '<\/span>';
+            ch.style.display = S.uid ? '' : 'none';
+        }
         if (!S.loaded) {
             app.innerHTML = `<p class="mut">${S.stale ? 'Market data can\'t be reached yet. It will appear as soon as the connection answers.' : 'Loading market data…'}<\/p>`;
             return;
@@ -1320,9 +1330,6 @@ No<\/textarea><\/label>
             else if (bd)
                 bd.remove();
         }
-        const chip = document.getElementById('cashChip');
-        if (chip && n && chip.textContent.indexOf('new') < 0)
-            chip.textContent = chip.textContent.replace('Staff', 'Staff (' + n + ' new)');
         if (route() === 'staff') {
             clearTimeout(staffAlerts._t);
             staffAlerts._t = setTimeout(() => { setSeen(Date.now()); }, 4000);
