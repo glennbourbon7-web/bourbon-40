@@ -226,7 +226,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 /* Shared database: Firebase Realtime Database over its REST + live-stream API.
    Every phone reads and writes the same data, so all accounts, trades and requests are shared. */
 (function () {
-    const DB = (window.__DB_URL || 'https://ananda-57fbb-default-rtdb.firebaseio.com').replace(/\/$/, '');
+    const ROOT = (window.__DB_URL || 'https://ananda-57fbb-default-rtdb.firebaseio.com').replace(/\/$/, ''), DB = ROOT + '/v3';
     const SEED = window.__SEED || {};
     let tree = {}, ready = false;
     const waiters = [], subs = new Set();
@@ -473,8 +473,35 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             }
         });
     }
+    /* move to a fresh section of the database that only this version uses; copy everything over the first time */
+    function migrate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (getAt('companies') || getAt('users'))
+                return;
+            try {
+                const r = yield fetch(ROOT + '/.json', { cache: 'no-store' });
+                const old = yield r.json();
+                if (!old)
+                    return;
+                delete old.v3;
+                const up = {};
+                for (const k of Object.keys(old))
+                    if (!getAt(k))
+                        up[k] = old[k];
+                if (!Object.keys(up).length)
+                    return;
+                for (const k of Object.keys(up))
+                    setAt(k, up[k]);
+                fire();
+                yield req('PATCH', '', up);
+            }
+            catch (e) {
+                console.warn('migrate', e);
+            }
+        });
+    }
     connect();
-    whenReady().then(() => ensureSeed().catch(e => console.warn('seed', e)));
+    whenReady().then(() => migrate()).then(() => ensureSeed().catch(e => console.warn('seed', e)));
     const user = { id: () => __awaiter(this, void 0, void 0, function* () { yield whenReady(); return auth.current(); }), isOwner: () => __awaiter(this, void 0, void 0, function* () { yield whenReady(); return auth.isEmployee(); }), can: () => __awaiter(this, void 0, void 0, function* () { return true; }),
         profiles: (ids) => __awaiter(this, void 0, void 0, function* () { const o = {}; ids.forEach(i => { o[i] = { name: (getAt('accounts/' + i) || {}).label || '' }; }); return o; }) };
     window.SOLO = { auth, use: (n) => __awaiter(this, void 0, void 0, function* () { yield whenReady(); return n === 'db' ? db : n === 'user' ? user : null; }) };
@@ -490,7 +517,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795762255';
+    const BUILD = '1795762525';
     const START = 0, WDLIM = 50000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -1064,7 +1091,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
    <label>Shares${sell ? ` (you can sell ${av.toLocaleString()})` : ''}<input id="qty" name="qty" type="number" min="1" step="1" value="10" inputmode="numeric"><\/label>
    <div class="qq"><button type="button" class="sm-b" data-qq="1" data-for="qty">1<\/button><button type="button" class="sm-b" data-qq="10" data-for="qty">10<\/button><button type="button" class="sm-b" data-qq="100" data-for="qty">100<\/button><button type="button" class="sm-b" data-qq="${sell ? av : Math.max(1, Math.floor(a.cash / p / 1.15))}" data-for="qty">Max<\/button><\/div>
    ${S.ot !== 'market' ? `<div class="frow"><label>${S.ot === 'limit' ? 'Limit' : 'Stop'} price<input id="lim" name="lim" type="number" min="0.01" step="0.01" value="${r2(p)}" inputmode="decimal"><\/label><label>Good for<select id="tif" name="tif"><option value="day">Today (24 hours)<\/option><option value="gtc">Until cancelled<\/option><\/select><\/label><\/div>` : ''}
-   <div class="est" id="est"><\/div>${a.cash <= 0 && !sell ? '<p class="note" style="margin:0"><a href="#funding">Add money first<\/a><\/p>' : ''}
+   <div class="est" id="est"><\/div><p class="note" id="buyleft" style="margin:0"><\/p>${a.cash <= 0 && !sell ? '<p class="note" style="margin:0"><a href="#funding">Add money first<\/a><\/p>' : ''}
    <button class="${sell ? 'sell' : 'pri'}" id="go">${S.ot === 'market' ? (sell ? 'Sell' : 'Buy') + ' now' : 'Place ' + S.ot + ' order'}<\/button><div class="msg" id="tmsg"><\/div><\/form><\/section>`;
     }
     function meetSlots() { const out = [], d = new Date(); d.setHours(0, 0, 0, 0); while (out.length < 15) {
@@ -1100,6 +1127,16 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             cond = sell ? `Fills automatically once the price reaches ${$(lim)} or higher.` : `Fills automatically once the price falls to ${$(lim)} or lower.`;
         if (S.ot === 'stop' && lim)
             cond = sell ? `Sells automatically if the price drops to ${$(lim)} or lower.` : `Buys automatically if the price rises to ${$(lim)} or higher.`;
+        const bl = document.getElementById('buyleft');
+        if (bl) {
+            if (sell)
+                bl.textContent = '';
+            else {
+                const left = BUYMAX - buysUsed(me(), T, q);
+                bl.textContent = `Buys left today for ${BUCKETS[bucketOf(q)][2]} shares of ${T}: ${Math.max(0, left)} of ${BUYMAX}`;
+                bl.style.color = left > 0 ? '' : '#ff453a';
+            }
+        }
         el.innerHTML = `<div><span class="mut">Price now<\/span><b>${$(p)}<\/b><\/div><div><span class="mut">Average price you ${sell ? 'get' : 'pay'}<\/span><b>${$(p * ip.avg)}<\/b><\/div><div><span class="mut">Estimated ${sell ? 'proceeds' : 'cost'}<\/span><b>${$(p * ip.avg * q)}<\/b><\/div><div><span class="mut">Your price impact<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div><span class="mut">Price after your trade<\/span><b>${$(np)}<\/b><\/div>${cond ? `<div class="note" style="display:block">${esc(cond)}<\/div>` : ''}`;
     }
     /* ---------- TRADE TAB ---------- */
@@ -1743,7 +1780,7 @@ No<\/textarea><\/label>
                 return;
             resetBusy = true;
             try {
-                const done = yield S.db.doc('meta/reset2').get();
+                const done = yield S.db.doc('meta/reset3').get();
                 if (done.exists)
                     return;
                 const c1 = yield S.db.doc('meta/cleanup1').get();
@@ -1751,7 +1788,7 @@ No<\/textarea><\/label>
                     resetBusy = false;
                     return;
                 }
-                yield S.db.doc('meta/reset2').set({ started: Date.now(), by: S.uid });
+                yield S.db.doc('meta/reset3').set({ started: Date.now(), by: S.uid });
                 const now = Date.now();
                 for (const c of L()) {
                     const orig = r2(c.ipo || c.ref || (c.ticker === 'GNS' ? 9.6 : refPx(c)));
@@ -1781,8 +1818,8 @@ No<\/textarea><\/label>
                         nb.wagers = {};
                         yield S.db.doc('bets/' + b.id).set(nb);
                     }
-                yield S.db.doc('meta/reset2').update({ done: Date.now() });
-                yield log({ kind: 'RESET', via: 'Price loophole fixed: all stock prices reset to their original price and every account reset to $50,000' });
+                yield S.db.doc('meta/reset3').update({ done: Date.now() });
+                yield log({ kind: 'RESET', via: 'Moved to the new market: all stock prices reset to their original price and every account reset to $50,000' });
             }
             catch (e) {
                 console.warn(e);
@@ -1913,6 +1950,7 @@ No<\/textarea><\/label>
    <ul class="mut"><li><b>Trade value ÷ company value:<\/b> buying 10% of a company's worth pushes its price up about 10%. $10,000 barely moves a $100M company but clearly moves a $4M one.<\/li>
    <li><b>Impact shrinks as more is bought:<\/b> the first shares of a company move its price the most. Once investors own half of it, each share moves the price a third as much, and when they own all of it, a fifth as much.<\/li>
    <li><b>You pay the average:<\/b> a big buy pays more as its own order pushes the price up, and a big sale gets less as it pushes the price down. Buying and selling straight back earns exactly $0, so you can't pump a stock for free money.<\/li>
+   <li><b>Buy limit:<\/b> each account can make 10 buys a day of each stock in each size range (1–15, 16–150, 151–1,500, 1,501–15,000 and over 15,000 shares).<\/li>
    <li><b>No shortcuts:<\/b> ten trades of 100 shares move the price exactly as much as one trade of 1,000 shares, so spamming small orders gets you nothing extra.<\/li>
    <li><b>Investors holding<\/b> is market depth. With more shareholders there are more people on the other side of a trade, so each order moves the price less.<\/li>
    <li>The new base price is then saved and logged, so every viewer sees the same new price instantly.<\/li><\/ul>
@@ -1940,6 +1978,11 @@ No<\/textarea><\/label>
   <div><span class="mut">Investors holding<\/span><b>${ip.h} → × ${ip.depth.toFixed(3)}<\/b><\/div><div><span class="mut">Push<\/span><b>${(ip.x * 100).toFixed(3)}%<\/b><\/div>
   <div><span class="mut">Price move<\/span><b class="${sell ? 'dn' : 'up'}">${sell ? '−' : '+'}${(ip.m * 100).toFixed(2)}%<\/b><\/div><div><span class="mut">Average price ${sell ? 'received' : 'paid'}<\/span><b>${$(p * ip.avg)}<\/b><\/div><div><span class="mut">${sell ? 'You get' : 'You pay'}<\/span><b>${$(p * ip.avg * q)}<\/b><\/div><div style="border:0"><span>New price<\/span><b style="font-size:20px">${$(np)}<\/b><\/div>`;
     }
+    /* buy limit: at most 10 buys a day per stock in each size range, so nobody can spam one stock */
+    const BUCKETS = [[1, 15, '1–15'], [16, 150, '16–150'], [151, 1500, '151–1,500'], [1501, 15000, '1,501–15,000'], [15001, 1e15, 'over 15,000']];
+    const bucketOf = q => BUCKETS.findIndex(b => q >= b[0] && q <= b[1]);
+    const BUYMAX = 10;
+    const buysUsed = (a, T, q) => { const k = T + '_' + bucketOf(q); return a && a.buys && a.buys.d === dayKey() && a.buys.c ? (a.buys.c[k] || 0) : 0; };
     /* ================= WRITES ================= */
     S.msgs = {};
     const paint = (id, m) => { const el = document.getElementById(id); if (el) {
@@ -1974,6 +2017,14 @@ No<\/textarea><\/label>
                 throw Error(`Not enough cash: this needs ${$(total)} and the account has ${$(a.cash)}.`);
             if (side === 'SELL' && h.q < qty)
                 throw Error(`Only ${h.q} shares of ${T} are owned.`);
+            if (side === 'BUY') {
+                const bi = bucketOf(qty), k = T + '_' + bi, used = buysUsed(a, T, qty);
+                if (used >= BUYMAX)
+                    throw Error(`You've made ${BUYMAX} buys of ${BUCKETS[bi][2]} shares of ${T} today. Pick a different amount or try again tomorrow.`);
+                a.buys = a.buys && a.buys.d === dayKey() ? a.buys : { d: dayKey(), c: {} };
+                a.buys.c = a.buys.c || {};
+                a.buys.c[k] = used + 1;
+            }
             const m = ip.m, np = Math.max(.01, rawPx * (side === 'BUY' ? 1 + m : 1 - m)), nb = np / ratio(c, now);
             if (side === 'BUY') {
                 h.q += qty;
