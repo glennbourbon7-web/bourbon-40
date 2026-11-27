@@ -1160,6 +1160,23 @@ No<\/textarea><\/label>
         });
     }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
+    function giveMoney(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner)
+                return;
+            const uid = f.gu.value, amt = r2(+f.ga.value || 0);
+            if (!uid || !(amt > 0))
+                return say('givemsg', 'Pick an account and an amount.', false);
+            try {
+                yield refund(uid, amt);
+                yield S.db.collection('ledger').add({ t: Date.now(), uid, kind: 'DEPOSIT', price: amt, via: 'Added by ' + name(S.uid) });
+                say('givemsg', `Gave ${$(amt)} to ${name(uid)}.`, true);
+            }
+            catch (e) {
+                say('givemsg', 'Could not add the money. Try again.', false);
+            }
+        });
+    }
     function staff() {
         if (!S.isOwner)
             return `<div class="card pad"><h2>Employees only<\/h2><p class="mut">Sign out and use Employee sign in with an employee account.<\/p><\/div>`;
@@ -1181,6 +1198,9 @@ No<\/textarea><\/label>
    ${sec('Betting boards to settle', toSettle.length, toSettle.length ? `<div class="list">${toSettle.map(betRow).join('')}<\/div>` : `<div class="empty">Nothing to settle. ${openB.length} board${openB.length === 1 ? ' is' : 's are'} still taking bets.<\/div>`)}
    <div class="msg" id="cm_staff"><\/div><\/div>
   <div class="stackc"><section class="card"><div class="ch-h"><h2>All accounts<\/h2><span class="note">${accts.length}<\/span><\/div>${accts.length ? `<div class="list">${accts.map(x => `<div class="li" style="cursor:default"><span class="grow"><b>${esc(name(x.id))}<\/b><small>@${esc(String(x.id).replace(/^u:/, ''))} · traded ${$(x.a.day && x.a.day.d === dk ? x.a.day.v : 0)} today<\/small><\/span><span class="rt"><b class="mono">${$(x.a.cash + x.v)}<\/b><small class="mut">${$(x.a.cash)} cash<\/small><\/span><\/div>`).join('')}<\/div>` : '<div class="empty">No accounts yet.<\/div>'}<\/section>
+   <section class="card pad"><h2>Give money<\/h2><p class="mut" style="margin:6px 0 12px">Add cash straight to any account. It's logged in the ledger as a deposit.<\/p>
+    <form id="givef" class="form"><label>Account<select name="gu">${accts.map(x => `<option value="${esc(x.id)}">${esc(name(x.id))} (@${esc(String(x.id).replace(/^u:/, ''))})<\/option>`).join('')}<\/select><\/label>
+    <label>Amount<input name="ga" type="number" min="1" step="1" value="50000" inputmode="numeric"><\/label><button class="pri">Give money<\/button><div class="msg" id="givemsg"><\/div><\/form><\/section>
    <section class="card pad"><h2>Employee access<\/h2><p class="mut" style="margin:6px 0 12px">Current employees: ${SOLO.auth.employees().map(e => '<b style="color:var(--ink)">@' + esc(e) + '<\/b>').join(', ')}<\/p>
     <form id="empf" class="form" style="grid-template-columns:minmax(0,1fr) auto;align-items:end"><label>Username<input name="eu" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="username"><\/label><button class="pri">Make employee<\/button><\/form>
     <div class="qq" style="margin-top:10px">${SOLO.auth.employees().filter(e => e !== 'glennbourbon').map(e => `<button class="sm-b" data-act="emp-remove" data-u="${esc(e)}">Remove @${esc(e)}<\/button>`).join('')}<\/div><div class="msg" id="empmsg"><\/div><\/section>
@@ -1750,7 +1770,8 @@ No<\/textarea><\/label>
         fileIPO(f); if (f.id === 'betf')
         fileBoard(f); if (f.id === 'authf')
         authSubmit(f); if (f.id === 'depf')
-        requestDeposit(f); if (f.id === 'empf') {
+        requestDeposit(f); if (f.id === 'givef')
+        giveMoney(f); if (f.id === 'empf') {
         try {
             SOLO.auth.setEmployee(f.eu.value.trim().toLowerCase(), true);
             render();
