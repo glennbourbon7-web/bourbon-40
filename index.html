@@ -520,7 +520,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795838573';
+    const BUILD = '1795853592';
     const START = 0, WDLIM = 50000, SHARECAP = 450000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -1230,8 +1230,8 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
             if (sell)
                 bl.textContent = '';
             else {
-                const left = BUYMAX - buysUsed(me(), T, q), avl = Math.max(0, c.shares - ownedShares(T));
-                bl.textContent = `Shares available: ${avl.toLocaleString()} · Buys left today for ${BUCKETS[bucketOf(q)][2]} shares: ${Math.max(0, left)} of ${BUYMAX}`;
+                const left = q > 15000 ? 1 : BUYMAX - buysUsed(me(), T, q), avl = Math.max(0, c.shares - ownedShares(T));
+                bl.textContent = `Shares available: ${avl.toLocaleString()} · ` + (q > 15000 ? 'No daily limit for buys over 15,000 shares' : `Buys left today for ${BUCKETS[bucketOf(q)][2]} shares: ${Math.max(0, left)} of ${BUYMAX}`);
                 bl.style.color = left > 0 && q <= avl ? '' : '#ff453a';
             }
         }
@@ -2158,7 +2158,7 @@ No<\/textarea><\/label>
    <li><b>Impact shrinks as more is bought:<\/b> the first shares of a company move its price the most. Once investors own half of it, each share moves the price a third as much, and when they own all of it, a fifth as much.<\/li>
    <li><b>You pay the average:<\/b> a big buy pays more as its own order pushes the price up, and a big sale gets less as it pushes the price down. Buying and selling straight back earns exactly $0, so you can't pump a stock for free money.<\/li>
    <li><b>Shares are limited:<\/b> nobody can own more shares than a company has. When every share is owned, you can buy once someone sells. New companies can have up to 450,000 shares.<\/li>
-   <li><b>Buy limit:<\/b> each account can make 10 buys a day of each stock in each size range (1–15, 16–150, 151–1,500, 1,501–15,000 and over 15,000 shares).<\/li>
+   <li><b>Buy limit:<\/b> each account can make 10 buys a day of each stock in each size range (1–15, 16–150, 151–1,500 and 1,501–15,000 shares). Buys of more than 15,000 shares have no limit.<\/li>
    <li><b>No shortcuts:<\/b> ten trades of 100 shares move the price exactly as much as one trade of 1,000 shares, so spamming small orders gets you nothing extra.<\/li>
    <li><b>Investors holding<\/b> is market depth. With more shareholders there are more people on the other side of a trade, so each order moves the price less.<\/li>
    <li>The new base price is then saved and logged, so every viewer sees the same new price instantly.<\/li><\/ul>
@@ -2230,7 +2230,7 @@ No<\/textarea><\/label>
                 if (qty > left)
                     throw Error(left ? `Only ${left.toLocaleString()} shares of ${T} are left to buy.` : `Every share of ${T} is owned. You can buy once someone sells.`);
             }
-            if (side === 'BUY') {
+            if (side === 'BUY' && qty <= 15000) {
                 const bi = bucketOf(qty), k = T + '_' + bi, used = buysUsed(a, T, qty);
                 if (used >= BUYMAX)
                     throw Error(`You've made ${BUYMAX} buys of ${BUCKETS[bi][2]} shares of ${T} today. Pick a different amount or try again tomorrow.`);
