@@ -520,7 +520,7 @@ window.__GB = { "salt": "78ec06f0", "hash": "e0e6b3b82f44cde7af8c827aeedf8e2e057
 };
 (function () {
     /* ================= CONSTANTS ================= */
-    const BUILD = '1795853592';
+    const BUILD = '1795853879';
     const START = 0, WDLIM = 50000, SHARECAP = 450000, DAY = 864e5;
     const TF = { '1D': [DAY, 96], '5D': [5 * DAY, 110], '1M': [30 * DAY, 120], '1Y': [365 * DAY, 150] };
     const TFL = { '1D': '1 Day', '5D': '5 Day', '1M': '1 Month', '1Y': '1 Year' };
@@ -2029,6 +2029,82 @@ No<\/textarea><\/label>
             }
         });
     }
+    /* one-time fix the owner asked for: undo Rick's mass sell-off on prices, and give Rick $1,000,000 */
+    let rickBusy = false;
+    function rickFix() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner || !S.loaded || rickBusy)
+                return;
+            rickBusy = true;
+            try {
+                if ((yield S.db.doc('meta/rickfix1').get()).exists)
+                    return;
+                const uid = S.users.ricksinger ? 'u:ricksinger' : (Object.entries(S.accounts).find(([id, a]) => /rick\s*singer/i.test(a.label || '')) || [])[0];
+                if (!uid) {
+                    rickBusy = false;
+                    return;
+                }
+                yield S.db.doc('meta/rickfix1').set({ started: Date.now(), by: S.uid, uid });
+                const q = yield S.db.collection('ledger').get();
+                const sells = q.docs.map(d => d.data()).filter(l => l && l.uid === uid && l.ticker && (l.kind === 'SELL' || l.kind === 'REP-SALE' || (l.kind === 'FILL' && l.side === 'SELL'))).sort((x, y) => y.t - x.t);
+                const burst = [];
+                for (const l of sells) {
+                    if (!burst.length || burst[burst.length - 1].t - l.t <= 36e5)
+                        burst.push(l);
+                    else
+                        break;
+                }
+                const before = {};
+                for (const l of burst.slice().reverse()) {
+                    if (before[l.ticker] != null)
+                        continue;
+                    before[l.ticker] = typeof l.mv === 'number' && l.after ? l.after / (1 + l.mv) : l.price;
+                }
+                const now = Date.now(), done = [];
+                for (const [T, p] of Object.entries(before)) {
+                    const c = S.companies[T];
+                    if (!c || !(p > 0))
+                        continue;
+                    const hist = (Array.isArray(c.hist) ? c.hist.filter(Array.isArray) : []).concat([[now, p]]).slice(-240);
+                    yield S.db.doc('companies/' + T).update({ price: p, hist, t0: now });
+                    done.push(`${T} ${$(p)}`);
+                }
+                yield refund(uid, 1000000);
+                yield S.db.collection('ledger').add({ t: now, uid, kind: 'DEPOSIT', price: 1000000, via: 'Added by ' + name(S.uid) });
+                yield log({ kind: 'RESET', via: done.length ? `Undid Rick's sell-off (${burst.length} sales): ${done.join(', ')}` : "No sell-off by Rick found; prices unchanged" });
+                yield S.db.doc('meta/rickfix1').update({ done: Date.now(), reset: done, sales: burst.length });
+            }
+            catch (e) {
+                console.warn(e);
+                rickBusy = false;
+            }
+        });
+    }
+    /* one-time: approve the Par Amounts IPO the owner asked for */
+    let parBusy = false;
+    function parApprove() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!S.isOwner || !S.loaded || parBusy)
+                return;
+            parBusy = true;
+            try {
+                if ((yield S.db.doc('meta/parapprove1').get()).exists)
+                    return;
+                const hits = Object.values(S.ipos).filter(i => i.status === 'review' && /par\s*amount/i.test((i.name || '') + ' ' + (i.ticker || '')));
+                if (!hits.length) {
+                    parBusy = false;
+                    return;
+                }
+                yield S.db.doc('meta/parapprove1').set({ t: Date.now(), by: S.uid, tickers: hits.map(i => i.ticker) });
+                for (const i of hits)
+                    yield approveIPO(i.ticker);
+            }
+            catch (e) {
+                console.warn(e);
+                parBusy = false;
+            }
+        });
+    }
     /* ---------- EMPLOYEE DASHBOARD ---------- */
     function giveMoney(f) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -2836,7 +2912,7 @@ No<\/textarea><\/label>
         });
     }
     let rt = 0;
-    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); resetOnce(); promoJobs(); promoPopup(); renameOnce(); }, 80); };
+    const soon = () => { clearTimeout(rt); rt = setTimeout(() => { render(); resolveNames(); staffAlerts(); autoClean(); cleanupTest(); resetOnce(); promoJobs(); promoPopup(); renameOnce(); rickFix(); parApprove(); }, 80); };
     setTimeout(() => { if (!S.loaded) {
         S.stale = true;
         render();
